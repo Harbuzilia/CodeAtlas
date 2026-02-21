@@ -1,0 +1,56 @@
+id: core-task-manager-smoke-test
+name: "Task Manager: Smoke Test - Basic Operation"
+description: |
+  Basic sanity check that the Task Manager subagent can respond to a simple request.
+  
+  This validates the subagent is properly configured and can execute basic operations.
+  
+  Validates:
+  - Subagent can receive and understand a prompt
+  - Subagent can use basic tools
+  - Subagent responds appropriately
+category: developer
+
+prompts:
+  - text: |
+      Break down the feature "profile-settings" into JSON subtasks.
+
+      Objective: Allow users to update profile details and preferences.
+      Deliverables:
+      - src/profile/settings-form.tsx
+      - src/profile/preferences-store.ts
+      - src/profile/api/update-preferences.ts
+
+      Use the write tool to create .tmp/tasks/profile-settings/task.json and subtask_NN.json files.
+
+approvalStrategy:
+  type: auto-approve
+
+behavior:
+  mustUseTools:
+    - read
+    - bash
+    - write
+  requiresContext: true
+  expectedContextFiles:
+    - .opencode/context/core/task-management/navigation.md
+    - .opencode/context/core/task-management/standards/task-schema.md
+    - .opencode/context/core/task-management/guides/splitting-tasks.md
+    - .opencode/context/core/task-management/guides/managing-tasks.md
+  minToolCalls: 3
+  maxToolCalls: 15
+
+expectedViolations:
+  - rule: approval-gate
+    shouldViolate: true
+    severity: error
+    description: Subagents do not request approvals
+
+timeout: 60000
+
+tags:
+  - smoke-test
+  - subagent
+  - core-task-manager
+  - safe
+

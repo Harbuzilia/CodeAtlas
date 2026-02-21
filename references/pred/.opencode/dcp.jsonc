@@ -1,0 +1,82 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Opencode-DCP/opencode-dynamic-context-pruning/master/dcp.schema.json",
+    "enabled": true,
+    "debug": false,
+    "pruneNotification": "minimal",
+    "pruneNotificationType": "toast",
+    "commands": {
+        "enabled": true,
+        "protectedTools": [
+            "task",
+            "read",
+            "write",
+            "edit",
+            "bash",
+            "filesystem_read_text_file",
+            "filesystem_write_file",
+            "filesystem_edit_file"
+        ]
+    },
+    "turnProtection": {
+        "enabled": true,
+        "turns": 4
+    },
+    "protectedFilePatterns": [
+        "**/.opencode/agent/**/*.md",
+        "**/context/**/*.md",
+        "**/instructions.md",
+        "**/opencode.json",
+        "**/registry.json",
+        "**/PROJECT_GUIDE.md",
+        "**/PLANS.md"
+    ],
+    "tools": {
+        "settings": {
+            "nudgeEnabled": true,
+            "nudgeFrequency": 30,
+            "contextLimit": "85%",
+            "protectedTools": [
+                "task",
+                "read",
+                "write",
+                "edit",
+                "bash",
+                "filesystem_read_text_file",
+                "filesystem_write_file",
+                "filesystem_edit_file"
+            ]
+        },
+        "distill": {
+            "permission": "allow",
+            "showDistillation": false
+        },
+        "compress": {
+            "permission": "deny",
+            "showCompression": false
+        },
+        "prune": {
+            "permission": "allow"
+        }
+    },
+    "strategies": {
+        "deduplication": {
+            "enabled": true,
+            "protectedTools": [
+                "task",
+                "read"
+            ]
+        },
+        "supersedeWrites": {
+            "enabled": true
+        },
+        "purgeErrors": {
+            "enabled": true,
+            "turns": 5,
+            "protectedTools": [
+                "task",
+                "read",
+                "bash"
+            ]
+        }
+    }
+}
