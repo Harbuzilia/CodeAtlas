@@ -58,7 +58,13 @@ CodeAtlas-Lite/
 ├── opencode.json                     # Generic runtime LLM configuration manifest
 ├── validate-runtime-governance.mjs   # Strict CI/CD prompt constraint validator
 └── README.md                         # Project documentation
-```
+### Curated MCP Integrations (Lite)
+
+To keep the Lite version lean and avoid unnecessary telemetry or redundant access protocols, bloated integrations like `filesystem` or generic `memory` have been intentionally excluded. Instead, CodeAtlas-Lite ships with highly targeted MCP servers:
+
+- **Tavily Search (`tavily-search`):** Replacing basic integrations like DuckDuckGo for robust, research-grade web searches.
+- **Context7 (`context7`):** Seamless real-time documentation retrieval for external libraries.
+- **GitHub Grep (`github-grep`):** Fast pattern matching across external open-source codebases.
 
 ---
 
