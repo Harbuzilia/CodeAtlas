@@ -35,17 +35,71 @@ CodeAtlas is built on a foundation of strict operational rules to prevent LLM ha
 
 ### Architecture
 
-```bash
-User Request
-   └── OpenAgent (Orchestrator)
-         ├─> ContextScout (Analyzes repo structure, AST, and dependencies)
-         ├─> Planner (Breaks down complex tasks into step-by-step plans)
-         ├─> Coder (Implements exact code logic and modifies files)
-         ├─> Reviewer (Audits Diff and enforces clean-code strategies)
-         └─> Tester (Validates logic, creates and runs rigorous tests)
+#### Orchestration Workflow
+
+```mermaid
+graph TD
+    User([User Request]) --> OpenAgent
+    OpenAgent{OpenAgent<br/>Orchestrator}
+    
+    %% Planning Phase
+    OpenAgent -->|1. Analyze| ContextScout[ContextScout<br/>Repo & AST Analysis]
+    ContextScout --> |Context| OpenAgent
+    OpenAgent -->|2. Strategize| Planner[Planner<br/>Task Breakdown]
+    Planner --> |Plan| OpenAgent
+    
+    %% Execution Phase
+    OpenAgent -->|3. Delegate| Coder[Coder<br/>Code Generation]
+    Coder --> |Diff / PR| Reviewer[Reviewer<br/>Code Review & Quality]
+    Coder --> |Logic| Tester[Tester<br/>TDD & Validation]
+    
+    %% Feedback Loops
+    Reviewer -.->|Revise (Clean Code)| Coder
+    Tester -.->|Fix (Failing Tests)| Coder
+    
+    %% Completion
+    Reviewer --> |Approved| Done([Done])
+    Tester --> |Passes| Done
+    
+    classDef orchestrator fill:#2d3748,stroke:#4a5568,stroke-width:2px,color:#fff
+    classDef agent fill:#4a5568,stroke:#718096,stroke-width:2px,color:#e2e8f0
+    classDef io fill:#3182ce,stroke:#2b6cb0,stroke-width:2px,color:#fff
+    
+    class OpenAgent orchestrator
+    class ContextScout,Planner,Coder,Reviewer,Tester agent
+    class User,Done io
 ```
 
-### The Lite Repository Structure
+#### TDD Cycle & Fail-Fast Mechanism
+
+```mermaid
+sequenceDiagram
+    participant O as OpenAgent
+    participant C as Coder
+    participant T as Tester
+    
+    O->>C: Assign Task
+    C->>C: Write Failing Test (Red)
+    C->>C: Implement Feature (Green)
+    C->>C: Refactor (Clean)
+    C-->>O: Submit Code
+    
+    O->>T: Validate Implementation
+    T->>T: Run Test Suite
+    
+    alt Tests Pass
+        T-->>O: Validation Successful
+        O-->>User: Task Complete (Get Shit Done)
+    else Tests Fail
+        T-->>O: Error/Traceback Report
+        O->>C: Auto-Mitigation (Fix Bug)
+        C->>C: Correct Code
+        C-->>O: Submit Fix
+        O->>T: Re-validate
+    end
+```
+
+#### The Lite Repository Structure
 
 ```text
 CodeAtlas-Lite/
@@ -144,6 +198,72 @@ CodeAtlas построен на базе строгих операционных
 - **Строгое управление в Runtime:** Рабочие процессы регулируются строгими контрактами в формате Markdown и валидационными скриптами, гарантирующими последовательное, детерминированное выполнение.
 - **Долгосрочная память (EchoVault):** За счет глубокой интеграции Model Context Protocol (MCP) с EchoVault, CodeAtlas сохраняет долговременную память и контекст между сессиями. Агенты знают о предыдущих архитектурных решениях и настройках без необходимости начинать каждый раз с нуля.
 - **Плагинная система "Навыков" (Skills):** Легко расширяет возможности. Навыки определяют нюансы конкретного языка или интеграцию с внешними инструментами, которые динамически "впрыскиваются" в контекст агента.
+
+### Архитектура (Architecture)
+
+#### Оркестрация рабочего процесса (Workflow)
+
+```mermaid
+graph TD
+    User([Пользовательский запрос]) --> OpenAgent
+    OpenAgent{OpenAgent<br/>Оркестратор}
+    
+    %% Planning Phase
+    OpenAgent -->|1. Анализ| ContextScout[ContextScout<br/>Анализ AST и структуры]
+    ContextScout --> |Контекст| OpenAgent
+    OpenAgent -->|2. Стратегия| Planner[Planner<br/>Пошаговый план]
+    Planner --> |План| OpenAgent
+    
+    %% Execution Phase
+    OpenAgent -->|3. Делегирование| Coder[Coder<br/>Генерация кода]
+    Coder --> |Diff / PR| Reviewer[Reviewer<br/>Code Review & Качество]
+    Coder --> |Логика| Tester[Tester<br/>TDD & Валидация]
+    
+    %% Feedback Loops
+    Reviewer -.->|Доработка (Clean Code)| Coder
+    Tester -.->|Исправление (Падающие тесты)| Coder
+    
+    %% Completion
+    Reviewer --> |Одобрено| Done([Готово])
+    Tester --> |Успешно| Done
+    
+    classDef orchestrator fill:#2d3748,stroke:#4a5568,stroke-width:2px,color:#fff
+    classDef agent fill:#4a5568,stroke:#718096,stroke-width:2px,color:#e2e8f0
+    classDef io fill:#3182ce,stroke:#2b6cb0,stroke-width:2px,color:#fff
+    
+    class OpenAgent orchestrator
+    class ContextScout,Planner,Coder,Reviewer,Tester agent
+    class User,Done io
+```
+
+#### TDD Цикл и механизм Fail-Fast
+
+```mermaid
+sequenceDiagram
+    participant O as OpenAgent
+    participant C as Coder
+    participant T as Tester
+    
+    O->>C: Постановка задачи
+    C->>C: Падающий тест (Red)
+    C->>C: Реализация (Green)
+    C->>C: Рефакторинг (Clean)
+    C-->>O: Отправка кода
+    
+    O->>T: Валидация логики
+    T->>T: Запуск тестов
+    
+    alt Тесты пройдены
+        T-->>O: Успешная валидация
+        O-->>User: Задача завершена (Get Shit Done)
+    else Тесты упали
+        T-->>O: Отчёт об ошибке / Трейсбек
+        O->>C: Авто-исправление (Fix Bug)
+        C->>C: Корректировка кода
+        C-->>O: Отправка фикса
+        O->>T: Повторная валидация
+    end
+```
 
 ### Структура репозитория Lite
 
