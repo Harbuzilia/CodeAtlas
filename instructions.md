@@ -45,9 +45,9 @@ Remove-Item -Recurse -Force  # rm -rf
   Загружай скиллы через fallback-цепочку:
 
   1. Попробуй инструмент `skill` по имени: `skill({ name: "{skill_name}" })`
-  2. Если ошибка → прочитай локальный manifest: `read(".codeatlas/skills/{skill_name}/SKILL.md")`
-  3. Если локально нет → прочитай глобальный manifest: `read("~/.config/codeatlas/skills/{skill_name}/SKILL.md")`
-  4. (Альтернатива Windows) `read("%USERPROFILE%/.config/codeatlas/skills/{skill_name}/SKILL.md")`
+  2. Если ошибка → прочитай локальный manifest: `read(".opencode/skills/{skill_name}/SKILL.md")`
+  3. Если локально нет → прочитай глобальный manifest: `read("~/.config/opencode/skills/{skill_name}/SKILL.md")`
+  4. (Альтернатива Windows) `read("%USERPROFILE%/.config/opencode/skills/{skill_name}/SKILL.md")`
   5. Если всё не работает → продолжай БЕЗ скилла, не блокируй задачу
 
   Скиллы — справочные, не критичные. Их отсутствие НЕ ДОЛЖНО останавливать работу.
@@ -130,13 +130,13 @@ agents/
 
 ### Source Of Truth
 
-- Runtime agent IDs, paths, and tool permissions: `codeatlas.json`
+- Runtime agent IDs, paths, and tool permissions: `opencode.json`
 - Runtime behavior prompts: `agents/*.md`
 - Runtime context system: `context/**/*.md`
 - `registry.json` is metadata inventory, not execution truth.
 - Canonical docs entrypoint: `PROJECT_GUIDE.md`.
 
-Rule: if any doc conflicts with `codeatlas.json`, treat `codeatlas.json` as canonical.
+Rule: if any doc conflicts with `opencode.json`, treat `opencode.json` as canonical.
 
 ### Delegation Flow
 ```
@@ -183,15 +183,15 @@ Rules:
 
 ## Project Initialization (Sync Scripts)
 
-Для корректной работы навыков в локальных репозиториях рекомендуется использовать `codeatlas-init.sh` (или `codeatlas-init.ps1`), который создает символическую ссылку на глобальные скиллы:
+Для корректной работы навыков в локальных репозиториях рекомендуется использовать `opencode-init.sh` (или `opencode-init.ps1`), который создает символическую ссылку на глобальные скиллы:
 
 ```bash
-# codeatlas-init.sh (пример для Bash/Git Bash)
-mkdir -p .codeatlas
-ln -s ~/.config/codeatlas/skills .codeatlas/skills
-echo ".codeatlas/task_state.md" >> .gitignore
+# opencode-init.sh (пример для Bash/Git Bash)
+mkdir -p .opencode
+ln -s ~/.config/opencode/skills .opencode/skills
+echo ".opencode/task_state.md" >> .gitignore
 ```
-Это позволит агентам находить скиллы по пути `.codeatlas/skills` без необходимости их полного копирования.
+Это позволит агентам находить скиллы по пути `.opencode/skills` без необходимости их полного копирования.
 
 ---
 
@@ -241,9 +241,9 @@ Final self-check before response:
 ## Workflow Standards
 
 ### Before Any Code
-1. Before changing `codeatlas.json`, `agents/*.md`, or `context/**/*.md` run `npm run validate:runtime`.
+1. Before changing `opencode.json`, `agents/*.md`, or `context/**/*.md` run `npm run validate:runtime`.
 2. `pwd` — Verify directory.
-3. Check for existing context (`Glob context/` or `Glob .codeatlas/context/`) before reading.
+3. Check for existing context (`Glob context/` or `Glob .opencode/context/`) before reading.
 4. Load skill by name (`skill({ name: "typescript" })`, etc.).
 5. For external libs -> Context7.
 6. Research existing patterns.
@@ -260,7 +260,7 @@ Final self-check before response:
 3. Brief summary
 4. Suggest next steps
 5. If one-shot was used -> return clear end-to-end result blocks (plan/execution/validation/docs-sync)
-6. Обязательное Атомарное сохранение: `git commit` (если есть git) ИЛИ бэкап файлов в `.codeatlas/history/<timestamp>_<task>/`.
+6. Обязательное Атомарное сохранение: `git commit` (если есть git) ИЛИ бэкап файлов в `.opencode/history/<timestamp>_<task>/`.
 
 ---
 

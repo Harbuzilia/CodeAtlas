@@ -4,8 +4,8 @@
 
 ## Quick Reference
 
-Source of truth: `codeatlas.json`.
-If this file and `codeatlas.json` diverge on agent names, follow `codeatlas.json` and update this file.
+Source of truth: `opencode.json`.
+If this file and `opencode.json` diverge on agent names, follow `opencode.json` and update this file.
 
 Process: Analyze → Delegate (serial route) → Monitor → Return
 

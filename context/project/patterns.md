@@ -16,12 +16,12 @@
 - Context root: определяется через `context/core/config/paths.json`
 
 Canonical SoT:
-1. `codeatlas.json`
+1. `opencode.json`
 2. `agents/*.md`
 3. `context/**/*.md`
 4. `instructions.md`
 
-Rule: если есть конфликт в документации, следуй `codeatlas.json`.
+Rule: если есть конфликт в документации, следуй `opencode.json`.
 
 ---
 
@@ -44,7 +44,7 @@ Rule: если есть конфликт в документации, следу
 - `planning/decomposition`
 - `research/external-scout`
 - `subagents/external-scout`
-- `core/codeatlasr`
+- `core/opencoder`
 
 ### 3) Contract-First Delegation
 Каждая делегация должна включать:
@@ -73,12 +73,12 @@ Rule: если есть конфликт в документации, следу
 
 ## Validation Pattern | Паттерн валидации
 
-Перед изменениями runtime-контура (`codeatlas.json`, `agents/*.md`, `context/**/*.md`) запускать:
+Перед изменениями runtime-контура (`opencode.json`, `agents/*.md`, `context/**/*.md`) запускать:
 - `npm run validate:runtime`
 
 Что должно оставаться инвариантом:
-- пути из `codeatlas.json.agent[*].path` существуют;
-- имена агентов в runtime файлах существуют в `codeatlas.json`;
+- пути из `opencode.json.agent[*].path` существуют;
+- имена агентов в runtime файлах существуют в `opencode.json`;
 - legacy ID не используются.
 
 ---
@@ -104,6 +104,6 @@ Rule: если есть конфликт в документации, следу
 
 - Смешивать runtime и reference-проекты в одном execution flow.
 - Использовать файлы из `references/*` как runtime source of truth.
-- Добавлять новые agent IDs без обновления `codeatlas.json`.
+- Добавлять новые agent IDs без обновления `opencode.json`.
 - Доверять `registry.json` как execution source.
 - Возвращать в активный поток legacy-схемы имен.

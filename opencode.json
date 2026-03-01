@@ -1,5 +1,5 @@
 {
-    "$schema": "https://codeatlas.ai/config.json",
+    "$schema": "https://opencode.ai/config.json",
     "instructions": [
         "instructions.md"
     ],

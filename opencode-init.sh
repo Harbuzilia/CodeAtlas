@@ -1,18 +1,18 @@
 #!/bin/bash
-# codeatlas-init.sh
+# opencode-init.sh
 # Initialize CodeAtlas in a new repository (required dirs and symlinks).
 
 set -e
 
 echo "Initializing CodeAtlas in $(pwd)..."
 
-mkdir -p .codeatlas
+mkdir -p .opencode
 
-GLOBAL_SKILLS_PATH="$HOME/.config/codeatlas/skills"
-LOCAL_SKILLS_PATH=".codeatlas/skills"
+GLOBAL_SKILLS_PATH="$HOME/.config/opencode/skills"
+LOCAL_SKILLS_PATH=".opencode/skills"
 
-GLOBAL_LEGACY_SKILL_PATH="$HOME/.config/codeatlas/skill"
-LOCAL_LEGACY_SKILL_PATH=".codeatlas/skill"
+GLOBAL_LEGACY_SKILL_PATH="$HOME/.config/opencode/skill"
+LOCAL_LEGACY_SKILL_PATH=".opencode/skill"
 
 if [ -d "$GLOBAL_SKILLS_PATH" ]; then
     if [ ! -L "$LOCAL_SKILLS_PATH" ] && [ ! -d "$LOCAL_SKILLS_PATH" ]; then
@@ -27,8 +27,8 @@ else
 fi
 
 # Link global bin directory (ast-index and other CLI tools).
-GLOBAL_BIN_PATH="$HOME/.config/codeatlas/bin"
-LOCAL_BIN_PATH=".codeatlas/bin"
+GLOBAL_BIN_PATH="$HOME/.config/opencode/bin"
+LOCAL_BIN_PATH=".opencode/bin"
 
 if [ -d "$GLOBAL_BIN_PATH" ]; then
     if [ ! -L "$LOCAL_BIN_PATH" ] && [ ! -d "$LOCAL_BIN_PATH" ]; then
@@ -45,16 +45,16 @@ fi
 
 
 if [ -f .gitignore ]; then
-    if ! grep -q "\.codeatlas/task_state\.md" .gitignore; then
+    if ! grep -q "\.opencode/task_state\.md" .gitignore; then
         echo "" >> .gitignore
         echo "# CodeAtlas" >> .gitignore
-        echo ".codeatlas/task_state.md" >> .gitignore
-        echo "Added .codeatlas/task_state.md to .gitignore"
+        echo ".opencode/task_state.md" >> .gitignore
+        echo "Added .opencode/task_state.md to .gitignore"
     fi
 else
     echo "# CodeAtlas" > .gitignore
-    echo ".codeatlas/task_state.md" >> .gitignore
-    echo "Created .gitignore and added .codeatlas/task_state.md"
+    echo ".opencode/task_state.md" >> .gitignore
+    echo "Created .gitignore and added .opencode/task_state.md"
 fi
 
 echo "Initialization complete."

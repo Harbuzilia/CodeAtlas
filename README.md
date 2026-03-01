@@ -31,12 +31,24 @@ User Request
          └─> Reviewer (Audits Diff and enforces clean-code strategies)
 ```
 
-### Components in this Repository
+### The Lite Repository Structure
 
-- `/agents`: The prompt contracts defining agent behaviors and strict constraints.
-- `/context`: System workflows, delegation rules, and codebase identity.
-- `/skills`: Injectable toolsets. This Lite version includes foundational skills: `python`, `typescript`, `git`, `repomap`, `ast-index`.
-- `codeatlas.json`: The core routing and configuration manifest.
+```text
+CodeAtlas-Lite/
+├── agents/                           # The core delegation engine
+│   ├── openagent.md                  # The orchestrator (simplified)
+│   ├── contextscout.md               # The AST explorer
+│   ├── coder.md                      # Basic code implementation
+│   └── reviewer.md                   # Basic syntax/logic checking
+├── skills/                           # Essential infrastructure skills
+│   ├── ast-index/SKILL.md            # The magic searching tool
+│   ├── repomap/SKILL.md              # The PageRank architecture map
+│   ├── python/SKILL.md               # Baseline language guidelines
+│   └── typescript/SKILL.md           # Baseline language guidelines
+├── opencode.json                     # Clean LLM config (no private URLs/keys)
+├── validate-runtime-governance.mjs   # The impressive CI validator
+└── README.md                         # Professional, corporate-style documentation
+```
 
 ---
 
@@ -50,20 +62,28 @@ User Request
 
 ### Installation
 
+**CodeAtlas runs entirely out of your global configuration directory.**
+
 1. Clone the repository:
    ```bash
-   git clone https://github.com/YourUsername/CodeAtlas-Lite.git
-   cd CodeAtlas-Lite
+   git clone https://github.com/Harbuzilia/CodeAtlas.git
    ```
 
-2. Initialize your project environment:
+2. Copy the entire repository to your system's global config directory:
+   - **Windows:** `C:\Users\Your_Username\.config\opencode\`
+   - **macOS / Linux:** `~/.config/opencode/`
+
+   *Note: The core engine config logic explicitly looks for the `opencode` folder name.*
+
+3. Configure your API key. Edit `opencode.json` in that directory to add your model endpoints and OpenRouter API key.
+
+4. Initialize in a specific project:
+   From your target workspace, run:
    ```bash
-   ./codeatlas-init.sh
+   bash ~/.config/opencode/opencode-init.sh
    ```
 
-3. Configure your API key. Edit `.codeatlas/codeatlas.json` (or place in `~/.config/codeatlas/codeatlas.json`) to add your model endpoints and OpenRouter API key.
-
-4. Run CodeAtlas:
+5. Run CodeAtlas:
    Start interacting with your terminal wrapper or UI tool configured to point to these agents!
 
 ---
