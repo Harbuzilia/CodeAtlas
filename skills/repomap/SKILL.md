@@ -18,11 +18,11 @@ description: repomap skill reference
 Используй инструмент `bash` (если у тебя есть права) или попроси пользователя выполнить следующую команду в корне проекта:
 
 ```bash
-export PYTHONIOENCODING=utf-8 && uvx --from aider-chat aider --yes --no-auto-commits --model null --show-repo-map > .opencode/repomap.txt
+export PROMPT_TOOLKIT_NO_CPR=1 PYTHONIOENCODING=utf-8 && uvx --from aider-chat aider --yes --no-auto-commits --model null --no-show-model-warnings --show-repo-map > .opencode/repomap.txt
 ```
 
 **Обработка ошибок и адаптация к другим проектам:**
-- **Требование Git:** Aider генерирует карту только внутри Git-репозиториев. Если проект еще не в Git, команда выдаст ошибку. В таком случае выполни `git init && git add . && git commit -m "initial commit"` (даже если это чисто для локального кэширования).
+- **Требование Git и добавленных файлов:** Aider генерирует карту строго для файлов, добавленных в Git-индекс. Если команда пишет `Git repo: .git with 0 files`, значит файлы не проиндексированы. В таком случае выполни `git init` (если репозитория нет) и обязательно `git add .` (для добавления файлов в индекс, коммит при этом делать необязательно). При ошибке `prompt toolkit` убедись, что переменная `PROMPT_TOOLKIT_NO_CPR=1` передана в команду.
 - **Исключение мусора (.gitignore / .aiderignore):** Aider автоматически уважает правила `.gitignore` (все ваши `node_modules`, `dist` и т.д. игнорируются изначально). Если в проекте есть папки, которые нужно скрыть от AST-карты, но они не в `.gitignore` (например, папки с логами или чужими референсами), создай файл `.aiderignore` в корне проекта и впиши туда эти папки (например `references/` или `.venv/`).
 - Если команда долго "висит" - останови её.
 - Если система не знает команду `uvx`, значит пакетный менеджер `uv` не настроен должным образом.
