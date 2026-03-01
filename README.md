@@ -30,7 +30,7 @@ CodeAtlas is built on a foundation of strict operational rules to prevent LLM ha
 - **Context-Aware UI-Localization:** If UI elements are generated, agents dynamically check project settings or prompt the user for the targeted UI language to prevent default English layouts for regional apps.
 - **AST-Driven Code Perception:** Not just grep. Powered by the compiled `ast-index` executable and `repomap`, CodeAtlas truly understands your codebase topology, class hierarchies, and call graphs.
 - **Strict Runtime Governance:** Workflows are governed by strict Markdown contracts and validation scripts ensuring serial, deterministic execution.
-- **Persistent Cognitive Memory (EchoVault):** Through deep Model Context Protocol (MCP) integration with EchoVault, CodeAtlas maintains long-term memory and context across sessions, ensuring agents are aware of previous architectural setups and decisions without starting from scratch.
+- **Persistent Cognitive Memory ([EchoVault](https://github.com/coalaura/echo-vault)):** Through deep Model Context Protocol (MCP) integration with EchoVault, CodeAtlas maintains long-term memory and context across sessions, ensuring agents are aware of previous architectural setups and decisions without starting from scratch.
 - **Pluggable Skill System:** Easily extend capabilities. "Skills" define language-specific nuances or external tool integrations injected directly into the agent context dynamically.
 
 ### Architecture
@@ -196,7 +196,7 @@ CodeAtlas построен на базе строгих операционных
 - **Контекстно-зависимая локализация UI:** Если генерируются элементы интерфейса, агенты динамически проверяют настройки проекта или запрашивают целевой язык UI, чтобы предотвратить создание английских интерфейсов по-умолчанию для региональных приложений.
 - **Восприятие кода через AST:** Это не просто grep. Благодаря скомпилированному исполняемому файлу `ast-index` и `repomap`, CodeAtlas по-настоящему понимает топологию вашей кодовой базы, иерархию классов и графы вызовов.
 - **Строгое управление в Runtime:** Рабочие процессы регулируются строгими контрактами в формате Markdown и валидационными скриптами, гарантирующими последовательное, детерминированное выполнение.
-- **Долгосрочная память (EchoVault):** За счет глубокой интеграции Model Context Protocol (MCP) с EchoVault, CodeAtlas сохраняет долговременную память и контекст между сессиями. Агенты знают о предыдущих архитектурных решениях и настройках без необходимости начинать каждый раз с нуля.
+- **Долгосрочная память ([EchoVault](https://github.com/coalaura/echo-vault)):** За счет глубокой интеграции Model Context Protocol (MCP) с EchoVault, CodeAtlas сохраняет долговременную память и контекст между сессиями. Агенты знают о предыдущих архитектурных решениях и настройках без необходимости начинать каждый раз с нуля.
 - **Плагинная система "Навыков" (Skills):** Легко расширяет возможности. Навыки определяют нюансы конкретного языка или интеграцию с внешними инструментами, которые динамически "впрыскиваются" в контекст агента.
 
 ### Архитектура (Architecture)
