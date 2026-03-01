@@ -3,7 +3,7 @@ import path from 'node:path';
 
 const root = process.cwd();
 const smokeMode = process.argv.includes('--smoke');
-const opencodePath = path.join(root, 'opencode.json');
+const codeatlasPath = path.join(root, 'codeatlas.json');
 const pathsPath = path.join(root, 'context', 'core', 'config', 'paths.json');
 
 function fail(message) {
@@ -19,8 +19,8 @@ function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
-if (!fs.existsSync(opencodePath)) {
-  fail('opencode.json not found');
+if (!fs.existsSync(codeatlasPath)) {
+  fail('codeatlas.json not found');
   process.exit(1);
 }
 
@@ -29,7 +29,7 @@ if (!fs.existsSync(pathsPath)) {
   process.exit(1);
 }
 
-const opencode = readJson(opencodePath);
+const codeatlas = readJson(codeatlasPath);
 const pathsConfig = readJson(pathsPath);
 
 const contextRoot = pathsConfig?.paths?.local || pathsConfig?.custom_dir || 'context';
@@ -40,10 +40,10 @@ if (!fs.existsSync(navigationPath)) {
   ok(`Navigation exists: ${path.relative(root, navigationPath)}`);
 }
 
-const agentMap = opencode.agent || {};
+const agentMap = codeatlas.agent || {};
 const agentKeys = new Set(Object.keys(agentMap));
 if (agentKeys.size === 0) {
-  fail('No agents found in opencode.json (agent map is empty)');
+  fail('No agents found in codeatlas.json (agent map is empty)');
 }
 for (const [key, value] of Object.entries(agentMap)) {
   const relPath = value?.path;
@@ -149,7 +149,7 @@ if (!fs.existsSync(openagentPath)) {
 
 const runtimeDirs = [
   path.join(root, 'agents'),
-  path.join(root, '.opencode', 'agents'),
+  path.join(root, '.codeatlas', 'agents'),
   path.join(root, 'context', 'core', 'workflows')
 ];
 
@@ -195,7 +195,7 @@ const legacyPatterns = [
   /planning\/planner/,
   /research\/external-scout/,
   /subagents\/external-scout/,
-  /core\/opencoder/
+  /core\/codeatlasr/
 ];
 
 for (const f of runtimeFiles) {
@@ -220,7 +220,7 @@ const legacySkillRefPatterns = [
   /skill\/languages\//,
   /skill\/tools\//,
   /skill\/review\//,
-  /\.config\/opencode\/skill\//
+  /\.config\/codeatlas\/skill\//
 ];
 
 for (const rel of migrationScopedFiles) {

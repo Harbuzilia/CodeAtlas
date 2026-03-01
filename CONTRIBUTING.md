@@ -1,10 +1,10 @@
-# Contributing to OpenCode-Lite
+# Contributing to CodeAtlas-Lite
 
-First off, thank you for considering contributing to OpenCode-Lite! This document is a set of guidelines for contributing to this repository.
+First off, thank you for considering contributing to CodeAtlas-Lite! This document is a set of guidelines for contributing to this repository.
 
 ## 🌟 The Open-Core Philosophy
 
-**OpenCode-Lite** is the open-source version of the OpenCode engine. While this repository contains the core orchestration engine, fundamental agents (`openagent`, `contextscout`, `coder`, `reviewer`), and core skills, the advanced enterprise features and specialized agents are maintained in the private Pro repository.
+**CodeAtlas-Lite** is the open-source version of the CodeAtlas engine. While this repository contains the core orchestration engine, fundamental agents (`openagent`, `contextscout`, `coder`, `reviewer`), and core skills, the advanced enterprise features and specialized agents are maintained in the private Pro repository.
 
 We openly welcome contributions to the Lite engine. Improvements to the core orchestration, bug fixes to the agent prompt constraints, and general optimization of the included skills are highly appreciated.
 
@@ -36,6 +36,6 @@ We welcome suggestions for new features and enhancements.
 
 ## ⚖️ Code of Conduct
 
-Help us keep OpenCode-Lite welcoming and inclusive. Please be respectful and professional in all interactions.
+Help us keep CodeAtlas-Lite welcoming and inclusive. Please be respectful and professional in all interactions.
 
-Thank you for helping to improve OpenCode!
+Thank you for helping to improve CodeAtlas!

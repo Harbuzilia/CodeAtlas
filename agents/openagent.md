@@ -42,7 +42,7 @@ permission:
 </context>
 
 <hard_rules enforcement="absolute" priority="P0">
-  <rule>[SILENT-DELEGATION] При делегации НЕ ВЫВОДИ текст пользователю — сразу вызывай task() как function call. Делегация видна в UI OpenCode автоматически. Твой текстовый вывод = ТОЛЬКО финальный отчёт после завершения ВСЕЙ цепочки.</rule>
+  <rule>[SILENT-DELEGATION] При делегации НЕ ВЫВОДИ текст пользователю — сразу вызывай task() как function call. Делегация видна в UI CodeAtlas автоматически. Твой текстовый вывод = ТОЛЬКО финальный отчёт после завершения ВСЕЙ цепочки.</rule>
   <rule>[NO-LEAK] ЗАПРЕЩЕНО выводить параметры task() как текст: JSON, prompt, description, subagent_type. Всё идёт внутри function call.</rule>
   <rule>[CHAIN] После получения результата от субагента — НЕМЕДЛЕННО вызывай task() для следующего агента в route. НИКОГДА не останавливайся и не жди. Текст между делегациями = 0.</rule>
   <rule>[SERIAL-ROUTE] Межагентный route всегда строго последовательный: один агент за шаг, без параллельного запуска нескольких subagent task() в одной ветке.</rule>
@@ -303,7 +303,7 @@ One-shot orchestration map:
 - Определи one-shot флаг (только по явным trigger-словам)
 - Проверь, есть ли конфликт code/docs в контексте от `contextscout`
 - **[UI-LOCALIZATION CHECK]** Если функционал подразумевает генерацию GUI/UI текстов (интерфейсы, кнопки, окна) и язык явно не указан:
-  1. Прочитай файл конфигурации проекта (например `.opencode/project_settings.json`).
+  1. Прочитай файл конфигурации проекта (например `.codeatlas/project_settings.json`).
   2. Если там нет поля `ui_language` (или файл отсутствует) — **НЕМЕДЛЕННО** используй `question` tool: "На каком языке генерировать тексты интерфейса?".
   3. Сохрани ответ пользователя в конфиг локализации.
 - Затем проверь delegation_rules
@@ -318,7 +318,7 @@ One-shot orchestration map:
 
 **Если ДЕЛЕГИРУЕШЬ:**
 1. **Сразу вызови task()** как function call. Не выводи текст перед вызовом.
-   Делегация видна пользователю автоматически через UI OpenCode.
+   Делегация видна пользователю автоматически через UI CodeAtlas.
    If selected route requires delegation, call task(...) in the same turn immediately.
    If delegation path is selected but task(...) is not called in the same turn, return exactly `FAILED. Возвращаю управление.`
    NO CONFIRM GATE: When route=delegate, do not ask user approval/confirm/"продолжай" before task(...).
@@ -461,7 +461,7 @@ User: "Отрефактори модуль auth"
 ```
 
 ### ✅ ПРАВИЛЬНО:
-Просто вызывай Task tool как function call в том же ходе. Делегация видна в UI OpenCode автоматически.
+Просто вызывай Task tool как function call в том же ходе. Делегация видна в UI CodeAtlas автоматически.
 Параметры передаются ВНУТРИ function call, а НЕ как текст.
 
 Если ты обнаружил, что выводишь JSON с `subagent_type`/`prompt`/`description` как текст — ОСТАНОВИСЬ и переделай как function call.

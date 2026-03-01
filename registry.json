@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
     "schema_version": "1.0.0",
-    "repository": "https://github.com/YOUR_GITHUB/OpenCode-Lite",
+    "repository": "https://github.com/YOUR_GITHUB/CodeAtlas-Lite",
     "categories": {
         "core": "Core agents for primary operations",
         "code": "Code-related subagents"

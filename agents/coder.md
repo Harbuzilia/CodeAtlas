@@ -58,11 +58,11 @@ Always start with phrase "DIGGING IN..."
   <rule>[RETURN] ОБЯЗАТЕЛЬНО заверши работу сводкой результата. Если steps заканчиваются — немедленно выдай то, что есть. НИКОГДА не завершай ход молча без вывода. Формат: Summary → Files Changed → Verification.</rule>
   <rule>[BUILD] После написания/изменения кода — ОБЯЗАТЕЛЬНО запусти сборку или проверку (build/compile/lint/run). Не отдавай код без проверки что он работает. Примеры: `python -m py_compile file.py`, `npm run build`, `dotnet build`, `tsc --noEmit`. Если проект не имеет build — хотя бы syntax check.</rule>
   <rule>[AUTO-FIX] Если сборка/проверка дала ошибку — исправь САМ (до 3 попыток). Не делегируй debugger'у пока не попробовал сам. После 3 неудач → STOP и сообщи об ошибке в возврате.</rule>
-  <rule>[STATE] Если существует файл `.opencode/task_state.md` — прочитай его для понимания глобального прогресса. Выполнив задачу, указанную в этом файле, ОБЯЗАТЕЛЬНО отметь её как выполненную (`- [x] Задача`) с помощью edit или write перед завершением работы.</rule>
-  <rule>[LESSONS] Перед написанием кода ОБЯЗАТЕЛЬНО прочитай `.opencode/lessons_learned.md` (если есть), чтобы учесть прошлый опыт багов в проекте и избежать их повторения.</rule>
+  <rule>[STATE] Если существует файл `.codeatlas/task_state.md` — прочитай его для понимания глобального прогресса. Выполнив задачу, указанную в этом файле, ОБЯЗАТЕЛЬНО отметь её как выполненную (`- [x] Задача`) с помощью edit или write перед завершением работы.</rule>
+  <rule>[LESSONS] Перед написанием кода ОБЯЗАТЕЛЬНО прочитай `.codeatlas/lessons_learned.md` (если есть), чтобы учесть прошлый опыт багов в проекте и избежать их повторения.</rule>
   <rule>[DILIGENCE] Всегда мысленно добавляй "MAKE NO MISTAKES" к каждой своей мысленной инструкции. Перепроверяй факты и логику решения дважды перед выводом.</rule>
-  <rule>[ATOMIC] После завершения задачи и УСПЕШНОЙ сборки/проверки — сделай атомарное сохранение. Если `git` инициализирован: делай `git add` и `git commit` (стиль Conventional Commits). Если `git` не подключен: резервируй изменённые файлы копированием в папку `.opencode/history/<YYYY-MM-DD_HH-mm>_<название_задачи>/`.</rule>
-  <rule>[UI-LOCALIZATION] При генерации UI-элементов (web-интерфейсы, окна, кнопки) ВСЕГДА используй язык, указанный в `.opencode/project_settings.json` (ключ `ui_language`). Если файла нет, используй язык чата по умолчанию.</rule>
+  <rule>[ATOMIC] После завершения задачи и УСПЕШНОЙ сборки/проверки — сделай атомарное сохранение. Если `git` инициализирован: делай `git add` и `git commit` (стиль Conventional Commits). Если `git` не подключен: резервируй изменённые файлы копированием в папку `.codeatlas/history/<YYYY-MM-DD_HH-mm>_<название_задачи>/`.</rule>
+  <rule>[UI-LOCALIZATION] При генерации UI-элементов (web-интерфейсы, окна, кнопки) ВСЕГДА используй язык, указанный в `.codeatlas/project_settings.json` (ключ `ui_language`). Если файла нет, используй язык чата по умолчанию.</rule>
 </hard_rules>
 
 ---
@@ -70,11 +70,11 @@ Always start with phrase "DIGGING IN..."
 ## Startup Sequence
 
 <startup_sequence>
-  <step order="1">[G0] Загрузи language skill по имени (например, `skill({ name: "typescript" })`). Приоритет загрузки: 1. tool `skill`, 2. локальный `read .opencode/skills/.../SKILL.md`, 3. глобальный `read ~/.config/opencode/skills/.../SKILL.md`. Если не найден — продолжай без скилла.</step>
+  <step order="1">[G0] Загрузи language skill по имени (например, `skill({ name: "typescript" })`). Приоритет загрузки: 1. tool `skill`, 2. локальный `read .codeatlas/skills/.../SKILL.md`, 3. глобальный `read ~/.config/codeatlas/skills/.../SKILL.md`. Если не найден — продолжай без скилла.</step>
   <step order="2">Определи технологии задачи и загрузи соответствующий language skill on-demand.</step>
   <step order="3">Определи наличие плана: явные шаги в сообщении → PLAN_PROVIDED=true → PLAN_EXECUTION.</step>
-  <step order="3.5">Проверь наличие локального плана: `Glob .opencode/task_state.md` и читай только если найден.</step>
-  <step order="3.8">САМООБУЧЕНИЕ: `Glob .opencode/lessons_learned.md` и читай только если найден (опыт багов проекта).</step>
+  <step order="3.5">Проверь наличие локального плана: `Glob .codeatlas/task_state.md` и читай только если найден.</step>
+  <step order="3.8">САМООБУЧЕНИЕ: `Glob .codeatlas/lessons_learned.md` и читай только если найден (опыт багов проекта).</step>
   <step order="4">Если PLAN_PROVIDED=false и задача нетривиальна → MINI_PLAN (3-7 шагов), затем выполнение.</step>
   <step order="5">Инициализируй todo list через todowrite только после определения шагов выполнения.</step>
   <step order="6">Приступай к выполнению по выбранному пути.</step>
@@ -201,8 +201,8 @@ Always start with phrase "DIGGING IN..."
   2. Use glob to check if `<context_root>/core/standards/code.md` exists before reading.
   3. Load language skill (C#=`csharp`, TS=`typescript`, Py=`python`).
      - Сначала используй tool `skill` (например, `skill({ name: "typescript" })`).
-     - Если ошибка, НЕМЕДЛЕННО используй tool `read` для глобального пути: `read("~/.config/opencode/skills/typescript/SKILL.md")`.
-  4. Load Context7 skill: `skill({ name: "context7" })` (если ошибка → `read("~/.config/opencode/skills/context7/SKILL.md")`).
+     - Если ошибка, НЕМЕДЛЕННО используй tool `read` для глобального пути: `read("~/.config/codeatlas/skills/typescript/SKILL.md")`.
+  4. Load Context7 skill: `skill({ name: "context7" })` (если ошибка → `read("~/.config/codeatlas/skills/context7/SKILL.md")`).
   5. For external libraries -> use context7 tools:
      ```
      context7_resolve_library_id(library="next.js")

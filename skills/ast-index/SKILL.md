@@ -22,21 +22,21 @@ description: ast-index skill reference
 
 ## Расположение бинарника
 
-Бинарник хранится глобально: `~/.config/opencode/bin/ast-index.exe`
-В каждом проекте он доступен через symlink (создаётся `opencode-init.sh`):
+Бинарник хранится глобально: `~/.config/codeatlas/bin/ast-index.exe`
+В каждом проекте он доступен через symlink (создаётся `codeatlas-init.sh`):
 
 ```
-.opencode/bin/ast-index.exe
+.codeatlas/bin/ast-index.exe
 ```
 
 ## Первичная настройка (один раз на проект)
 
 ```bash
 # Построить индекс (выполнить из корня проекта)
-.opencode/bin/ast-index.exe rebuild
+.codeatlas/bin/ast-index.exe rebuild
 
 # Обновить индекс после изменений (инкрементально, быстро)
-.opencode/bin/ast-index.exe update
+.codeatlas/bin/ast-index.exe update
 ```
 
 > **Важно:** Индекс хранится в `%LOCALAPPDATA%\ast-index\` (не в папке проекта). Первый `rebuild` занимает ~1 секунду. Последующие `update` — мгновенны.
@@ -46,67 +46,67 @@ description: ast-index skill reference
 ### Поиск символов
 ```bash
 # Универсальный поиск (файлы + символы + ссылки)
-.opencode/bin/ast-index.exe search "UserService"
+.codeatlas/bin/ast-index.exe search "UserService"
 
 # Найти класс/интерфейс
-.opencode/bin/ast-index.exe class "AuthController"
+.codeatlas/bin/ast-index.exe class "AuthController"
 
 # Найти любой символ (функцию, переменную, тип)
-.opencode/bin/ast-index.exe symbol "handleSubmit"
+.codeatlas/bin/ast-index.exe symbol "handleSubmit"
 
 # Найти файл по имени
-.opencode/bin/ast-index.exe file "auth"
+.codeatlas/bin/ast-index.exe file "auth"
 ```
 
 ### Анализ использований (КЛЮЧЕВАЯ ФИЧА)
 ```bash
 # Где используется этот символ? (за ~8ms вместо 90ms grep)
-.opencode/bin/ast-index.exe usages "validateUser"
+.codeatlas/bin/ast-index.exe usages "validateUser"
 
 # Кросс-ссылки: определение + импорты + использования (одним вызовом)
-.opencode/bin/ast-index.exe refs "UserRepository"
+.codeatlas/bin/ast-index.exe refs "UserRepository"
 
 # Кто вызывает эту функцию?
-.opencode/bin/ast-index.exe callers "fetchData"
+.codeatlas/bin/ast-index.exe callers "fetchData"
 
 # Дерево вызовов (кто вызывает вызывающих)
-.opencode/bin/ast-index.exe call-tree "processOrder" --depth 3
+.codeatlas/bin/ast-index.exe call-tree "processOrder" --depth 3
 ```
 
 ### Навигация по структуре
 ```bash
 # Показать все символы в файле (outline)
-.opencode/bin/ast-index.exe outline "src/auth/login.ts"
+.codeatlas/bin/ast-index.exe outline "src/auth/login.ts"
 
 # Иерархия класса (родители + потомки)
-.opencode/bin/ast-index.exe hierarchy "BaseComponent"
+.codeatlas/bin/ast-index.exe hierarchy "BaseComponent"
 
 # Найти все реализации интерфейса/абстрактного класса
-.opencode/bin/ast-index.exe implementations "IRepository"
+.codeatlas/bin/ast-index.exe implementations "IRepository"
 
 # Показать импорты файла
-.opencode/bin/ast-index.exe imports "src/app.ts"
+.codeatlas/bin/ast-index.exe imports "src/app.ts"
 ```
 
 ### Обзор проекта
 ```bash
 # Компактная карта проекта (ключевые типы по директориям)
-.opencode/bin/ast-index.exe map
+.codeatlas/bin/ast-index.exe map
 
 # Статистика индекса
-.opencode/bin/ast-index.exe stats
+.codeatlas/bin/ast-index.exe stats
 
 # Обнаружить паттерны архитектуры и фреймворки
-.opencode/bin/ast-index.exe conventions
+.codeatlas/bin/ast-index.exe conventions
 ```
 
 ### Анализ изменений
 ```bash
 # Какие символы изменились относительно main?
-.opencode/bin/ast-index.exe changed
+.codeatlas/bin/ast-index.exe changed
 
 # Изменения относительно конкретной ветки
-.opencode/bin/ast-index.exe changed --base origin/develop
+.codeatlas/bin/ast-index.exe changed --base origin/develop
 ```
 
 ## Правила для агентов
