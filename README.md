@@ -36,8 +36,10 @@ CodeAtlas is built on a foundation of strict operational rules to prevent LLM ha
 User Request
    └── OpenAgent (Orchestrator)
          ├─> ContextScout (Analyzes repo structure, AST, and dependencies)
+         ├─> Planner (Breaks down complex tasks into step-by-step plans)
          ├─> Coder (Implements exact code logic and modifies files)
-         └─> Reviewer (Audits Diff and enforces clean-code strategies)
+         ├─> Reviewer (Audits Diff and enforces clean-code strategies)
+         └─> Tester (Validates logic, creates and runs rigorous tests)
 ```
 
 ### The Lite Repository Structure
@@ -47,8 +49,10 @@ CodeAtlas-Lite/
 ├── agents/                           # Core configuration prompts for agents
 │   ├── openagent.md                  # Main routing and delegation orchestrator
 │   ├── contextscout.md               # Repo-wide analysis and topology crawler
+│   ├── planner.md                    # Strategic step-by-step task breakdown
 │   ├── coder.md                      # Code generation and file modification 
-│   └── reviewer.md                   # Diff analysis and standard enforcement
+│   ├── reviewer.md                   # Diff analysis and standard enforcement
+│   └── tester.md                     # Test generation and execution validation
 ├── skills/                           # Extensible tooling and patterns
 │   ├── ast-index/SKILL.md            # Execution profiles for the AST indexer
 │   ├── repomap/SKILL.md              # PageRank-based architecture mapping
@@ -56,8 +60,10 @@ CodeAtlas-Lite/
 │   └── typescript/SKILL.md           # Baseline language guidelines
 ├── bin/                              # Executables (e.g., ast-index.exe)
 ├── opencode.json                     # Generic runtime LLM configuration manifest
+├── dcp.jsonc                         # Deterministic Context Protocol configuration
 ├── validate-runtime-governance.mjs   # Strict CI/CD prompt constraint validator
 └── README.md                         # Project documentation
+
 ### Curated MCP Integrations (Lite)
 
 To keep the Lite version lean and avoid unnecessary telemetry or redundant access protocols, bloated integrations like `filesystem` or generic `memory` have been intentionally excluded. Instead, CodeAtlas-Lite ships with highly targeted MCP servers:
@@ -70,12 +76,6 @@ To keep the Lite version lean and avoid unnecessary telemetry or redundant acces
 
 ## Getting Started
 
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) & [npm](https://www.npmjs.com/)
-- An API Key from [OpenRouter](https://openrouter.ai/) (or a compatible LLM provider)
-- [Aider](https://aider.chat/) (Used as the low-level CLI context bridge)
-
 ### Installation
 
 **CodeAtlas runs entirely out of your global configuration directory.**
@@ -85,14 +85,14 @@ To keep the Lite version lean and avoid unnecessary telemetry or redundant acces
    git clone https://github.com/Harbuzilia/CodeAtlas.git
    ```
 
-2. Copy the entire repository to your system's global config directory:
-   - **Windows:** `C:\Users\Your_Username\.config\opencode\`
-   - **macOS / Linux:** `~/.config/opencode/`
+2. Copy the contents of this repository to your system's global configuration directory so that `opencode.json` ends up precisely at this path:
+   - **Windows:** `C:\Users\Your_Username\.config\opencode\opencode.json`
+   - **macOS / Linux:** `~/.config/opencode/opencode.json`
 
-   *Note: The core engine config logic explicitly looks for the `opencode` folder name.*
+   *Note: The core engine config logic explicitly looks for the `opencode` folder name and requires the global configuration manifest to be exactly at this path.*
 
 3. Set up the AST Executable:
-   The `ast-index` tool uses a compiled executable to parse repository structures near-instantly. You must place your compiled `ast-index.exe` (or binary equivalent for Linux/macOS) into the global `bin/` directory:
+   The `ast-index` tool uses a compiled executable to parse repository structures near-instantly. You can download or build it from [Claude-ast-index-search](https://github.com/defendend/Claude-ast-index-search). You must place your compiled `ast-index.exe` (or binary equivalent for Linux/macOS) into the global `bin/` directory:
    - Path: `~/.config/opencode/bin/ast-index.exe`
 
 4. Configure your API key. Edit `opencode.json` in the configuration directory to add your model endpoints and OpenRouter API key.
@@ -114,7 +114,7 @@ This repository houses the **CodeAtlas-Lite** engine. It is a fully functional s
 
 The full internal implementation includes extended capabilities for enterprise teams, complex monorepos, and mission-critical systems:
 
-- **Advanced Agents:** `Planner`, `Tester`, `Debugger`, `DocWriter`, and `ExternalScout`.
+- **Advanced Enterprise Agents:** `Debugger`, `DocWriter`, and `ExternalScout`.
 - **Comprehensive Skill Library:** 50+ enterprise skills including `security-owasp`, `incident-response`, `devops-docker`, `api-change-safe`, and dynamic configuration migrations.
 - **Context7 MCP Integration:** Real-time deep Web/API documentation scraping for external libraries.
 - **Strict One-Shot Execution Profiles:** Parallel analysis, automated dependency resolution, and deep project telemetry.

@@ -75,6 +75,12 @@
         },
         "reviewer": {
             "path": "agents/reviewer.md"
+        },
+        "planner": {
+            "path": "agents/planner.md"
+        },
+        "tester": {
+            "path": "agents/tester.md"
         }
     },
     "mcp": {

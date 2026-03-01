@@ -212,6 +212,8 @@ const migrationScopedFiles = [
   'PROJECT_GUIDE.md',
   'agents/coder.md',
   'agents/reviewer.md',
+  'agents/planner.md',
+  'agents/tester.md',
   'agents/openagent.md',
   'context/core/workflows/delegation.md'
 ];
