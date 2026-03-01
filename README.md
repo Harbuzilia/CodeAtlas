@@ -21,6 +21,7 @@ CodeAtlas is built on a foundation of strict operational rules to prevent LLM ha
 - **True Agent-to-Agent Delegation:** Tasks are automatically routed. `OpenAgent` acts as an orchestrator, delegating complex system analysis to `ContextScout`, writing tasks to `Coder`, and validation to `Reviewer`.
 - **AST-Driven Code Perception:** Not just grep. Powered by the compiled `ast-index` executable and `repomap`, CodeAtlas truly understands your codebase topology, class hierarchies, and call graphs.
 - **Strict Runtime Governance:** Workflows are governed by strict Markdown contracts and validation scripts ensuring serial, deterministic execution.
+- **Persistent Cognitive Memory (EchoVault):** Through deep Model Context Protocol (MCP) integration with EchoVault, CodeAtlas maintains long-term memory and context across sessions, ensuring agents are aware of previous architectural setups and decisions without starting from scratch.
 - **Pluggable Skill System:** Easily extend capabilities. "Skills" define language-specific nuances or external tool integrations injected directly into the agent context dynamically.
 
 ---
