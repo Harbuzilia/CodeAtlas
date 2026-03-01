@@ -1,0 +1,73 @@
+{
+    "version": "1.0.0",
+    "schema_version": "1.0.0",
+    "repository": "https://github.com/YOUR_GITHUB/OpenCode-Lite",
+    "categories": {
+        "core": "Core agents for primary operations",
+        "code": "Code-related subagents"
+    },
+    "components": {
+        "agents": [
+            {
+                "id": "openagent",
+                "name": "OpenAgent",
+                "type": "agent",
+                "path": "agents/openagent.md",
+                "description": "Universal orchestrator and delegation system",
+                "tags": [
+                    "universal",
+                    "coordination",
+                    "primary"
+                ],
+                "dependencies": [
+                    "subagent:contextscout",
+                    "subagent:coder",
+                    "subagent:reviewer"
+                ],
+                "category": "core"
+            }
+        ],
+        "subagents": [
+            {
+                "id": "contextscout",
+                "name": "ContextScout",
+                "type": "subagent",
+                "path": "agents/contextscout.md",
+                "description": "Context discovery via AST and Repomap",
+                "tags": [
+                    "context",
+                    "search",
+                    "discovery"
+                ],
+                "dependencies": [],
+                "category": "core"
+            },
+            {
+                "id": "coder",
+                "name": "CoderAgent",
+                "type": "subagent",
+                "path": "agents/coder.md",
+                "description": "Code implementation expert",
+                "tags": [
+                    "coding",
+                    "implementation"
+                ],
+                "dependencies": [],
+                "category": "code"
+            },
+            {
+                "id": "reviewer",
+                "name": "CodeReviewer",
+                "type": "subagent",
+                "path": "agents/reviewer.md",
+                "description": "Code quality validation and verification",
+                "tags": [
+                    "review",
+                    "quality"
+                ],
+                "dependencies": [],
+                "category": "code"
+            }
+        ]
+    }
+}
