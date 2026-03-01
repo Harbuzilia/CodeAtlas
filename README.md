@@ -54,8 +54,8 @@ graph TD
     Coder --> |Logic| Tester[Tester<br/>TDD & Validation]
     
     %% Feedback Loops
-    Reviewer -.->|Revise (Clean Code)| Coder
-    Tester -.->|Fix (Failing Tests)| Coder
+    Reviewer -.->|Revise: Clean Code| Coder
+    Tester -.->|Fix: Failing Tests| Coder
     
     %% Completion
     Reviewer --> |Approved| Done([Done])
@@ -220,8 +220,8 @@ graph TD
     Coder --> |Логика| Tester[Tester<br/>TDD & Валидация]
     
     %% Feedback Loops
-    Reviewer -.->|Доработка (Clean Code)| Coder
-    Tester -.->|Исправление (Падающие тесты)| Coder
+    Reviewer -.->|Доработка: Clean Code| Coder
+    Tester -.->|Исправление: Падающие тесты| Coder
     
     %% Completion
     Reviewer --> |Одобрено| Done([Готово])
