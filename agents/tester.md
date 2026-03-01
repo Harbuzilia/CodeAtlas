@@ -48,7 +48,7 @@ permission:
 </hard_rules>
 
 <startup_sequence>
-  <step order="1">[G0] Загрузи language skill (например, `skill("skill/languages/typescript.md")`). Если ошибка → глобальный `read("~/.config/opencode/skill/languages/...`.</step>
+  <step order="1">[G0] Загрузи language skill по имени (например, `skill({ name: "typescript" })`). Если ошибка → глобальный `read("~/.config/opencode/skills/<name>/SKILL.md")`.</step>
   <step order="2">Определи тип тестирования: unit | integration | e2e | api-manual.</step>
   <step order="3">Загрузи соответствующий testing skill on-demand (с таким же глобальным fallback, если необходимо).</step>
   <step order="4">Приступай к написанию тестов.</step>

@@ -29,7 +29,9 @@
 ## 3. Текущая архитектура
 - Входной агент: `openagent` (см. `opencode.json` -> `default_agent`)
 - Делегация: mode-first, затем fallback по delegation rules
+- Межагентный route: строго serial (один subagent за шаг, без параллельных task() в одной ветке)
 - Context discovery: `contextscout`
+- Внутри discovery допускается только безопасная read-only параллелизация независимых батчей `glob`/`grep`/`read`
 - One-shot: только opt-in (по явному триггеру)
 
 ## 4. Активные субагенты
@@ -59,26 +61,30 @@
 Примечание: ID режимов и маршрутов остаются на английском как стабильные технические ключи.
 
 ## 6. Скиллы
-### 6.1 Языковые (`skill/languages/`)
-- `csharp.md` (обновлен: human-grade protocol + modern tooling)
-- `typescript.md` (обновлен: human-grade protocol + modern tooling)
-- `python.md` (обновлен: human-grade protocol + modern tooling)
+### 6.1 Языковые (`skills/<name>/SKILL.md`)
+- `csharp`
+- `typescript`
+- `python`
 
 Когда используются:
 - code/test/debug задачи — обязательно соответствующий language skill.
 
-### 6.2 Инструментальные (`skill/tools/`)
-- `context7.md`
+### 6.2 Инструментальные (`skills/<name>/SKILL.md`)
+- `context7`
   - `modern-design-research`
   - `modern-backend-research`
-- `docs-sync.md`
+- `docs-sync`
   - `release-docs-sync`
-- `incident-response.md`
-- `api-change-safe.md`
-- `database-sql.md` (SQL-инъекции, ORM N+1, миграции)
-- `security-owasp.md` (OWASP Top 10, XSS, CSRF, управление секретами)
-- `devops-docker.md` (Multi-stage Docker, CI/CD, bash best practices)
-- `git.md` (Строгий Conventional Commits формат)
+- `incident-response`
+- `api-change-safe`
+- `database-sql` (SQL injection, ORM N+1, migrations)
+- `security-owasp` (OWASP Top 10, XSS, CSRF, secret handling)
+- `devops-docker` (multi-stage Docker, CI/CD, shell safety)
+- `git` (strict Conventional Commits)
+- `repomap`
+- `review-code-strategy`
+- `review-code-checklist`
+- `config-migration`
 
 Когда используются:
 - external libs/framework/API -> `context7`
@@ -112,7 +118,7 @@
 - Локальная проверка обновлений: `npm run update:local -- --target=<path> --check`
 
 ## 10. GitHub/Git качество
-- Используем `skill/tools/git.md` при задачах с коммитами/PR.
+- Используем `git` skill при задачах с коммитами/PR.
 - Коммит не обязателен для каждого шага: коммитим только завершенные и полезные изменения.
 - Один коммит = один смысловой шаг.
 - PR без шума: clear summary, validation, risks.
@@ -141,7 +147,7 @@
 - перед финалом обязательный self-check качества.
 
 ## 12. Ключевые механизмы (Global Skills, Debugger, Localization)
-- **Universal Global Skills**: Агенты (`coder`, `tester`, `debugger`) используют явные пути для вызова скиллов (например, `skill("skill/languages/typescript.md")`) и имеют встроенный механизм немедленного глобального fallback-чтения из профиля пользователя ОС: `read("~/.config/opencode/skill/...` (на Windows: `%USERPROFILE%\.config\opencode\skill\`). Это гарантирует работу специализированных скиллов из любой директории.
+- **Universal Global Skills**: Агенты (`coder`, `tester`, `debugger`) используют name-based вызов скиллов (например, `skill({ name: "typescript" })`) и fallback-чтение manifest-файлов: `read("~/.config/opencode/skills/<name>/SKILL.md")` (на Windows: `%USERPROFILE%/.config/opencode/skills/<name>/SKILL.md`). Это гарантирует discoverable-layout и переносимость.
 - **Dynamic Debugger**: Агент `debugger` больше не угадывает команды сборки (hardcoded `dotnet build`). Он анализирует контекст ошибки: запускает напрямую указанные `.bat`/`.sh` скрипты, ищет точки входа в `package.json` или `Makefile`. Если информации нет, запрашивает команду через `question tool`.
 - **UI Localization Enforcement**: В `openagent` внедрен чек: при необходимости генерации UI и отсутствии языка в настройках он ОДИН раз запрашивает предпочитаемый язык интерфейса и сохраняет его в `.opencode/project_settings.json`. Агент `coder` строго придерживается этой настройки при генерации визуальных компонентов.
 

@@ -103,7 +103,7 @@ Rule: если есть конфликт в документации, следу
 ## Practical Defaults | Практические дефолты
 
 - При сомнении в маршрутизации: `contextscout -> openagent route decision`.
-- При внешних библиотеках: подключать `skill/tools/context7.md` и/или `externalscout`.
+- При внешних библиотеках: подключать `context7` skill и/или `externalscout`.
 - При ошибках сборки/рантайма: `debugger` с воспроизводимым входом.
 - При проверке качества: `reviewer` (read-only).
 

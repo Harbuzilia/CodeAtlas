@@ -29,6 +29,8 @@
 - ddg-search MCP shows "Connection closed" error (external issue, not our code)
 
 ## Recent Changes Log
+- 2026-03-01: **Structural Code Analysis** — Integrated `ast-index` (native Rust binary) for lightning-fast symbol usage lookups via `.opencode/bin/ast-index.exe`. Integrated `repomap` (Aider PageRank AST map) for global architecture overviews.
+- 2026-03-01: **ContextScout Empowerment** — Removed `bash: deny` limit for `contextscout`. Allowed read-only tools (`ast-index`, `uvx` for Aider, `git log/diff`) allowing automatic generation of `repomap.txt` on new projects and 260x faster grep alternatives.
 - 2026-02-20: **Architectural Cleanup** — Synced `registry.json` with active agents, removed legacy `.opencode/agent/` docs paths, and standardized permission globs (`**/*`) across all agent configs to align with `opencode.json`.
 - 2026-02-20: **Market Best Practices (GSD)** — Integrated `[DILIGENCE]` ("MAKE NO MISTAKES") rule to `coder` and `reviewer`. Added automated Atomic Commits/Backups to `coder` (with fallback to `.opencode/history/` for non-git projects). Switched `planner` output to strict XML tags (`<task>`).
 - 2026-02-20: **DCP Fixes & Skills Upgrade** — Adjusted `dcp.jsonc` limit to 150000 and nudgeFrequency to 10. Added 3 new skills (database, security, devops). Enhanced existing skills with performance rules and Conventional Commits.

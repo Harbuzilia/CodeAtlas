@@ -41,28 +41,34 @@ Remove-Item -Recurse -Force  # rm -rf
 ## Skill Loading Protocol
 
 <skill_loading>
-  Skill tool может быть недоступен (`Available skills: none`). 
+  Skill tool может быть недоступен (`Available skills: none`).
   Загружай скиллы через fallback-цепочку:
-  
-  1. Попробуй инструмент `skill` передав полный относительный путь: `skill("skill/languages/{lang}.md")`
-  2. Если ошибка → НЕМЕДЛЕННО прочитай из глобального профиля ОС с помощью инструмента `read`: `read("~/.config/opencode/skill/languages/{lang}.md")`
-  3. (Альтернатива) `read("%USERPROFILE%/.config/opencode/skill/languages/{lang}.md")` на Windows
-  4. Если всё не работает → продолжай БЕЗ скилла, не блокируй задачу
-  
+
+  1. Попробуй инструмент `skill` по имени: `skill({ name: "{skill_name}" })`
+  2. Если ошибка → прочитай локальный manifest: `read(".opencode/skills/{skill_name}/SKILL.md")`
+  3. Если локально нет → прочитай глобальный manifest: `read("~/.config/opencode/skills/{skill_name}/SKILL.md")`
+  4. (Альтернатива Windows) `read("%USERPROFILE%/.config/opencode/skills/{skill_name}/SKILL.md")`
+  5. Если всё не работает → продолжай БЕЗ скилла, не блокируй задачу
+
   Скиллы — справочные, не критичные. Их отсутствие НЕ ДОЛЖНО останавливать работу.
-  
+
   Доступные скиллы:
-  - `skill/languages/python.md` — Python patterns (Pydantic, generators)
-  - `skill/languages/typescript.md` — TypeScript/React/Vue patterns
-  - `skill/languages/csharp.md` — C#/.NET patterns (EF Core, AsNoTracking)
-  - `skill/tools/git.md` — Git workflow & Conventional Commits
-  - `skill/tools/database-sql.md` — SQL, ORM, Migrations & Security
-  - `skill/tools/security-owasp.md` — OWASP Top 10, XSS, CSRF
-  - `skill/tools/devops-docker.md` — Docker, CI/CD pipelines
-  - `skill/tools/context7.md` — Context7 MCP usage
-  - `skill/tools/docs-sync.md` — Documentation sync
-  - `skill/tools/incident-response.md` — Incident response
-  - `skill/tools/api-change-safe.md` — API change safety
+  - `python` — Python patterns (typing, async, tests)
+  - `typescript` — TypeScript/React/Vue patterns
+  - `csharp` — C#/.NET patterns (async, EF Core)
+  - `git` — Git workflow & Conventional Commits
+  - `database-sql` — SQL, ORM, migrations, transactions
+  - `security-owasp` — OWASP, XSS, CSRF, secrets
+  - `devops-docker` — Docker and CI/CD practices
+  - `context7` — Context7 MCP usage
+  - `docs-sync` — Documentation synchronization
+  - `incident-response` — Incident response workflow
+  - `api-change-safe` — API change safety
+  - `repomap` — Repository map workflow
+  - `ast-index` — Fast AST-based code search (usages, hierarchy, outline)
+  - `review-code-strategy` — Reviewer baseline strategy
+  - `review-code-checklist` — Reviewer actionable checklist
+  - `config-migration` — Source-first migration discipline
 </skill_loading>
 
 ---
@@ -106,7 +112,7 @@ Remove-Item -Recurse -Force  # rm -rf
      context7_resolve_library_id(library="next.js")
      context7_get_library_docs(id="vercel/next.js", topic="server actions")
      ```
-  3. См. полный скилл: `skill/tools/context7.md`
+  3. См. полный скилл: `skills/context7/SKILL.md`
 </context7_rule>
 
 ---
@@ -155,12 +161,12 @@ User -> openagent -> [delegate when needed]
 
 ## Skills System
 
-### Language Skills (`skill/languages/`)
+### Language Skills (`skills/<name>/SKILL.md`)
 - `csharp.md` — .NET, EF Core, WPF, async
 - `typescript.md` — React, Vue, Next.js
 - `python.md` — FastAPI, SQLAlchemy, pytest
 
-### Tool Skills (`skill/tools/`)
+### Tool Skills (`skills/<name>/SKILL.md`)
 - `context7.md` — Интеграция с Context7
   - Profile: `modern-design-research` для запросов на современный UI/дизайн
 - `git.md` — Conventional commits, branching
@@ -172,16 +178,16 @@ User -> openagent -> [delegate when needed]
 
 | Trigger | Skill | Required | Owner |
 |---------|-------|----------|-------|
-| Any write/edit code task | `skill/languages/{language}.md` | Yes | OpenAgent -> coder |
-| API contract/schema change | `skill/tools/api-change-safe.md` | Yes | OpenAgent -> coder/tester/docwriter |
-| External library/framework/API | `skill/tools/context7.md` | Yes | OpenAgent / externalscout |
-| Modern design / UI modernization request | `skill/tools/context7.md` (modern-design-research profile) | Yes | OpenAgent -> externalscout -> coder |
-| Modern backend stack upgrade request | `skill/tools/context7.md` (modern-backend-research profile) | Yes | OpenAgent -> contextscout -> externalscout -> coder -> tester |
-| Git workflow (commit/changelog/release notes) | `skill/tools/git.md` (quality commit/PR protocol) | If task touches git history | OpenAgent |
-| Test authoring | `skill/languages/{language}.md` + testing conventions from context | Yes | tester |
-| Debug/build fix | language skill for target file type + `skill/tools/incident-response.md` | Yes | debugger |
-| Documentation synchronization | `skill/tools/docs-sync.md` | Yes for docs-sync tasks | OpenAgent / docwriter |
-| Release preparation / pre-tag sync | `skill/tools/docs-sync.md` (release-docs-sync profile) | Yes | OpenAgent / docwriter |
+| Any write/edit code task | `{language}` | Yes | OpenAgent -> coder |
+| API contract/schema change | `api-change-safe` | Yes | OpenAgent -> coder/tester/docwriter |
+| External library/framework/API | `context7` | Yes | OpenAgent / externalscout |
+| Modern design / UI modernization request | `context7` (modern-design-research profile) | Yes | OpenAgent -> externalscout -> coder |
+| Modern backend stack upgrade request | `context7` (modern-backend-research profile) | Yes | OpenAgent -> contextscout -> externalscout -> coder -> tester |
+| Git workflow (commit/changelog/release notes) | `git` (quality commit/PR protocol) | If task touches git history | OpenAgent |
+| Test authoring | `{language}` + testing conventions from context | Yes | tester |
+| Debug/build fix | language skill for target file type + `incident-response` | Yes | debugger |
+| Documentation synchronization | `docs-sync` | Yes for docs-sync tasks | OpenAgent / docwriter |
+| Release preparation / pre-tag sync | `docs-sync` (release-docs-sync profile) | Yes | OpenAgent / docwriter |
 
 Rules:
 1. OpenAgent chooses skill set before delegation and passes it in prompt.
@@ -197,10 +203,10 @@ Rules:
 ```bash
 # opencode-init.sh (пример для Bash/Git Bash)
 mkdir -p .opencode
-ln -s ~/.config/opencode/skill .opencode/skill
+ln -s ~/.config/opencode/skills .opencode/skills
 echo ".opencode/task_state.md" >> .gitignore
 ```
-Это позволит агентам находить скиллы по пути `.opencode/skill` без необходимости их полного копирования.
+Это позволит агентам находить скиллы по пути `.opencode/skills` без необходимости их полного копирования.
 
 ---
 
@@ -253,7 +259,7 @@ Final self-check before response:
 1. Before changing `opencode.json`, `agents/*.md`, or `context/**/*.md` run `npm run validate:runtime`.
 2. `pwd` — Verify directory.
 3. Check for existing context (`Glob context/` or `Glob .opencode/context/`) before reading.
-4. Load skill (`skill/languages/`).
+4. Load skill by name (`skill({ name: "typescript" })`, etc.).
 5. For external libs -> Context7.
 6. Research existing patterns.
 

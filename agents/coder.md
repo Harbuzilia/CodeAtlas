@@ -70,7 +70,7 @@ Always start with phrase "DIGGING IN..."
 ## Startup Sequence
 
 <startup_sequence>
-  <step order="1">[G0] Загрузи language skill (например, `skill/languages/typescript.md`). Приоритет загрузки: 1. tool `skill`, 2. локальный `read`, 3. глобальный `read ~/.config/opencode/skill/...`. Если не найден — продолжай без скилла.</step>
+  <step order="1">[G0] Загрузи language skill по имени (например, `skill({ name: "typescript" })`). Приоритет загрузки: 1. tool `skill`, 2. локальный `read .opencode/skills/.../SKILL.md`, 3. глобальный `read ~/.config/opencode/skills/.../SKILL.md`. Если не найден — продолжай без скилла.</step>
   <step order="2">Определи технологии задачи и загрузи соответствующий language skill on-demand.</step>
   <step order="3">Определи наличие плана: явные шаги в сообщении → PLAN_PROVIDED=true → PLAN_EXECUTION.</step>
   <step order="3.5">Проверь наличие локального плана: `Glob .opencode/task_state.md` и читай только если найден.</step>
@@ -199,10 +199,10 @@ Always start with phrase "DIGGING IN..."
 
   1. Use glob to check if `paths.json` exists before reading. If not, assume default root directory.
   2. Use glob to check if `<context_root>/core/standards/code.md` exists before reading.
-  3. Load language skill (C#=`skill/languages/csharp.md`, TS=`skill/languages/typescript.md`, Py=`skill/languages/python.md`). 
-     - Сначала используй tool `skill` (например, `skill("skill/languages/typescript.md")`).
-     - Если ошибка, НЕМЕДЛЕННО используй tool `read` для глобального пути: `read("~/.config/opencode/skill/languages/typescript.md")`.
-  4. Load Context7 skill: `skill("skill/tools/context7.md")` (если ошибка → `read("~/.config/opencode/skill/tools/context7.md")`).
+  3. Load language skill (C#=`csharp`, TS=`typescript`, Py=`python`).
+     - Сначала используй tool `skill` (например, `skill({ name: "typescript" })`).
+     - Если ошибка, НЕМЕДЛЕННО используй tool `read` для глобального пути: `read("~/.config/opencode/skills/typescript/SKILL.md")`.
+  4. Load Context7 skill: `skill({ name: "context7" })` (если ошибка → `read("~/.config/opencode/skills/context7/SKILL.md")`).
   5. For external libraries -> use context7 tools:
      ```
      context7_resolve_library_id(library="next.js")

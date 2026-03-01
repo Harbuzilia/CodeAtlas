@@ -70,4 +70,4 @@ Config:
 If user mentions a library/framework NOT covered here:
 → Recommend `subagents/research/externalscout`
 
-See `skill/tools/context7.md` for supported libraries and usage rules.
+See `skills/context7/SKILL.md` for supported libraries and usage rules.

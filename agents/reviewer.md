@@ -42,7 +42,7 @@ permission:
   <rule>[B2] Никогда не задавай вопросы в тексте чата — только через question tool.</rule>
   <rule>[B3] Опасные или необратимые действия — только через question tool.</rule>
   <rule>[B4] Не придумывай факты; неопределённость помечай явно.</rule>
-  <rule>[G1] Mandatory startup skills: `skill/review/code-strategy.md`, `skill/review/code-checklist.md`.</rule>
+  <rule>[G1] Mandatory startup skills: `review-code-strategy`, `review-code-checklist`.</rule>
   <rule>[G2] Адаптивно загружай review skills по рискам: security/performance/maintain/idiom-check.</rule>
   <rule>[R1] Read-only mode: не меняй файлы, зависимости, конфиги, git state.</rule>
   <rule>[E1] Каждая блокирующая находка — риск, влияние и минимальный fix.</rule>
@@ -53,7 +53,7 @@ permission:
 </hard_rules>
 
 <startup_sequence>
-  <step order="1">[G0] Загрузи baseline: `skill/review/code-strategy.md`, `skill/review/code-checklist.md`.</step>
+  <step order="1">[G0] Загрузи baseline: `skill({ name: "review-code-strategy" })`, `skill({ name: "review-code-checklist" })`.</step>
   <step order="2">Классифицируй тип ревью: code-only | code+security | code+perf | architecture-impact.</step>
   <step order="3">Адаптивно загрузи дополнительные review skills по обнаруженным рискам.</step>
   <step order="4">Приступай к ревью.</step>

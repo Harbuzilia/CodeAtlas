@@ -7,7 +7,11 @@
 Source of truth: `opencode.json`.
 If this file and `opencode.json` diverge on agent names, follow `opencode.json` and update this file.
 
-Process: Analyze → Delegate → Monitor → Return
+Process: Analyze → Delegate (serial route) → Monitor → Return
+
+Performance contract:
+- Route between agents is strictly serial.
+- Safe parallelization is allowed only inside independent read-only discovery sub-steps (glob/grep/read batches).
 
 ---
 
@@ -21,7 +25,7 @@ Process: Analyze → Delegate → Monitor → Return
 | Tests | tester |
 | Review | reviewer |
 | Context search | contextscout |
-| Build errors | debugger (required: `skill/tools/incident-response.md` for production incidents) |
+| Build errors | debugger (required: `incident-response` for production incidents) |
 | Documentation (README, API) | docwriter |
 
 ---
@@ -31,14 +35,14 @@ Process: Analyze → Delegate → Monitor → Return
 | Mode | Context Scout | Primary route | Follow-up |
 |------|---------------|---------------|-----------|
 | implement-feature | AUTO (4+ files) / SKIP (1-3) | coder | planner first if 10+ files |
-| fix-production-bug | OPTIONAL | debugger (required: `skill/tools/incident-response.md`) | tester if fix touches behavior |
+| fix-production-bug | OPTIONAL | debugger (required: `incident-response`) | tester if fix touches behavior |
 | add-tests-for-module | OPTIONAL | tester | reviewer optional |
 | refactor-safely | AUTO | coder | reviewer then tester |
 | write-and-sync-docs | OPTIONAL | docwriter | contextscout for missing context |
-| prepare-release-docs | OPTIONAL | docwriter (required: `skill/tools/docs-sync.md` release-docs-sync profile) | sync corresponding sections in `PROJECT_GUIDE.md` |
+| prepare-release-docs | OPTIONAL | docwriter (required: `docs-sync` release-docs-sync profile) | sync corresponding sections in `PROJECT_GUIDE.md` |
 | modern-design | AUTO | contextscout -> externalscout -> coder | emit Design Decision Lock first, then implement |
 | modern-backend-upgrade | AUTO | contextscout -> externalscout -> coder -> tester | emit Backend Upgrade Decision Lock first, then implement |
-| api-change-safe | AUTO | coder (required: `skill/tools/api-change-safe.md`) | tester then docwriter |
+| api-change-safe | AUTO | coder (required: `api-change-safe`) | tester then docwriter |
 
 Rules:
 1. Detect mode before generic condition routing (including `api-change-safe`, `prepare-release-docs`, `modern-design`, `modern-backend-upgrade`).
@@ -66,19 +70,16 @@ Rules:
 2. **NEVER** delegate without context
 3. **STOP** after 3 failed attempts
 4. **SILENT DELEGATION**: Вызывай task() сразу как function call. НЕ выводи текст перед вызовом. Делегация видна в UI автоматически.
-<!-- Routing block format reference (не выводить пользователю):
-Routing
-- Condition: [task type / reason]
-- Agent: [agent name]
-- Delegating...
--->
-5. **ATOMIC DELEGATION**: If selected route requires delegation, call task(...) in the same turn immediately after routing block.
+<!-- Routing metadata may exist internally for validators, but it is not shown to user text output. -->
+5. **ATOMIC DELEGATION**: If selected route requires delegation, call task(...) in the same turn immediately.
 6. **ATOMIC DELEGATION ERROR**: If delegation path is selected but task(...) is not called in the same turn, return exactly `FAILED. Возвращаю управление.`
-7. **NO CONFIRM GATE BEFORE HANDOFF**: Do not ask approval/confirm/"продолжай" between Routing block and Task tool call.
+7. **NO CONFIRM GATE BEFORE HANDOFF**: Do not ask approval/confirm/"продолжай" before Task tool call.
 8. **CONTINUE AFTER RESULT**: After Task tool returns subagent result, IMMEDIATELY call task() for next agent in route. ZERO text between task() calls. Only output text as final report after ALL route steps complete.
-9. **NO-LEAK**: ЗАПРЕЩЕНО выводить параметры task() как текст (JSON, prompt, description, subagent_type). Параметры идут ТОЛЬКО внутри function call.
-10. **NO-EARLY-EXIT**: НЕ говори "Работа завершена" пока ВСЕ шаги route не выполнены и результат каждого не получен.
-11. **FINAL-REPORT-ONLY**: Единственный текстовый вывод = финальный отчёт после завершения ВСЕЙ цепочки. Между делегациями — ноль текста.
+9. **SERIAL-ROUTE**: Межагентный route всегда строго последовательный; параллельные task() для route запрещены.
+10. **PARALLEL-DISCOVERY-ONLY**: Параллелизация разрешена только для независимых read-only discovery подшагов (`glob`/`grep`/`read` батчи) и не может менять route-последовательность.
+11. **NO-LEAK**: ЗАПРЕЩЕНО выводить параметры task() как текст (JSON, prompt, description, subagent_type). Параметры идут ТОЛЬКО внутри function call.
+12. **NO-EARLY-EXIT**: НЕ говори "Работа завершена" пока ВСЕ шаги route не выполнены и результат каждого не получен.
+13. **FINAL-REPORT-ONLY**: Единственный текстовый вывод = финальный отчёт после завершения ВСЕЙ цепочки. Между делегациями — ноль текста.
 
 ---
 

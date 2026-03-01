@@ -152,7 +152,7 @@ permission:
 
 ## Supported Libraries
 
-See `skill/tools/context7.md` for usage.
+See `context7` skill for usage (`skills/context7/SKILL.md`).
 
 Categories:
 - Database: Drizzle, Prisma, SQLAlchemy
@@ -183,4 +183,4 @@ Trigger: User mentions library/framework not in local context
 
 ## References
 
-- `skill/tools/context7.md` — Context7 skill
+- `skills/context7/SKILL.md` — Context7 skill manifest

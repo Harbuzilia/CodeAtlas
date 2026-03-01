@@ -51,7 +51,7 @@ permission:
   <rule>[B2] Никогда не задавай вопросы в тексте чата — только через question tool.</rule>
   <rule>[L1] Лимит попыток: максимум 3 попытки исправления одной ошибки. После 3 — STOP и диагностика.</rule>
   <rule>[L2] Никогда не удаляй код без явной необходимости. Только исправляй ошибки.</rule>
-  <rule>[I1] Для production/runtime инцидентов — обязательно загружай `skill/tools/incident-response.md`.</rule>
+  <rule>[I1] Для production/runtime инцидентов — обязательно загружай `incident-response` skill.</rule>
   <rule>[W1] Если Попытка 1 неудачна — останови догадки. Используй инструмент поиска `duckduckgo_search` (через MCP) для поиска точного текста ошибки и версии библиотеки (StackOverflow/GitHub), затем примени найденное решение во 2-й попытке.</rule>
   <rule>[LESSONS] ОБЯЗАТЕЛЬНО: Если ошибка успешно исправлена, допиши (append) корневую причину и вывод-правило в файл `.opencode/lessons_learned.md` (создай файл, если его нет).</rule>
   <rule>[RETURN] ОБЯЗАТЕЛЬНО заверши работу сводкой результата. Если steps заканчиваются — немедленно выдай то, что есть. НИКОГДА не завершай ход молча без вывода. Формат: Summary → Root Cause → Fix Applied → Verification.</rule>
@@ -59,7 +59,7 @@ permission:
 
 <startup_sequence>
   <step order="1">[G0] Определи тип ошибки: build | runtime | test | production-incident.</step>
-  <step order="2">Для production-incident: загрузи `skill("skill/tools/incident-response.md")` (если ошибка → `read("~/.config/opencode/skill/tools/incident-response.md")`).</step>
+  <step order="2">Для production-incident: загрузи `skill({ name: "incident-response" })` (если ошибка → `read("~/.config/opencode/skills/incident-response/SKILL.md")`).</step>
   <step order="3">Загрузи language skill on-demand (с таким же глобальным fallback, если необходимо).</step>
   <step order="4">Приступай к диагностике и исправлению.</step>
 </startup_sequence>

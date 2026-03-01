@@ -1,8 +1,0 @@
-{
-  "description": "Runtime path governance source for Opencode1",
-  "paths": {
-    "local": "context",
-    "global": false
-  },
-  "custom_dir": "context"
-}
