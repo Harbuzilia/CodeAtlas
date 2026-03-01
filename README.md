@@ -2,7 +2,7 @@
   <img src="./logo.jpg" alt="CodeAtlas Logo" style="width: 100%; max-width: 800px;"/>
 </p>
 
-# 🚀 CodeAtlas-Lite
+# CodeAtlas-Lite
 
 > **High-Performance Multi-Agent Orchestration Framework**
 
@@ -12,20 +12,24 @@ Unlike basic agent wrappers, CodeAtlas implements a strictly enforced **determin
 
 ---
 
-## 🔥 The "Wow" Factor: Why CodeAtlas?
+## Core Principles and Capabilities
 
-- **🧠 True Agent-to-Agent Delegation:** Tasks are automatically routed. `OpenAgent` acts as an orchestrator, delegating complex system analysis to `ContextScout`, writing tasks to `Coder`, and validation to `Reviewer`.
-- **⚡ AST-Driven Code Perception:** Not just grep. Powered by `ast-index` and `repomap`, CodeAtlas truly understands your codebase topology, class hierarchies, and call graphs.
-- **🔒 Strict Runtime Governance:** No hallucinations running wild. Workflows are governed by strict Markdown contracts and validation scripts ensuring serial, deterministic execution.
-- **🧩 Pluggable Skill System:** Easily extend capabilities. "Skills" define language-specific nuances or external tool integrations injected directly into the agent context dynamically.
+CodeAtlas is built on a foundation of strict operational rules to prevent LLM hallucinations and endless loops.
+
+- **"Get Shit Done" Philosophy:** A focus on minimal, high-signal changes over broad rewrites. Agents are instructed to be concise, to strictly adhere to done criteria, and to provide actionable outcomes rather than generic conversational filler.
+- **Smart Problem Solving:** A built-in fail-fast safety net. Before attempting a blind fix, agents analyze errors, categorize them (User Error, Environmental, Internal Tooling), and apply specific mitigation strategies rather than jumping to alternatives without understanding the root cause.
+- **True Agent-to-Agent Delegation:** Tasks are automatically routed. `OpenAgent` acts as an orchestrator, delegating complex system analysis to `ContextScout`, writing tasks to `Coder`, and validation to `Reviewer`.
+- **AST-Driven Code Perception:** Not just grep. Powered by the compiled `ast-index` executable and `repomap`, CodeAtlas truly understands your codebase topology, class hierarchies, and call graphs.
+- **Strict Runtime Governance:** Workflows are governed by strict Markdown contracts and validation scripts ensuring serial, deterministic execution.
+- **Pluggable Skill System:** Easily extend capabilities. "Skills" define language-specific nuances or external tool integrations injected directly into the agent context dynamically.
 
 ---
 
-## 🛠️ Architecture
+## Architecture
 
 ```bash
 User Request
-   └── OpenAgent (The Director)
+   └── OpenAgent (Orchestrator)
          ├─> ContextScout (Analyzes repo structure, AST, and dependencies)
          ├─> Coder (Implements exact code logic and modifies files)
          └─> Reviewer (Audits Diff and enforces clean-code strategies)
@@ -35,24 +39,25 @@ User Request
 
 ```text
 CodeAtlas-Lite/
-├── agents/                           # The core delegation engine
-│   ├── openagent.md                  # The orchestrator (simplified)
-│   ├── contextscout.md               # The AST explorer
-│   ├── coder.md                      # Basic code implementation
-│   └── reviewer.md                   # Basic syntax/logic checking
-├── skills/                           # Essential infrastructure skills
-│   ├── ast-index/SKILL.md            # The magic searching tool
-│   ├── repomap/SKILL.md              # The PageRank architecture map
+├── agents/                           # Core configuration prompts for agents
+│   ├── openagent.md                  # Main routing and delegation orchestrator
+│   ├── contextscout.md               # Repo-wide analysis and topology crawler
+│   ├── coder.md                      # Code generation and file modification 
+│   └── reviewer.md                   # Diff analysis and standard enforcement
+├── skills/                           # Extensible tooling and patterns
+│   ├── ast-index/SKILL.md            # Execution profiles for the AST indexer
+│   ├── repomap/SKILL.md              # PageRank-based architecture mapping
 │   ├── python/SKILL.md               # Baseline language guidelines
 │   └── typescript/SKILL.md           # Baseline language guidelines
-├── opencode.json                     # Clean LLM config (no private URLs/keys)
-├── validate-runtime-governance.mjs   # The impressive CI validator
-└── README.md                         # Professional, corporate-style documentation
+├── bin/                              # Executables (e.g., ast-index.exe)
+├── opencode.json                     # Generic runtime LLM configuration manifest
+├── validate-runtime-governance.mjs   # Strict CI/CD prompt constraint validator
+└── README.md                         # Project documentation
 ```
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -75,39 +80,44 @@ CodeAtlas-Lite/
 
    *Note: The core engine config logic explicitly looks for the `opencode` folder name.*
 
-3. Configure your API key. Edit `opencode.json` in that directory to add your model endpoints and OpenRouter API key.
+3. Set up the AST Executable:
+   The `ast-index` tool uses a compiled executable to parse repository structures near-instantly. You must place your compiled `ast-index.exe` (or binary equivalent for Linux/macOS) into the global `bin/` directory:
+   - Path: `~/.config/opencode/bin/ast-index.exe`
 
-4. Initialize in a specific project:
+4. Configure your API key. Edit `opencode.json` in the configuration directory to add your model endpoints and OpenRouter API key.
+
+5. Initialize in a specific project:
    From your target workspace, run:
    ```bash
    bash ~/.config/opencode/opencode-init.sh
    ```
 
-5. Run CodeAtlas:
+6. Run CodeAtlas:
    Start interacting with your terminal wrapper or UI tool configured to point to these agents!
 
 ---
 
-## 💳 CodeAtlas-Lite vs. CodeAtlas Pro
+## CodeAtlas-Lite vs. CodeAtlas Extended
 
 This repository houses the **CodeAtlas-Lite** engine. It is a fully functional slice of the architecture providing immense value for single developers and open-source experiments.
 
-For enterprise teams, complex monorepos, and mission-critical systems, **CodeAtlas Pro** includes the following extended capabilities:
+The full internal implementation includes extended capabilities for enterprise teams, complex monorepos, and mission-critical systems:
 
-### What's in the full version?
 - **Advanced Agents:** `Planner`, `Tester`, `Debugger`, `DocWriter`, and `ExternalScout`.
 - **Comprehensive Skill Library:** 50+ enterprise skills including `security-owasp`, `incident-response`, `devops-docker`, `api-change-safe`, and dynamic configuration migrations.
 - **Context7 MCP Integration:** Real-time deep Web/API documentation scraping for external libraries.
 - **Strict One-Shot Execution Profiles:** Parallel analysis, automated dependency resolution, and deep project telemetry.
 
-### Contact ✉️
-Interested in **CodeAtlas Pro**, dedicated support, or deploying this architecture internally at your company?
-**Contact the creator for enterprise access, feature details, and consulting inquiries.**
+### Knowledge Sharing & Showcase
+
+I built CodeAtlas to explore the limits of deterministic autonomous agents. If you want to see how the extended architecture operates in a real enterprise environment, or if you want to understand how to expand this ecosystem with new custom agents and workflows, feel free to reach out.
+
+**Contact the repository owner to discuss advanced implementations, view demonstrations, or collaborate on pushing agentic architecture forward.**
 
 ---
 
-## 📜 Contributing
+## Contributing
 We welcome issues, PRs, and feature ideas for the Lite engine. Read our [CONTRIBUTING.md](CONTRIBUTING.md) for details on code of conduct and the pull request process.
 
-## ⚖️ License
+## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
