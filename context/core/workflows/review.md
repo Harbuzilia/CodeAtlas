@@ -1,7 +1,7 @@
 # Review Workflow Context
 
 ## Purpose
-Стандарты и чеклист для code review. Загружается агентом `subagents/reviewer`.
+Стандарты и чеклист для code review. Загружается агентом `reviewer`.
 
 ---
 
@@ -117,4 +117,4 @@ nitpick: Лишняя пустая строка
 
 ---
 
-*Используется агентом `subagents/reviewer`*
+*Используется агентом `reviewer`*

@@ -1,111 +1,651 @@
 {
-    "$schema": "https://opencode.ai/config.json",
-    "instructions": [
-        "instructions.md"
-    ],
-    "model": "openrouter/claude-3.5-sonnet",
-    "small_model": "openrouter/gpt-4o-mini",
-    "default_agent": "openagent",
-    "permission": {
-        "bash": {
-            "git status": "allow",
-            "ls": "allow",
-            "pwd": "allow",
-            "git diff": "allow",
-            "python --version": "allow",
-            "npm list": "allow",
-            "*": "ask"
-        },
-        "edit": {
-            "**/*.env*": "deny",
-            ".git/**": "deny"
-        }
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    "instructions.md"
+  ],
+  "model": "google/antigravity-gemini-3-pro:high",
+  "small_model": "google/antigravity-gemini-3-flash",
+  "default_agent": "openagent",
+  "permission": {
+    "bash": {
+      "*": "ask",
+      "git status": "allow",
+      "git status *": "allow",
+      "git diff": "allow",
+      "git diff *": "allow",
+      "git log*": "allow",
+      "git branch*": "allow",
+      "git remote*": "allow",
+      "ls": "allow",
+      "ls *": "allow",
+      "pwd": "allow",
+      "python --version": "allow",
+      "node --version": "allow",
+      "npm list": "allow",
+      "npm list *": "allow",
+      "grep *": "allow",
+      "find *": "allow",
+      "cat *": "allow",
+      "head *": "allow",
+      "tail *": "allow",
+      "wc *": "allow",
+      "rm *": "deny",
+      "rm -rf *": "deny"
     },
-    "provider": {
-        "openrouter": {
-            "npm": "@openrouter/ai-sdk-provider",
-            "options": {
-                "apiKey": "YOUR_OPENROUTER_API_KEY"
-            },
-            "models": {
-                "claude-3.5-sonnet": {
-                    "name": "Claude 3.5 Sonnet",
-                    "limit": {
-                        "context": 200000,
-                        "output": 8192
-                    },
-                    "modalities": {
-                        "input": [
-                            "text",
-                            "image"
-                        ],
-                        "output": [
-                            "text"
-                        ]
-                    }
-                },
-                "gpt-4o-mini": {
-                    "name": "GPT 4o Mini",
-                    "limit": {
-                        "context": 128000,
-                        "output": 4096
-                    },
-                    "modalities": {
-                        "input": [
-                            "text",
-                            "image"
-                        ],
-                        "output": [
-                            "text"
-                        ]
-                    }
-                }
-            }
-        }
+    "edit": {
+      "**/*.env*": "deny",
+      "**/*.key": "deny",
+      "**/*.secret": "deny",
+      ".git/**": "deny",
+      "node_modules/**": "deny"
     },
-    "agent": {
-        "openagent": {
-            "path": "agents/openagent.md"
-        },
-        "contextscout": {
-            "path": "agents/contextscout.md"
-        },
-        "coder": {
-            "path": "agents/coder.md"
-        },
-        "reviewer": {
-            "path": "agents/reviewer.md"
-        },
-        "planner": {
-            "path": "agents/planner.md"
-        },
-        "tester": {
-            "path": "agents/tester.md"
-        }
+    "read": {
+      "*": "allow",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow"
     },
-    "mcp": {
-        "context7": {
-            "type": "local",
-            "command": [
-                "npx",
-                "-y",
-                "@upstash/context7-mcp"
-            ]
-        },
-        "tavily-search": {
-            "type": "local",
-            "command": [
-                "npx",
-                "-y",
-                "@tavily/mcp-server"
+    "external_directory": {
+      "D:/AllMyProject/**": "allow"
+    },
+    "doom_loop": "ask",
+    "skill": "allow",
+    "task": "allow"
+  },
+  "provider": {
+    "google": {
+      "npm": "@ai-sdk/google",
+      "models": {
+        "antigravity-gemini-3-pro": {
+          "name": "Gemini 3 Pro (Antigravity)",
+          "limit": {
+            "context": 1048576,
+            "output": 65535
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
             ],
-            "env": {
-                "TAVILY_API_KEY": "YOUR_TAVILY_API_KEY"
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "low": {
+              "thinkingLevel": "low"
+            },
+            "high": {
+              "thinkingLevel": "high"
             }
+          }
         },
-        "github-grep": {
-            "type": "remote",
-            "url": "https://mcp.grep.app"
+        "antigravity-gemini-3-flash": {
+          "name": "Gemini 3 Flash (Antigravity)",
+          "limit": {
+            "context": 1048576,
+            "output": 65536
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "minimal": {
+              "thinkingLevel": "minimal"
+            },
+            "low": {
+              "thinkingLevel": "low"
+            },
+            "medium": {
+              "thinkingLevel": "medium"
+            },
+            "high": {
+              "thinkingLevel": "high"
+            }
+          }
+        },
+        "antigravity-claude-sonnet-4-5": {
+          "name": "Claude Sonnet 4.5 (Antigravity)",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        },
+        "antigravity-claude-sonnet-4-5-thinking": {
+          "name": "Claude Sonnet 4.5 Thinking (Antigravity)",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "low": {
+              "thinkingConfig": {
+                "thinkingBudget": 8192
+              }
+            },
+            "max": {
+              "thinkingConfig": {
+                "thinkingBudget": 32768
+              }
+            }
+          }
+        },
+        "antigravity-claude-opus-4-5-thinking": {
+          "name": "Claude Opus 4.5 Thinking (Antigravity)",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "low": {
+              "thinkingConfig": {
+                "thinkingBudget": 8192
+              }
+            },
+            "max": {
+              "thinkingConfig": {
+                "thinkingBudget": 32768
+              }
+            }
+          }
+        },
+        "antigravity-gpt-oss-120b": {
+          "name": "GPT-OSS 120B"
         }
+      }
+    },
+    "ccs-agy": {
+      "npm": "@ai-sdk/anthropic",
+      "name": "CCS AGY Provider",
+      "options": {
+        "baseURL": "http://127.0.0.1:8317/api/provider/agy/v1",
+        "apiKey": "ccs-internal-managed"
+      },
+      "models": {
+        "gemini-3-pro-preview": {
+          "name": "Gemini 3 Pro (CCS AGY)",
+          "limit": {
+            "context": 1048576,
+            "output": 65535
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "low": {
+              "thinkingLevel": "low"
+            },
+            "high": {
+              "thinkingLevel": "high"
+            }
+          }
+        },
+        "gemini-3-flash-preview": {
+          "name": "Gemini 3 Flash (CCS AGY)",
+          "limit": {
+            "context": 1048576,
+            "output": 65536
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "minimal": {
+              "thinkingLevel": "minimal"
+            },
+            "low": {
+              "thinkingLevel": "low"
+            },
+            "medium": {
+              "thinkingLevel": "medium"
+            },
+            "high": {
+              "thinkingLevel": "high"
+            }
+          }
+        },
+        "gemini-claude-sonnet-4-5": {
+          "name": "Claude Sonnet 4.5 (CCS AGY)",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        },
+        "gemini-claude-sonnet-4-5-thinking": {
+          "name": "Claude Sonnet 4.5 Thinking (CCS AGY)",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "low": {
+              "thinkingConfig": {
+                "thinkingBudget": 8192
+              }
+            },
+            "max": {
+              "thinkingConfig": {
+                "thinkingBudget": 32768
+              }
+            }
+          }
+        },
+        "gemini-claude-opus-4-5-thinking": {
+          "name": "Claude Opus 4.5 Thinking (CCS AGY)",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "low": {
+              "thinkingConfig": {
+                "thinkingBudget": 8192
+              }
+            },
+            "max": {
+              "thinkingConfig": {
+                "thinkingBudget": 32768
+              }
+            }
+          }
+        }
+      }
+    },
+    "ccs-gpt": {
+      "npm": "@ai-sdk/openai",
+      "name": "CCS GPT Provider",
+      "options": {
+        "baseURL": "http://127.0.0.1:8317/api/provider/codex/v1",
+        "apiKey": "ccs-internal-managed",
+        "reasoningEffort": "medium",
+        "reasoningSummary": "auto",
+        "textVerbosity": "medium",
+        "include": [
+          "reasoning.encrypted_content"
+        ],
+        "store": false
+      },
+      "models": {
+        "gpt-5.2": {
+          "name": "GPT 5.2 (CCS GPT)",
+          "limit": {
+            "context": 272000,
+            "output": 128000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "none": {
+              "reasoningEffort": "none",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "low": {
+              "reasoningEffort": "low",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "medium": {
+              "reasoningEffort": "medium",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            },
+            "xhigh": {
+              "reasoningEffort": "xhigh",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            }
+          }
+        },
+        "gpt-5.2-codex": {
+          "name": "GPT 5.2 Codex (CCS GPT)",
+          "limit": {
+            "context": 272000,
+            "output": 128000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "low": {
+              "reasoningEffort": "low",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "medium": {
+              "reasoningEffort": "medium",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            },
+            "xhigh": {
+              "reasoningEffort": "xhigh",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            }
+          }
+        },
+        "gpt-5.1-codex-max": {
+          "name": "GPT 5.1 Codex Max (CCS GPT)",
+          "limit": {
+            "context": 272000,
+            "output": 128000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "low": {
+              "reasoningEffort": "low",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            },
+            "medium": {
+              "reasoningEffort": "medium",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            },
+            "xhigh": {
+              "reasoningEffort": "xhigh",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            }
+          }
+        },
+        "gpt-5.1-codex": {
+          "name": "GPT 5.1 Codex (CCS GPT)",
+          "limit": {
+            "context": 272000,
+            "output": 128000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "low": {
+              "reasoningEffort": "low",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "medium": {
+              "reasoningEffort": "medium",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            }
+          }
+        },
+        "gpt-5.1-codex-mini": {
+          "name": "GPT 5.1 Codex Mini (CCS GPT)",
+          "limit": {
+            "context": 272000,
+            "output": 128000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "medium": {
+              "reasoningEffort": "medium",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            }
+          }
+        },
+        "gpt-5.1": {
+          "name": "GPT 5.1 (CCS GPT)",
+          "limit": {
+            "context": 272000,
+            "output": 128000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "none": {
+              "reasoningEffort": "none",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "low": {
+              "reasoningEffort": "low",
+              "reasoningSummary": "auto",
+              "textVerbosity": "low"
+            },
+            "medium": {
+              "reasoningEffort": "medium",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "high"
+            }
+          }
+        }
+      }
     }
+  },
+  "agent": {
+    "openagent": {
+      "path": "agents/openagent.md",
+      "color": "primary"
+    },
+    "contextscout": {
+      "path": "agents/contextscout.md",
+      "color": "#00BCD4"
+    },
+    "coder": {
+      "path": "agents/coder.md",
+      "color": "#4CAF50"
+    },
+    "tester": {
+      "path": "agents/tester.md",
+      "color": "#9C27B0"
+    },
+    "reviewer": {
+      "path": "agents/reviewer.md",
+      "color": "#2196F3"
+    },
+    "debugger": {
+      "path": "agents/debugger.md",
+      "color": "#FF5722"
+    },
+    "planner": {
+      "path": "agents/planner.md",
+      "color": "#FF9800"
+    },
+    "externalscout": {
+      "path": "agents/externalscout.md",
+      "color": "#607D8B"
+    },
+    "docwriter": {
+      "path": "agents/docwriter.md",
+      "color": "#795548"
+    },
+    "uitester": {
+      "path": "agents/uitester.md",
+      "color": "#E91E63"
+    }
+  },
+  "mcp": {
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp"
+    },
+    "ddg-search": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "duckduckgo-mcp-server"
+      ],
+      "timeout": 30
+    },
+    "github-grep": {
+      "type": "remote",
+      "url": "https://mcp.grep.app"
+    },
+    "chrome-devtools": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "chrome-devtools-mcp@latest"
+      ]
+    },
+    "echovault": {
+      "type": "local",
+      "command": [
+        "memory",
+        "mcp"
+      ]
+    }
+  },
+  "plugin": [
+    "opencode-antigravity-auth@beta",
+    "@tarquinen/opencode-dcp@latest"
+  ]
 }

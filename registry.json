@@ -1,10 +1,12 @@
 {
     "version": "1.0.0",
     "schema_version": "1.0.0",
-    "repository": "https://github.com/YOUR_GITHUB/CodeAtlas-Lite",
+    "repository": "https://github.com/user/opencode-config",
     "categories": {
         "core": "Core agents for primary operations",
-        "code": "Code-related subagents"
+        "code": "Code-related subagents",
+        "planning": "Planning and decomposition agents",
+        "research": "External research and documentation agents"
     },
     "components": {
         "agents": [
@@ -13,7 +15,7 @@
                 "name": "OpenAgent",
                 "type": "agent",
                 "path": "agents/openagent.md",
-                "description": "Universal orchestrator and delegation system",
+                "description": "Универсальный ассистент — координация, вопросы, делегация",
                 "tags": [
                     "universal",
                     "coordination",
@@ -22,7 +24,11 @@
                 "dependencies": [
                     "subagent:contextscout",
                     "subagent:coder",
-                    "subagent:reviewer"
+                    "subagent:tester",
+                    "subagent:reviewer",
+                    "subagent:debugger",
+                    "subagent:planner",
+                    "subagent:docwriter"
                 ],
                 "category": "core"
             }
@@ -33,7 +39,7 @@
                 "name": "ContextScout",
                 "type": "subagent",
                 "path": "agents/contextscout.md",
-                "description": "Context discovery via AST and Repomap",
+                "description": "Поиск контекста, файлов, паттернов и стандартов",
                 "tags": [
                     "context",
                     "search",
@@ -47,10 +53,24 @@
                 "name": "CoderAgent",
                 "type": "subagent",
                 "path": "agents/coder.md",
-                "description": "Code implementation expert",
+                "description": "Специалист по написанию кода",
                 "tags": [
                     "coding",
                     "implementation"
+                ],
+                "dependencies": [],
+                "category": "code"
+            },
+            {
+                "id": "tester",
+                "name": "TestEngineer",
+                "type": "subagent",
+                "path": "agents/tester.md",
+                "description": "Написание unit и integration тестов",
+                "tags": [
+                    "testing",
+                    "tdd",
+                    "quality"
                 ],
                 "dependencies": [],
                 "category": "code"
@@ -60,10 +80,83 @@
                 "name": "CodeReviewer",
                 "type": "subagent",
                 "path": "agents/reviewer.md",
-                "description": "Code quality validation and verification",
+                "description": "Code review с проверкой безопасности и качества",
                 "tags": [
                     "review",
+                    "security",
                     "quality"
+                ],
+                "dependencies": [],
+                "category": "code"
+            },
+            {
+                "id": "debugger",
+                "name": "Debugger",
+                "type": "subagent",
+                "path": "agents/debugger.md",
+                "description": "Автоматическое исправление ошибок сборки и runtime",
+                "tags": [
+                    "debugging",
+                    "errors",
+                    "fix"
+                ],
+                "dependencies": [],
+                "category": "core"
+            },
+            {
+                "id": "planner",
+                "name": "TaskManager",
+                "type": "subagent",
+                "path": "agents/planner.md",
+                "description": "Декомпозиция сложных задач на подзадачи",
+                "tags": [
+                    "planning",
+                    "organization",
+                    "task-management"
+                ],
+                "dependencies": [],
+                "category": "planning"
+            },
+            {
+                "id": "externalscout",
+                "name": "ExternalScout",
+                "type": "subagent",
+                "path": "agents/externalscout.md",
+                "description": "Получение документации внешних библиотек через Context7",
+                "tags": [
+                    "external-docs",
+                    "libraries",
+                    "context7"
+                ],
+                "dependencies": [],
+                "category": "research"
+            },
+            {
+                "id": "docwriter",
+                "name": "DocWriter",
+                "type": "subagent",
+                "path": "agents/docwriter.md",
+                "description": "Автогенерация и обновление документации",
+                "tags": [
+                    "documentation",
+                    "readme",
+                    "docs"
+                ],
+                "dependencies": [
+                    "subagent:contextscout"
+                ],
+                "category": "core"
+            },
+            {
+                "id": "uitester",
+                "name": "UITester",
+                "type": "subagent",
+                "path": "agents/uitester.md",
+                "description": "Visual UI Testing (Chrome DevTools)",
+                "tags": [
+                    "ui",
+                    "testing",
+                    "visual"
                 ],
                 "dependencies": [],
                 "category": "code"

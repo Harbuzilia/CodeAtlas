@@ -22,12 +22,14 @@ description: ast-index skill reference
 
 ## Расположение бинарника
 
-Бинарник хранится глобально: `~/.config/opencode/bin/ast-index.exe`
-В каждом проекте он доступен через symlink (создаётся `opencode-init.sh`):
+Поддерживаемый контракт: установщик OpenCode копирует bundled бинарник прямо в проект при `npx opencode-init` / `node scripts/install.mjs --target=<path>`.
+Поддерживаемый путь вызова внутри проекта:
 
 ```
 .opencode/bin/ast-index.exe
 ```
+
+Если файла `.opencode/bin/ast-index.exe` нет, установка/обновление считается неполной — сначала повторно запусти установщик, а уже потом используй команды ниже.
 
 ## Первичная настройка (один раз на проект)
 

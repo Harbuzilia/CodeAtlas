@@ -7,14 +7,7 @@
     "commands": {
         "enabled": true,
         "protectedTools": [
-            "task",
-            "read",
-            "write",
-            "edit",
-            "bash",
-            "filesystem_read_text_file",
-            "filesystem_write_file",
-            "filesystem_edit_file"
+            "task", "read", "write", "edit", "bash"
         ]
     },
     "turnProtection": {
@@ -22,62 +15,39 @@
         "turns": 4
     },
     "protectedFilePatterns": [
-        "**/.opencode/agents/**/*.md",
         "**/agents/**/*.md",
         "**/context/**/*.md",
         "**/instructions.md",
         "**/opencode.json",
         "**/registry.json",
         "**/PROJECT_GUIDE.md",
-        "**/PLANS.md"
+        "**/PLANS.md",
+        "**/_AGENTS_MEMORY.md",
+        "**/.opencode/task_state.md",
+        "**/.opencode/lessons_learned.md"
     ],
-    "tools": {
-        "settings": {
-            "nudgeEnabled": true,
-            "nudgeFrequency": 10,
-            "contextLimit": 150000,
-            "protectedTools": [
-                "task",
-                "read",
-                "write",
-                "edit",
-                "bash",
-                "filesystem_read_text_file",
-                "filesystem_write_file",
-                "filesystem_edit_file"
-            ]
-        },
-        "distill": {
-            "permission": "allow",
-            "showDistillation": false
-        },
-        "compress": {
-            "permission": "allow",
-            "showCompression": false
-        },
-        "prune": {
-            "permission": "allow"
-        }
+    "compress": {
+        "mode": "range",
+        "permission": "allow",
+        "showCompression": false,
+        "summaryBuffer": true,
+        "maxContextLimit": "70%",
+        "minContextLimit": "30%",
+        "nudgeFrequency": 5,
+        "iterationNudgeThreshold": 15,
+        "nudgeForce": "soft",
+        "protectedTools": ["task", "skill"],
+        "protectUserMessages": false
     },
     "strategies": {
         "deduplication": {
             "enabled": true,
-            "protectedTools": [
-                "task",
-                "read"
-            ]
-        },
-        "supersedeWrites": {
-            "enabled": true
+            "protectedTools": ["task", "read"]
         },
         "purgeErrors": {
             "enabled": true,
-            "turns": 5,
-            "protectedTools": [
-                "task",
-                "read",
-                "bash"
-            ]
+            "turns": 4,
+            "protectedTools": ["task", "read", "bash"]
         }
     }
 }

@@ -68,6 +68,6 @@ Config:
 ## External Libraries
 
 If user mentions a library/framework NOT covered here:
-→ Recommend `subagents/research/externalscout`
+→ Recommend `externalscout`
 
 See `skills/context7/SKILL.md` for supported libraries and usage rules.

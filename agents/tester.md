@@ -1,18 +1,18 @@
 ---
+id: tester
 description: "TDD-агент для создания тестов - Test-Driven Development с Arrange-Act-Assert паттерном"
 mode: subagent
 temperature: 0.1
-tools:
-  read: true
-  grep: true
-  glob: true
-  edit: true
-  write: true
-  bash: true
 permission:
   bash:
-    "rm -rf *": "ask"
+    "*": "ask"
+    "rm -rf *": "deny"
     "sudo *": "deny"
+    "npm test*": "allow"
+    "dotnet test*": "allow"
+    "python -m pytest*": "allow"
+    "go test*": "allow"
+    "grep *": "allow"
   edit:
     "**/*.env*": "deny"
     "**/*.key": "deny"
@@ -49,6 +49,7 @@ permission:
 
 <startup_sequence>
   <step order="1">[G0] Загрузи language skill по имени (например, `skill({ name: "typescript" })`). Если ошибка → глобальный `read("~/.config/opencode/skills/<name>/SKILL.md")`.</step>
+  <step order="1.5">Загрузи переданные от openagent методологические скиллы (например, `test-driven-development`). Строго следуй их инструкциям.</step>
   <step order="2">Определи тип тестирования: unit | integration | e2e | api-manual.</step>
   <step order="3">Загрузи соответствующий testing skill on-demand (с таким же глобальным fallback, если необходимо).</step>
   <step order="4">Приступай к написанию тестов.</step>

@@ -20,8 +20,13 @@ Performance contract:
 | Condition | Delegate to (agent name) |
 |-----------|---------------------------|
 | Any code (write/edit/fix) | coder |
+| 4+ files | planner first |
+| Complex code | coder |
+| Tests | tester |
 | Review | reviewer |
 | Context search | contextscout |
+| Build errors | debugger (required: `incident-response` for production incidents) |
+| Documentation (README, API) | docwriter |
 
 ---
 
@@ -29,16 +34,22 @@ Performance contract:
 
 | Mode | Context Scout | Primary route | Follow-up |
 |------|---------------|---------------|-----------|
-| implement-feature | AUTO (4+ files) / SKIP (1-3) | coder | reviewer optional |
-| fix-bug | OPTIONAL | coder | reviewer optional |
-| refactor-safely | AUTO | coder | reviewer |
+| implement-feature | AUTO (4+ files) / SKIP (1-3) | coder | planner first if 4+ files |
+| fix-production-bug | OPTIONAL | debugger (required: `incident-response`) | tester if fix touches behavior |
+| add-tests-for-module | OPTIONAL | tester | reviewer optional |
+| refactor-safely | AUTO | coder | reviewer then tester |
+| write-and-sync-docs | OPTIONAL | docwriter | contextscout for missing context |
+| prepare-release-docs | OPTIONAL | docwriter (required: `docs-sync` release-docs-sync profile) | sync corresponding sections in `PROJECT_GUIDE.md` |
+| modern-design | AUTO | contextscout -> externalscout -> coder | emit Design Decision Lock first, then implement |
+| modern-backend-upgrade | AUTO | contextscout -> externalscout -> coder -> tester | emit Backend Upgrade Decision Lock first, then implement |
+| api-change-safe | AUTO | coder (required: `api-change-safe`) | tester then docwriter |
 
 Rules:
-1. Detect mode before generic condition routing.
+1. Detect mode before generic condition routing (including `api-change-safe`, `prepare-release-docs`, `modern-design`, `modern-backend-upgrade`).
 2. If mode conflicts with generic route, mode wins.
 3. One-shot execution is opt-in only (`one-shot: on`, `/oneshot`, `сделай под ключ`).
 4. Without explicit one-shot trigger, stay in normal mode routing.
-5. If `contextscout` reports `Conflict Detected` (code vs docs), use code/tests as behavior source.
+5. If `contextscout` reports `Conflict Detected` (code vs docs), use code/tests as behavior source and schedule docs sync follow-up (`write-and-sync-docs` or `prepare-release-docs`).
 
 ---
 
@@ -78,4 +89,9 @@ Rules:
 |-------|---------------|
 | Context Scout | contextscout |
 | Coder | coder |
+| Debugger | debugger |
+| Tester | tester |
 | Reviewer | reviewer |
+| Planner | planner |
+| External Scout | externalscout |
+| DocWriter | docwriter |

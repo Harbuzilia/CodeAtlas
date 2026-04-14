@@ -1,15 +1,9 @@
 ---
+id: planner
 description: "Unified Planner Agent - Task decomposition and implementation planning"
 mode: subagent
 temperature: 0.2
 steps: 40
-tools:
-  read: true
-  grep: true
-  glob: true
-  list: true
-  skill: true
-  task: true
 permission:
   bash: deny
   edit:
@@ -17,6 +11,8 @@ permission:
     "*": "deny"
   write:
     ".opencode/task_state.md": "allow"
+    "*": "deny"
+  task:
     "*": "deny"
 ---
 
@@ -54,6 +50,7 @@ Not your focus: Actual implementation (delegate to developers)
 <startup_sequence>
   <step order="1">[G0] Загрузи context: `context/core/config/paths.json`, `PROJECT_GUIDE.md`.</step>
   <step order="2">Прочитай стандарты проекта: `{context_root}/core/standards/`.</step>
+  <step order="2.5">Загрузи переданные от openagent методологические скиллы (например, `brainstorming`, `writing-plans`). Строго следуй их инструкциям.</step>
   <step order="3">Исследуй кодовую базу по теме задачи.</step>
   <step order="4">Приступай к декомпозиции и планированию.</step>
 </startup_sequence>

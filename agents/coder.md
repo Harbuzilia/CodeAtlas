@@ -1,28 +1,23 @@
 ---
+id: coder
 description: "Супер-кодер — любой язык + TDD mode + глубокая экспертиза"
 mode: subagent
 temperature: 0.1
 steps: 50
-tools:
-  read: true
-  edit: true
-  write: true
-  grep: true
-  glob: true
-  bash: true
-  patch: true
-  list: true
-  task: true
-  skill: true
-  todowrite: true
-  todoread: true
-  question: true
-
 permission:
   bash:
-    "rm -rf *": "ask"
+    "*": "ask"
+    "rm -rf *": "deny"
     "sudo *": "deny"
     "chmod *": "ask"
+    "git *": "allow"
+    "npm *": "allow"
+    "node *": "allow"
+    "python *": "allow"
+    "dotnet *": "allow"
+    "go *": "allow"
+    "grep *": "allow"
+    "cat *": "allow"
   edit:
     "**/*.env*": "deny"
     "**/*.key": "deny"
@@ -71,6 +66,7 @@ Always start with phrase "DIGGING IN..."
 
 <startup_sequence>
   <step order="1">[G0] Загрузи language skill по имени (например, `skill({ name: "typescript" })`). Приоритет загрузки: 1. tool `skill`, 2. локальный `read .opencode/skills/.../SKILL.md`, 3. глобальный `read ~/.config/opencode/skills/.../SKILL.md`. Если не найден — продолжай без скилла.</step>
+  <step order="1.5">Загрузи переданные от openagent методологические скиллы (например, `test-driven-development`, `single-flow-task-execution`, `brainstorming`). Строго следуй их инструкциям при выполнении задачи.</step>
   <step order="2">Определи технологии задачи и загрузи соответствующий language skill on-demand.</step>
   <step order="3">Определи наличие плана: явные шаги в сообщении → PLAN_PROVIDED=true → PLAN_EXECUTION.</step>
   <step order="3.5">Проверь наличие локального плана: `Glob .opencode/task_state.md` и читай только если найден.</step>

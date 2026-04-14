@@ -1,10 +1,17 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const root = process.cwd();
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+const cwd = process.cwd();
+const root = fs.existsSync(path.join(cwd, 'opencode.json')) ? cwd : scriptDir;
 const smokeMode = process.argv.includes('--smoke');
 const opencodePath = path.join(root, 'opencode.json');
 const pathsPath = path.join(root, 'context', 'core', 'config', 'paths.json');
+const bundledAstIndexCandidates = [
+  path.join(root, 'bin', 'ast-index.exe'),
+  path.join(root, '.opencode', 'bin', 'ast-index.exe')
+];
 
 function fail(message) {
   console.error(`FAIL: ${message}`);
@@ -57,11 +64,34 @@ for (const [key, value] of Object.entries(agentMap)) {
 }
 
 const requiredSkills = [
+  'ast-index',
   'typescript',
+  'csharp',
   'python',
+  'context7',
+  'api-change-safe',
+  'incident-response',
   'git',
+  'database-sql',
+  'security-owasp',
+  'devops-docker',
   'repomap',
-  'ast-index'
+  'docs-sync',
+  'review-code-strategy',
+  'review-code-checklist',
+  'config-migration',
+  'brainstorming',
+  'executing-plans',
+  'finishing-a-development-branch',
+  'receiving-code-review',
+  'requesting-code-review',
+  'single-flow-task-execution',
+  'systematic-debugging',
+  'test-driven-development',
+  'using-git-worktrees',
+  'verification-before-completion',
+  'writing-plans',
+  'writing-skills'
 ];
 
 for (const skillName of requiredSkills) {
@@ -72,7 +102,7 @@ for (const skillName of requiredSkills) {
   }
 
   const text = fs.readFileSync(manifestPath, 'utf8');
-  const frontmatter = text.match(/^---\n([\s\S]*?)\n---/);
+  const frontmatter = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!frontmatter) {
     fail(`Skill manifest missing YAML frontmatter: skills/${skillName}/SKILL.md`);
     continue;
@@ -84,6 +114,13 @@ for (const skillName of requiredSkills) {
   if (!/^description:\s*.+$/m.test(frontmatter[1])) {
     fail(`Skill manifest missing description in skills/${skillName}/SKILL.md`);
   }
+}
+
+const bundledAstIndexPath = bundledAstIndexCandidates.find((candidate) => fs.existsSync(candidate));
+if (!bundledAstIndexPath) {
+  fail('Missing bundled ast-index binary at bin/ast-index.exe or .opencode/bin/ast-index.exe');
+} else {
+  ok(`Bundled ast-index binary exists: ${path.relative(root, bundledAstIndexPath)}`);
 }
 
 const openagentPath = path.join(root, 'agents', 'openagent.md');
@@ -150,7 +187,8 @@ if (!fs.existsSync(openagentPath)) {
 const runtimeDirs = [
   path.join(root, 'agents'),
   path.join(root, '.opencode', 'agents'),
-  path.join(root, 'context', 'core', 'workflows')
+  path.join(root, 'context', 'core', 'workflows'),
+  path.join(root, 'skills')
 ];
 
 const runtimeFiles = [];
@@ -195,7 +233,10 @@ const legacyPatterns = [
   /planning\/planner/,
   /research\/external-scout/,
   /subagents\/external-scout/,
-  /core\/opencoder/
+  /core\/opencoder/,
+  /subagents\/research\/externalscout/,
+  /subagents\/code\/coder-agent/,
+  /subagents\/core\/contextscout/
 ];
 
 for (const f of runtimeFiles) {
@@ -207,22 +248,111 @@ for (const f of runtimeFiles) {
   }
 }
 
+const legacyRuntimeAgentRefs = [
+  {
+    rel: 'context/core/workflows/review.md',
+    patterns: [/subagents\/reviewer/]
+  },
+  {
+    rel: 'context/navigation.md',
+    patterns: [/subagents\/research\/externalscout/, /subagents\/external-scout/, /research\/external-scout/]
+  }
+];
+
+for (const check of legacyRuntimeAgentRefs) {
+  const abs = path.join(root, check.rel);
+  if (!fs.existsSync(abs)) {
+    fail(`Missing runtime context file: ${check.rel}`);
+    continue;
+  }
+
+  const text = fs.readFileSync(abs, 'utf8');
+  for (const pattern of check.patterns) {
+    if (pattern.test(text)) {
+      fail(`Legacy runtime agent reference in ${check.rel}: ${pattern}`);
+    }
+  }
+}
+
+const plannerThresholdChecks = [
+  {
+    rel: 'agents/openagent.md',
+    required: [
+      '`coder` (if 4+ files -> `planner` first)',
+      '`implement-feature` -> `planner` (when 4+ files) -> `coder` -> `tester` -> `docwriter` (if behavior changed)',
+      '| 4+ файлов | planner | Сначала декомпозиция |',
+      '| planner | Декомпозиция 4+ файлов |'
+    ],
+    forbidden: [/10\+ files/, /10\+ файлов/]
+  },
+  {
+    rel: 'context/core/workflows/delegation.md',
+    required: [
+      '| 4+ files | planner first |',
+      '| implement-feature | AUTO (4+ files) / SKIP (1-3) | coder | planner first if 4+ files |'
+    ],
+    forbidden: [/10\+ files/, /10\+ файлов/]
+  },
+  {
+    rel: 'context/project/patterns.md',
+    required: ['- Для задач 4+ файлов сначала `planner`.'],
+    forbidden: [/10\+ files/, /10\+ файлов/]
+  },
+  {
+    rel: 'agents/planner.md',
+    required: ['- 4+ files affected'],
+    forbidden: []
+  },
+  {
+    rel: 'agents/coder.md',
+    required: ['Assess: 1-3 files (direct) or 4+ (plan)?', 'When: 4+ files, complex feature'],
+    forbidden: []
+  }
+];
+
+for (const check of plannerThresholdChecks) {
+  const abs = path.join(root, check.rel);
+  if (!fs.existsSync(abs)) {
+    fail(`Missing planner-threshold file: ${check.rel}`);
+    continue;
+  }
+
+  const text = fs.readFileSync(abs, 'utf8');
+  for (const marker of check.required) {
+    if (!text.includes(marker)) {
+      fail(`Planner threshold mismatch in ${check.rel}: missing marker ${marker}`);
+    }
+  }
+  for (const pattern of check.forbidden) {
+    if (pattern.test(text)) {
+      fail(`Planner threshold mismatch in ${check.rel}: forbidden legacy marker ${pattern}`);
+    }
+  }
+}
+
 const migrationScopedFiles = [
   'instructions.md',
   'PROJECT_GUIDE.md',
   'agents/coder.md',
-  'agents/reviewer.md',
-  'agents/planner.md',
+  'agents/contextscout.md',
   'agents/tester.md',
+  'agents/debugger.md',
+  'agents/reviewer.md',
   'agents/openagent.md',
-  'context/core/workflows/delegation.md'
+  'agents/docwriter.md',
+  'agents/externalscout.md',
+  'context/core/workflows/delegation.md',
+  'context/project/patterns.md',
+  'context/navigation.md'
 ];
 
 const legacySkillRefPatterns = [
   /skill\/languages\//,
   /skill\/tools\//,
   /skill\/review\//,
-  /\.config\/opencode\/skill\//
+  /\.config\/opencode\/skill\//,
+  /\brepomap\.md\b/,
+  /\bast-index\.md\b/
 ];
 
 for (const rel of migrationScopedFiles) {
@@ -276,8 +406,19 @@ if (!fs.existsSync(instructionsPath)) {
   fail('Missing instructions.md');
 } else {
   const text = fs.readFileSync(instructionsPath, 'utf8');
+  if (!text.includes('`api-change-safe`')) fail('instructions.md missing api-change-safe skill wiring');
+  if (!text.includes('release-docs-sync profile')) fail('instructions.md missing release-docs-sync profile wiring');
+  if (!text.includes('modern-design-research profile')) fail('instructions.md missing modern-design-research profile wiring');
+  if (!text.includes('modern-backend-research profile')) fail('instructions.md missing modern-backend-research profile wiring');
   if (!text.includes('One-shot mode: только opt-in')) fail('instructions.md missing one-shot opt-in policy');
   if (!text.includes('skill({ name: "{skill_name}" })')) fail('instructions.md missing name-based skill loading example');
+  if (!text.includes('4+ файлов → planner first (без confirm gate)')) fail('instructions.md planner policy mismatch: missing canonical 4+ files -> planner first rule');
+  if (text.includes('4+ файлов → подтверждение')) fail('instructions.md planner policy mismatch: legacy confirm gate still present');
+}
+
+const patternsPath = path.join(root, 'context', 'project', 'patterns.md');
+if (!fs.existsSync(patternsPath)) {
+  fail('Missing context/project/patterns.md');
 }
 
 if (process.exitCode && process.exitCode !== 0) {

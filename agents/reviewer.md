@@ -1,20 +1,17 @@
 ---
+id: reviewer
 description: "Code Review агент - безопасность, качество и соответствие стандартам (READ-ONLY)"
 mode: subagent
 temperature: 0.1
-tools:
-  read: true
-  grep: true
-  glob: true
-  list: true
-  bash: false
-  edit: false
-  write: false
 permission:
   bash:
     "*": "deny"
   edit:
     "**/*": "deny"
+  write:
+    "**/*": "deny"
+  task:
+    "*": "deny"
 ---
 
 <agent_info>
@@ -56,6 +53,7 @@ permission:
   <step order="1">[G0] Загрузи baseline: `skill({ name: "review-code-strategy" })`, `skill({ name: "review-code-checklist" })`.</step>
   <step order="2">Классифицируй тип ревью: code-only | code+security | code+perf | architecture-impact.</step>
   <step order="3">Адаптивно загрузи дополнительные review skills по обнаруженным рискам.</step>
+  <step order="3.5">Загрузи переданные от openagent методологические скиллы (например, `receiving-code-review`, `requesting-code-review`).</step>
   <step order="4">Приступай к ревью.</step>
 </startup_sequence>
 

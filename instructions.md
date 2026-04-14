@@ -1,4 +1,4 @@
-# CodeAtlas Global Instructions
+# OpenCode Global Instructions
 
 ## Environment (Windows + PowerShell)
 
@@ -125,7 +125,12 @@ agents/
 ├── openagent.md      # Главный агент (default_agent)
 ├── contextscout.md
 ├── coder.md
-└── reviewer.md
+├── debugger.md
+├── tester.md
+├── reviewer.md
+├── planner.md
+├── externalscout.md
+└── docwriter.md
 ```
 
 ### Source Of Truth
@@ -144,7 +149,12 @@ User -> openagent -> [delegate when needed]
                       |
                       +-> contextscout
                       +-> coder
+                      +-> debugger
+                      +-> tester
                       +-> reviewer
+                      +-> planner
+                      +-> externalscout
+                      +-> docwriter
 ```
 
 ---
@@ -164,15 +174,28 @@ User -> openagent -> [delegate when needed]
 - `incident-response.md` — Triage/containment/rollback/fix для продовых инцидентов
 - `api-change-safe.md` — Безопасные API-изменения (compatibility/versioning/migration)
 
+### Methodological Skills (`skills/<name>/SKILL.md`)
+Эти скиллы автоматически делегируются OpenAgent'ом соответствующим субагентам:
+- `brainstorming` — Извлечение требований и дизайн-решений до написания кода (planner)
+- `test-driven-development` — Строгая разработка через тестирование (tester/coder)
+- `systematic-debugging` — Системный подход к устранению багов (debugger)
+- `single-flow-task-execution` — Пошаговое выполнение с валидацией (coder)
+- И другие процессы для планирования (`writing-plans`), интеграции ветвей (`finishing-a-development-branch`) и код-ревью (`requesting-code-review`, `receiving-code-review`).
+
 ## Skill Activation Matrix
 
 | Trigger | Skill | Required | Owner |
 |---------|-------|----------|-------|
 | Any write/edit code task | `{language}` | Yes | OpenAgent -> coder |
-| External library/framework/API | `context7` | Yes | OpenAgent / contextscout |
+| API contract/schema change | `api-change-safe` | Yes | OpenAgent -> coder/tester/docwriter |
+| External library/framework/API | `context7` | Yes | OpenAgent / externalscout |
+| Modern design / UI modernization request | `context7` (modern-design-research profile) | Yes | OpenAgent -> externalscout -> coder |
+| Modern backend stack upgrade request | `context7` (modern-backend-research profile) | Yes | OpenAgent -> contextscout -> externalscout -> coder -> tester |
 | Git workflow (commit/changelog/release notes) | `git` (quality commit/PR protocol) | If task touches git history | OpenAgent |
-| Code review / audit | `review-code-strategy` | Yes | reviewer |
-| Bug / build fix | language skill for target file type | Yes | coder |
+| Test authoring | `{language}` + testing conventions from context | Yes | tester |
+| Debug/build fix | language skill for target file type + `incident-response` | Yes | debugger |
+| Documentation synchronization | `docs-sync` | Yes for docs-sync tasks | OpenAgent / docwriter |
+| Release preparation / pre-tag sync | `docs-sync` (release-docs-sync profile) | Yes | OpenAgent / docwriter |
 
 Rules:
 1. OpenAgent chooses skill set before delegation and passes it in prompt.
@@ -181,17 +204,24 @@ Rules:
 
 ---
 
-## Project Initialization (Sync Scripts)
+## Project Initialization
 
-Для корректной работы навыков в локальных репозиториях рекомендуется использовать `opencode-init.sh` (или `opencode-init.ps1`), который создает символическую ссылку на глобальные скиллы:
+Для корректной работы агентов и навыков (skills) в новых репозиториях необходимо инициализировать локальный `.opencode/` каталог. Используйте интерактивный установщик (работает на Windows, macOS и Linux):
 
 ```bash
-# opencode-init.sh (пример для Bash/Git Bash)
-mkdir -p .opencode
-ln -s ~/.config/opencode/skills .opencode/skills
-echo ".opencode/task_state.md" >> .gitignore
+npx opencode-init
+# или локально:
+node scripts/install.mjs
 ```
-Это позволит агентам находить скиллы по пути `.opencode/skills` без необходимости их полного копирования.
+
+Установщик:
+1. Создаст `.opencode/`
+2. Скопирует базовые конфиги (`opencode.json`, `registry.json`)
+3. Скопирует локально навыки, инструкции, контекст и bundled `bin/ast-index.exe`
+4. Автоматически пропатчит `.gitignore`
+5. Запустит валидацию (`validate-runtime-governance.mjs`) для проверки.
+
+Для обновления уже установленной конфигурации повторно запусти тот же `npx opencode-init` / `node scripts/install.mjs --target=<project-root>`: отдельные `install:local` / `update:local` больше не поддерживаются.
 
 ---
 
@@ -249,7 +279,7 @@ Final self-check before response:
 6. Research existing patterns.
 
 ### During Execution
-- Согласование: 4+ файлов → подтверждение
+- 4+ файлов → planner first (без confirm gate)
 - Инкрементально: один шаг за раз
 - Stop on Error: без подтверждения не чинить
 - One-shot mode: только opt-in (`one-shot: on`, `/oneshot`, `сделай под ключ`); по умолчанию OFF
@@ -323,8 +353,11 @@ Contract rules:
 | Задача | Агент | Правило |
 |--------|-------|---------|
 | Написание/редактирование кода | `coder` | ВСЕГДА делегируй |
-| Ошибки сборки/runtime/тесты | `coder` | ВСЕГДА делегируй |
+| Ошибки сборки/runtime | `debugger` | ВСЕГДА делегируй |
+| Тесты | `tester` | ВСЕГДА делегируй |
 | Code review / аудит / анализ | `reviewer` | contextscout → reviewer |
+| Документация | `docwriter` | ВСЕГДА делегируй |
+| 4+ файлов | `planner` | Сначала декомпозиция |
 
 ### Исключения (можно самому)
 - Короткий ответ на вопрос ("что делает эта функция?")
@@ -334,7 +367,7 @@ Contract rules:
 ### НЕ исключение (ДЕЛЕГИРУЙ)
 - "Проведи аудит" → contextscout + reviewer
 - "Добавь фичу" → coder
-- "Исправь баг" → coder
+- "Исправь баг" → debugger
 
 Перед делегацией покажи:
 ```

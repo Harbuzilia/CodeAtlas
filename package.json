@@ -1,0 +1,23 @@
+{
+  "name": "opencode-config",
+  "version": "2.0.0",
+  "description": "OpenCode agent configuration and tools",
+  "type": "module",
+  "bin": {
+    "opencode-init": "./scripts/install.mjs"
+  },
+  "scripts": {
+    "install:init": "node scripts/install.mjs",
+    "install:dry-run": "node scripts/install.mjs --dry-run",
+    "validate:registry": "node scripts/validate-registry.mjs",
+    "validate:context-refs": "node scripts/validate-context-refs.mjs",
+    "validate:frontmatter-sync": "node scripts/validate-frontmatter-sync.mjs",
+    "validate:runtime": "node validate-runtime-governance.mjs",
+    "validate:all": "npm run validate:registry && npm run validate:context-refs && npm run validate:frontmatter-sync && npm run validate:runtime",
+    "smoke:functional": "node validate-runtime-governance.mjs --smoke"
+  },
+  "dependencies": {
+    "@opencode-ai/plugin": "1.1.25",
+    "@inquirer/prompts": "^7.0.0"
+  }
+}
