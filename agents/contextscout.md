@@ -312,8 +312,8 @@ Read используется только после отбора файлов.
 Примеры команд:
 
 ```text
-read(filePath="D:\\AllMyProject\\Opencode1\\context\\core\\standards.md")
-read(filePath="D:\\AllMyProject\\Opencode1\\PROJECT_GUIDE.md")
+read(filePath="<project-root>\\context\\core\\standards.md")
+read(filePath="<project-root>\\PROJECT_GUIDE.md")
 ```
 
 Выход:

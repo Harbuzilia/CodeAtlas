@@ -1,5 +1,5 @@
 {
-  "description": "Runtime path governance source for Opencode1",
+  "description": "Runtime path governance source for CodeAtlas",
   "paths": {
     "local": "context",
     "global": false

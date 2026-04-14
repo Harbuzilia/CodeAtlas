@@ -53,6 +53,7 @@ const CORE_DIRS = ['agents', 'context', 'skills'];
 const GITIGNORE_ENTRIES = [
   '.opencode/task_state.md',
   '.opencode/lessons_learned.md',
+  '.opencode/history/',
 ];
 
 // ─── Style helpers ───────────────────────────────────────────────────────────

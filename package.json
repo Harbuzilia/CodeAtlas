@@ -1,11 +1,23 @@
 {
-  "name": "opencode-config",
-  "version": "2.0.0",
-  "description": "OpenCode agent configuration and tools",
+  "name": "codeatlas",
+  "version": "2.0.1",
+  "description": "CodeAtlas full OpenCode runtime, installer, validators, and tests",
   "type": "module",
   "bin": {
     "opencode-init": "./scripts/install.mjs"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Harbuzilia/CodeAtlas.git"
+  },
+  "homepage": "https://github.com/Harbuzilia/CodeAtlas",
+  "keywords": [
+    "codeatlas",
+    "opencode",
+    "agents",
+    "runtime",
+    "installer"
+  ],
   "scripts": {
     "install:init": "node scripts/install.mjs",
     "install:dry-run": "node scripts/install.mjs --dry-run",
@@ -19,5 +31,6 @@
   "dependencies": {
     "@opencode-ai/plugin": "1.1.25",
     "@inquirer/prompts": "^7.0.0"
-  }
+  },
+  "license": "MIT"
 }

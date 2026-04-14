@@ -1,41 +1,66 @@
-# Contributing to CodeAtlas-Lite
+# Contributing to CodeAtlas
 
-First off, thank you for considering contributing to CodeAtlas-Lite! This document is a set of guidelines for contributing to this repository.
+Thanks for contributing to CodeAtlas.
 
-## 🌟 The Open-Core Philosophy
+This repository is the maintained public source for the full installable CodeAtlas runtime. Contributions should keep runtime behavior, installer flow, validation, and documentation aligned.
 
-**CodeAtlas-Lite** is the open-source version of the CodeAtlas engine. While this repository contains the core orchestration engine, fundamental agents (`openagent`, `contextscout`, `coder`, `reviewer`), and core skills, the advanced enterprise features and specialized agents are maintained in the private Pro repository.
+## Scope
 
-We openly welcome contributions to the Lite engine. Improvements to the core orchestration, bug fixes to the agent prompt constraints, and general optimization of the included skills are highly appreciated.
+Good contribution areas:
 
-If you are developing complex, highly specialized enterprise skills or new orchestration agents, consider using them in your own local layer or contacting us for Pro integration.
+- agent prompt and routing improvements
+- validator hardening
+- installer reliability and UX
+- tests and regression coverage
+- documentation that reflects actual runtime behavior
 
-## 🐛 Reporting Bugs
+Avoid submitting local-only artifacts such as caches, repomap outputs, archives, editor state, or machine-specific support files.
 
-If you find a bug in the source code or agent behavior, you can help us by submitting an issue to our GitHub Repository. Even better, you can submit a Pull Request with a fix.
+## Before opening a pull request
 
-- Use a clear and descriptive title for the issue to identify the problem.
-- Describe the exact steps which reproduce the problem in as many details as possible.
-- Provide specific examples to demonstrate the steps.
+1. Fork the repository and branch from `main`.
+2. Keep changes focused and avoid unrelated cleanup.
+3. Update docs if behavior, installation, validation, or public metadata changed.
+4. Run the relevant checks from the repository root:
 
-## ✨ Suggesting Enhancements
+```bash
+npm run validate:all
+npm run smoke:functional
+node --test
+```
 
-We welcome suggestions for new features and enhancements.
-- Outline the concept clearly.
-- Provide a compelling use case.
-- Note whether you see this fitting in the Lite engine or as part of a wider ecosystem.
+5. Summarize what changed, why it changed, and what you verified.
 
-## 💻 Submitting Pull Requests
+## Reporting bugs
 
-1. Fork the repository and create your branch from `main`.
-2. Ensure your prompt changes follow the strict declarative contract structure.
-3. Test the agent behavior locally using the validation script to ensure governance:
-   `node validate-runtime-governance.mjs`
-4. Ensure your code or prompt tweaks don't introduce logical infinite loops between agents.
-5. Create an issue to track the change, and reference the issue in your PR description.
+Please include:
 
-## ⚖️ Code of Conduct
+- a clear title
+- the exact files or commands involved
+- reproduction steps
+- expected behavior vs actual behavior
+- relevant logs or validator output
 
-Help us keep CodeAtlas-Lite welcoming and inclusive. Please be respectful and professional in all interactions.
+## Suggesting enhancements
 
-Thank you for helping to improve CodeAtlas!
+Please describe:
+
+- the user or maintainer problem being solved
+- the proposed behavior
+- whether runtime docs, installer flow, or validation rules would need updates
+
+## Documentation and runtime truth
+
+When documentation conflicts with runtime files, the canonical order is:
+
+1. `opencode.json`
+2. `agents/**/*.md`
+3. `context/**/*.md`
+4. `instructions.md`
+5. public documentation such as `README.md`
+
+If your change modifies runtime behavior, update the affected docs in the same pull request.
+
+## Code of conduct
+
+Be respectful, precise, and professional in issues, reviews, and pull requests.

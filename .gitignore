@@ -1,0 +1,11 @@
+node_modules/
+.opencode/node_modules/
+
+.opencode/task_state.md
+.opencode/lessons_learned.md
+.opencode/history/
+.opencode/repomap.txt
+.opencode/test_repomap_final.txt
+
+*.rar
+.aider*

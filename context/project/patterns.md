@@ -2,14 +2,14 @@
 
 ## Purpose | Цель
 
-Этот файл фиксирует реальные паттерны текущего runtime-проекта `Opencode1`.
+Этот файл фиксирует реальные паттерны текущего runtime-проекта `CodeAtlas`.
 Используй его как project-specific слой поверх `context/core/*`.
 
 ---
 
 ## Project Identity | Профиль проекта
 
-- Project: `Opencode1`
+- Project: `CodeAtlas`
 - Domain: агентная оркестрация, делегация задач, контекст-управление
 - Runtime orchestrator: `agents/openagent.md`
 - Runtime agent tree: `agents/*.md`
@@ -95,7 +95,7 @@ Rule: если есть конфликт в документации, следу
 ## Documentation Hygiene | Гигиена документации
 
 - Runtime точка входа: `PROJECT_GUIDE.md`.
-- Исторические материалы: `docs/legacy/history/` и `docs/legacy/archive/`.
+- Исторические материалы и локальные служебные выгрузки не являются runtime source of truth.
 - Файлы с пометкой legacy не использовать как источник runtime-правды.
 
 ---
