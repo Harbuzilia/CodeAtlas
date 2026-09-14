@@ -175,6 +175,10 @@ Generated automatically via `npm run docgen` on 2026-09-14.
 
 *Executable script or configuration module.*
 
+## 📄 `validate-agent-permissions.mjs`
+
+*Executable script or configuration module.*
+
 ## 📄 `validate-context-refs.mjs`
 
 *Executable script or configuration module.*
@@ -184,6 +188,10 @@ Generated automatically via `npm run docgen` on 2026-09-14.
 *Executable script or configuration module.*
 
 ## 📄 `validate-registry.mjs`
+
+*Executable script or configuration module.*
+
+## 📄 `validate-skills.mjs`
 
 *Executable script or configuration module.*
 
