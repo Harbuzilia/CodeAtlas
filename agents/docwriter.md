@@ -14,16 +14,9 @@ tools:
   skill: true
   question: true
 permission:
-  edit:
-    "**/*.md": "allow"
-    "**/*.txt": "allow"
-    "**/*.env*": "deny"
-    "**/*.key": "deny"
-    "**/*.secret": "deny"
-    "node_modules/**": "deny"
-    ".git/**": "deny"
-  task:
-    "*": "deny"
+  edit: "allow"
+  task: "deny"
+  # secret-file protection is prompt-level: opencode ignores path globs in permission
 ---
 
 # DocWriter

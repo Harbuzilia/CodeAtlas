@@ -13,11 +13,15 @@ tools:
   write: false
   skill: true
   question: true
+# NOTE: opencode ignores the `tools:` map above as soon as a `permission:` block
+# exists, and path globs like "**/*" do not match anything — so the only reliable
+# way to lock this agent down is a domain-level action. Verified with
+# `opencode debug agent reviewer` (edit/write stayed true before this change).
 permission:
-  bash:
-    "*": "deny"
-  edit:
-    "**/*": "deny"
+  bash: "deny"
+  edit: "deny"
+  task: "deny"
+  # secret-file protection is prompt-level: opencode ignores path globs in permission
 ---
 
 <agent_info>

@@ -8,7 +8,11 @@ tools:
   bash: true
   grep: true
   question: true
+# The `tools:` map above is ignored by opencode once a `permission:` block exists,
+# so the file-level restriction must be stated here as a domain action.
 permission:
+  edit: "deny"
+  task: "deny"
   bash:
     "npm *": "allow"
     "npx *": "allow"
@@ -18,6 +22,7 @@ permission:
     "rm -rf *": "deny"
     "sudo *": "deny"
     "*": "ask"
+  # secret-file protection is prompt-level: opencode ignores path globs in permission
 ---
 
 <agent_info>

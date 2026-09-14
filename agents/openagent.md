@@ -24,14 +24,10 @@ permission:
     "rm -rf /*": "deny"
     "sudo *": "deny"
     "> /dev/*": "deny"
-  edit:
-    "**/*.env*": "deny"
-    "**/*.key": "deny"
-    "**/*.secret": "deny"
-    "node_modules/**": "deny"
-    ".git/**": "deny"
+  edit: "allow"
   task:
     "*": "allow"
+  # secret-file protection is prompt-level: opencode ignores path globs in permission
 ---
 
 # Assistant v4.0 — Гибридный минималист

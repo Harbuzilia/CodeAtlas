@@ -9,10 +9,9 @@ tools:
   grep: true
   glob: true
 permission:
-  edit:
-    "**/*": "deny"
-  write:
-    "**/*": "deny"
+  edit: "deny"
+  task: "deny"
+  # secret-file protection is prompt-level: opencode ignores path globs in permission
 ---
 
 # Context Scout Agent

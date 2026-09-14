@@ -1,6 +1,6 @@
 ---
-id: devops
-name: DevOps
+# No `id:`/`name:` here on purpose: those keys make opencode drop the whole agent
+# frontmatter (same defect as agents/architect.md — see the note there).
 description: "DevOps & Infrastructure Engineer — Docker, Kubernetes, CI/CD, Nginx, Terraform и Cloud автоматизация"
 mode: subagent
 temperature: 0
@@ -23,24 +23,9 @@ permission:
     "npm *": "allow"
     "git *": "allow"
     "*": "ask"
-  edit:
-    "Dockerfile*": "allow"
-    "docker-compose*.yml": "allow"
-    "docker-compose*.yaml": "allow"
-    ".github/workflows/**": "allow"
-    "k8s/**": "allow"
-    "nginx/**": "allow"
-    "infra/**": "allow"
-    "**/*": "deny"
-  write:
-    "Dockerfile*": "allow"
-    "docker-compose*.yml": "allow"
-    "docker-compose*.yaml": "allow"
-    ".github/workflows/**": "allow"
-    "k8s/**": "allow"
-    "nginx/**": "allow"
-    "infra/**": "allow"
-    "**/*": "deny"
+  edit: "allow"
+  # secret-file protection is prompt-level: opencode ignores path globs in permission
+  task: "deny"
 ---
 
 # DevOps & Infrastructure Agent

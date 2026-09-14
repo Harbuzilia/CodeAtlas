@@ -19,16 +19,13 @@ tools:
   question: true
 
 permission:
+  task: "deny"
   bash:
     "rm -rf *": "ask"
     "sudo *": "deny"
     "chmod *": "ask"
-  edit:
-    "**/*.env*": "deny"
-    "**/*.key": "deny"
-    "**/*.secret": "deny"
-    "node_modules/**": "deny"
-    ".git/**": "deny"
+  edit: "allow"
+  # secret-file protection is prompt-level: opencode ignores path globs in permission
 ---
 
 # Coder — Супер-кодер v2.1 (TDD + Plan Mode)

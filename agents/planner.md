@@ -14,13 +14,10 @@ tools:
   write: true
   question: true
 permission:
-  bash: deny
-  edit:
-    ".opencode/task_state.md": "allow"
-    "*": "deny"
-  write:
-    ".opencode/task_state.md": "allow"
-    "*": "deny"
+  task: "deny"
+  bash: "deny"
+  edit: "allow"
+  # secret-file protection is prompt-level: opencode ignores path globs in permission
 ---
 
 <agent_info>

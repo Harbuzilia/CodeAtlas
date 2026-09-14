@@ -12,14 +12,13 @@ tools:
 permission:
   bash:
     "*": "deny"
-  edit:
-    "**/*": "deny"
-  write:
-    ".tmp/external-docs/**": "allow"
-    "**/*": "deny"
-  skill:
-    "context7": "allow"
-    "*": "deny"
+  edit: "deny"
+  task: "deny"
+  # A map with `"*": "deny"` disables the tool completely (opencode has no working
+  # fine-grained allow-list), which would lock this agent out of the context7 skill
+  # it exists to use. Domain action only.
+  skill: "allow"
+  # secret-file protection is prompt-level: opencode ignores path globs in permission
 ---
 
 # External Scout

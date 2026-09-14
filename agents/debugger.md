@@ -15,6 +15,7 @@ tools:
   skill: true
   question: true
 permission:
+  task: "deny"
   bash:
     "rm -rf *": "deny"
     "sudo *": "deny"
@@ -23,10 +24,8 @@ permission:
     "npm run*": "allow"
     "python*": "allow"
     "go build*": "allow"
-  edit:
-    "**/*.env*": "deny"
-    "**/*.key": "deny"
-    "**/*.secret": "deny"
+  edit: "allow"
+  # secret-file protection is prompt-level: opencode ignores path globs in permission
 ---
 
 <agent_info>

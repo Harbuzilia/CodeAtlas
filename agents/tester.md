@@ -13,13 +13,12 @@ tools:
   skill: true
   question: true
 permission:
+  task: "deny"
   bash:
     "rm -rf *": "ask"
     "sudo *": "deny"
-  edit:
-    "**/*.env*": "deny"
-    "**/*.key": "deny"
-    "**/*.secret": "deny"
+  edit: "allow"
+  # secret-file protection is prompt-level: opencode ignores path globs in permission
 ---
 
 <agent_info>

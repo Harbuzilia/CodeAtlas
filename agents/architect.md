@@ -1,6 +1,7 @@
 ---
-id: architect
-name: Architect
+# No `id:`/`name:` here on purpose: those keys make opencode drop the whole agent
+# frontmatter (verified — the agent resolved with mode=all, no steps/temperature,
+# no permission). The agent name comes from the opencode.json key / filename.
 description: "Системный архитектор — проектирование распределенных систем, генерация ADR и Mermaid диаграмм"
 mode: subagent
 temperature: 0
@@ -15,15 +16,13 @@ tools:
   write: true
   edit: true
   question: true
+# Domain-level actions only: opencode ignores path globs in permission, so a
+# "write only docs/adr/**" rule cannot be expressed and is enforced by the prompt.
+# `task: "deny"` keeps the agent from delegating (the orchestrator routes).
 permission:
-  bash:
-    "*": "deny"
-  edit:
-    "docs/adr/**": "allow"
-    "**/*": "deny"
-  write:
-    "docs/adr/**": "allow"
-    "**/*": "deny"
+  task: "deny"
+  bash: "deny"
+  edit: "allow"
 ---
 
 # Architect Agent
