@@ -1,6 +1,6 @@
 # Module Documentation: scripts
 
-Generated automatically via `npm run docgen` on 2026-08-22.
+Generated automatically via `npm run docgen` on 2026-09-14.
 
 ## 📄 `agent-matrix.mjs`
 
@@ -74,7 +74,16 @@ Generated automatically via `npm run docgen` on 2026-08-22.
 
 *Executable script or configuration module.*
 
+## 📄 `generate-menu.mjs`
+
+### Functions & Methods:
+- `buildMenu()`
+
 ## 📄 `generate-repomap.mjs`
+
+*Executable script or configuration module.*
+
+## 📄 `heal-config.mjs`
 
 *Executable script or configuration module.*
 
@@ -83,6 +92,10 @@ Generated automatically via `npm run docgen` on 2026-08-22.
 *Executable script or configuration module.*
 
 ## 📄 `mutation-test-runner.mjs`
+
+*Executable script or configuration module.*
+
+## 📄 `onboard.mjs`
 
 *Executable script or configuration module.*
 
@@ -95,6 +108,10 @@ Generated automatically via `npm run docgen` on 2026-08-22.
 *Executable script or configuration module.*
 
 ## 📄 `release-gen.mjs`
+
+*Executable script or configuration module.*
+
+## 📄 `routing-telemetry.mjs`
 
 *Executable script or configuration module.*
 
@@ -134,6 +151,10 @@ Generated automatically via `npm run docgen` on 2026-08-22.
 
 *Executable script or configuration module.*
 
+## 📄 `sync-local.mjs`
+
+*Executable script or configuration module.*
+
 ## 📄 `sync-targets.mjs`
 
 *Executable script or configuration module.*
@@ -163,6 +184,10 @@ Generated automatically via `npm run docgen` on 2026-08-22.
 *Executable script or configuration module.*
 
 ## 📄 `validate-registry.mjs`
+
+*Executable script or configuration module.*
+
+## 📄 `watch.mjs`
 
 *Executable script or configuration module.*
 

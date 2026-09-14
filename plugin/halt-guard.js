@@ -22,8 +22,14 @@ const ERROR_BACKOFF_MS = 5000;
 const MAX_MAP_SIZE = 200;
 
 export default async function HaltGuard({ client }) {
-  const nudges = new Map(); // sessionID -> { count, lastMsgId }
-  const errRetries = new Map(); // sessionID -> count
+  // opencode loads this plugin twice when it exists in BOTH the global config
+  // (~/.config/opencode/plugin) and the project (.opencode/plugin). Keep the
+  // per-session budgets in one process-wide registry, otherwise each copy counts
+  // independently and a session gets nudged/retried up to 2x the intended limit.
+  const STATE_KEY = Symbol.for('opencode.halt-guard.state');
+  const shared = (globalThis[STATE_KEY] ??= { nudges: new Map(), errRetries: new Map() });
+  const nudges = shared.nudges; // sessionID -> { count, lastMsgId }
+  const errRetries = shared.errRetries; // sessionID -> count
 
   const getNudgeState = (sid) => {
     if (!nudges.has(sid)) nudges.set(sid, { count: 0, lastMsgId: null });

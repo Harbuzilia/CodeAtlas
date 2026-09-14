@@ -38,8 +38,33 @@ export default async function Telemetry({ directory }) {
     }
   };
 
+  // opencode loads this plugin twice when it exists in BOTH the global config
+  // (~/.config/opencode/plugin) and the project (.opencode/plugin). Both copies
+  // receive the same event, which would write every record twice and double every
+  // downstream count. Drop a record that repeats within a few milliseconds.
+  const DEDUPE_KEY = Symbol.for('opencode.telemetry.dedupe');
+  const dedupe = (globalThis[DEDUPE_KEY] ??= new Map());
+  const DEDUPE_WINDOW_MS = 50;
+  const DEDUPE_MAX = 4000;
+
+  const isDuplicate = (record) => {
+    const { ts, ...fields } = record;
+    const key = JSON.stringify(fields);
+    const now = Date.now();
+    const prev = dedupe.get(key);
+    if (prev !== undefined && now - prev < DEDUPE_WINDOW_MS) return true;
+    dedupe.set(key, now);
+    if (dedupe.size > DEDUPE_MAX) {
+      for (const [k, t] of dedupe) {
+        if (now - t >= DEDUPE_WINDOW_MS) dedupe.delete(k);
+      }
+    }
+    return false;
+  };
+
   const append = (record) => {
     try {
+      if (isDuplicate(record)) return;
       fs.mkdirSync(path.dirname(logFile), { recursive: true });
       rotateIfNeeded();
       fs.appendFileSync(logFile, JSON.stringify(record) + '\n', 'utf8');
