@@ -15,6 +15,7 @@ tools:
   write: true
   edit: true
   bash: true
+  question: true
 permission:
   bash:
     "docker *": "allow"

@@ -12,6 +12,8 @@ tools:
   grep: true
   glob: true
   list: true
+  skill: true
+  question: true
 permission:
   bash:
     "rm -rf *": "deny"

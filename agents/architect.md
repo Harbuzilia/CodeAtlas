@@ -14,6 +14,7 @@ tools:
   task: false
   write: true
   edit: true
+  question: true
 permission:
   bash:
     "*": "deny"

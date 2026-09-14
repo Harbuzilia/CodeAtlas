@@ -7,6 +7,7 @@ tools:
   read: true
   bash: true
   grep: true
+  question: true
 permission:
   bash:
     "npm *": "allow"

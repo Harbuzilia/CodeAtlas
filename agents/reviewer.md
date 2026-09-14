@@ -11,6 +11,8 @@ tools:
   bash: false
   edit: false
   write: false
+  skill: true
+  question: true
 permission:
   bash:
     "*": "deny"

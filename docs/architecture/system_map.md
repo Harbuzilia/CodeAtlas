@@ -1,6 +1,6 @@
 # System Architecture Map (Live C4 Container & Workflow Model)
 
-*Generated automatically via `npm run arch` on 2026-08-22.*
+*Generated automatically via `npm run arch` on 2026-09-14.*
 
 ## 1. High-Level Agent & Subsystem Interactions
 
@@ -30,13 +30,13 @@ graph TD
     cmd_i18n["/i18n"]
     cmd_infra["/infra"]
     cmd_matrix["/matrix"]
-    cmd_menu["/menu"]
     cmd_modernize["/modernize"]
     cmd_optimize["/optimize"]
     cmd_oracle["/oracle"]
     cmd_plan["/plan"]
     cmd_pr["/pr"]
     cmd_prompt["/prompt"]
+    cmd_prompt-engineering/prompt-optimizer["/prompt-engineering/prompt-optimizer"]
     cmd_release["/release"]
     cmd_review["/review"]
     cmd_synthesize["/synthesize"]
@@ -57,6 +57,7 @@ graph TD
     skill_e2e-playwright["e2e-playwright"]
     skill_event-driven-messaging["event-driven-messaging"]
     skill_feature-flags-trunk-based["feature-flags-trunk-based"]
+    skill_frontend-design["frontend-design"]
     skill_git["git"]
     skill_git-conflict-resolution["git-conflict-resolution"]
     skill_grpc-graphql-contracts["grpc-graphql-contracts"]
@@ -81,15 +82,12 @@ coder --> reviewer
 reviewer --> tester
 contextscout --> externalscout
 externalscout --> coder
-contextscout --> externalscout
-externalscout --> coder
-coder --> tester
 coder --> tester
 tester --> docwriter
 ```
 
 ## 2. Inventory (generated from disk)
 - Agents: 12 (architect, coder, contextscout, debugger, devops, docwriter, externalscout, openagent, planner, reviewer, tester, uitester)
-- Slash commands: 23 (/arch, /bootstrap, /budget, /build-context-system, /commit, /conflict, /docgen, /doctor, /heal, /i18n, /infra, /matrix, /menu, /modernize, /optimize, /oracle, /plan, /pr, /prompt, /release, /review, /synthesize, /test)
-- Skills: 36 (api-change-safe, api-openapi-spec, architecture-adr, ast-index, caching-redis-strategy, code-modernization-patterns, config-migration, context7, csharp, database-sql, db-migration-safety, devops-docker, docs-sync, e2e-playwright, event-driven-messaging, feature-flags-trunk-based, git, git-conflict-resolution, grpc-graphql-contracts, i18n-localization, incident-response, micro-frontends-federation, mock-service-virtualization, observability-opentelemetry, performance-optimization, prompt-engineering-advanced, python, react-next-modern, repomap, review-code-checklist, review-code-strategy, secrets-config-management, security-owasp, security-sast, typescript, websocket-realtime-events)
-- Delegation edges from functional_modes table: 9
+- Slash commands: 23 (/arch, /bootstrap, /budget, /build-context-system, /commit, /conflict, /docgen, /doctor, /heal, /i18n, /infra, /matrix, /modernize, /optimize, /oracle, /plan, /pr, /prompt, /prompt-engineering/prompt-optimizer, /release, /review, /synthesize, /test)
+- Skills: 37 (api-change-safe, api-openapi-spec, architecture-adr, ast-index, caching-redis-strategy, code-modernization-patterns, config-migration, context7, csharp, database-sql, db-migration-safety, devops-docker, docs-sync, e2e-playwright, event-driven-messaging, feature-flags-trunk-based, frontend-design, git, git-conflict-resolution, grpc-graphql-contracts, i18n-localization, incident-response, micro-frontends-federation, mock-service-virtualization, observability-opentelemetry, performance-optimization, prompt-engineering-advanced, python, react-next-modern, repomap, review-code-checklist, review-code-strategy, secrets-config-management, security-owasp, security-sast, typescript, websocket-realtime-events)
+- Delegation edges from functional_modes table: 6

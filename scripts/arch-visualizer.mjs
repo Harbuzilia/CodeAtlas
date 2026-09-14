@@ -46,9 +46,24 @@ const agents = agentFiles.map((f) => {
   return { id, role: (fm.description || '').replace(/^["']|["']$/g, '').slice(0, 40) };
 });
 
-// 2. Commands
+// 2. Commands — walk subfolders too (commands may be namespaced, e.g.
+//    prompt-engineering/prompt-optimizer), and skip the generated menu.
 const cmdDir = path.join(root, 'command');
-const commands = fs.existsSync(cmdDir) ? fs.readdirSync(cmdDir).filter((f) => f.endsWith('.md')).map((f) => f.replace('.md', '')).sort() : [];
+const commands = [];
+if (fs.existsSync(cmdDir)) {
+  const stack = [cmdDir];
+  while (stack.length > 0) {
+    const current = stack.pop();
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      const abs = path.join(current, entry.name);
+      if (entry.isDirectory()) stack.push(abs);
+      else if (entry.isFile() && entry.name.endsWith('.md') && entry.name !== 'menu.md') {
+        commands.push(path.relative(cmdDir, abs).split(path.sep).join('/').replace(/\.md$/, ''));
+      }
+    }
+  }
+  commands.sort();
+}
 
 // 3. Skills
 const skillsDir = path.join(root, 'skills');
@@ -88,6 +103,10 @@ if (fs.existsSync(openagentPath)) {
   }
 }
 
+// Several modes traverse the same hop, so collapse duplicates: a routing graph
+// with repeated identical edges is noise, and the edge count was inflated by them.
+const uniqueEdges = [...new Set(edges)];
+
 // 5. Emit the diagram.
 const agentLines = agents.map((a) => `    ${a.id}["${a.id}"]`);
 const cmdLines = commands.map((c) => `    cmd_${c}["/${c}"]`);
@@ -99,7 +118,7 @@ graph TD
 ${agentLines.filter((l) => !l.includes('openagent')).join('\n')}
 ${cmdLines.join('\n')}
 ${skillLines.join('\n')}
-${edges.join('\n')}
+${uniqueEdges.join('\n')}
 \`\`\``;
 
 const outputDir = path.join(root, 'docs', 'architecture');
@@ -118,11 +137,11 @@ ${diagram}
 - Agents: ${agents.length} (${agents.map((a) => a.id).join(', ')})
 - Slash commands: ${commands.length} (${commands.map((c) => '/' + c).join(', ')})
 - Skills: ${skills.length} (${skills.join(', ')})
-- Delegation edges from functional_modes table: ${edges.length}
+- Delegation edges from functional_modes table: ${uniqueEdges.length}
 `;
 
 fs.writeFileSync(outputFile, fullDoc, 'utf8');
 
 console.log(`✅ C4 Architecture map generated at: ${path.relative(root, outputFile)}`);
-console.log(`   - ${agents.length} agents, ${commands.length} commands, ${skills.length} skills, ${edges.length} routing edges.`);
+console.log(`   - ${agents.length} agents, ${commands.length} commands, ${skills.length} skills, ${uniqueEdges.length} routing edges.`);
 console.log('====================================================\n');

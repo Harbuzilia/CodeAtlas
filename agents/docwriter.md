@@ -11,6 +11,8 @@ tools:
   glob: true
   list: true
   task: false
+  skill: true
+  question: true
 permission:
   edit:
     "**/*.md": "allow"

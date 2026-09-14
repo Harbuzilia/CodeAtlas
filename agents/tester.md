@@ -10,6 +10,8 @@ tools:
   edit: true
   write: true
   bash: true
+  skill: true
+  question: true
 permission:
   bash:
     "rm -rf *": "ask"
