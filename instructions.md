@@ -192,7 +192,7 @@ User -> openagent -> [delegate when needed]
 
 ## Skills System
 
-Канонический реестр скиллов (36 шт.) — в секции «Skill Loading Protocol» выше. Формат файлов: `skills/<name>/SKILL.md`.
+Канонический реестр скиллов (37 шт.) — в секции «Skill Loading Protocol» выше. Формат файлов: `skills/<name>/SKILL.md`.
 
 ## Skill Activation Matrix
 

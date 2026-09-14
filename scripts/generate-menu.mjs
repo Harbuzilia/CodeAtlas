@@ -9,17 +9,31 @@ const menuPath = path.join(commandDir, 'menu.md');
 // Build menu.md content from command frontmatter. Pure function: used by the
 // CLI below and by validate-registry.mjs for drift detection.
 export function buildMenu() {
-  const files = fs
-    .readdirSync(commandDir)
-    .filter((f) => f.endsWith('.md') && f !== 'menu.md')
-    .sort((a, b) => a.localeCompare(b));
+  // Walk the whole command/ tree: commands may live in subfolders
+  // (e.g. command/prompt-engineering/prompt-optimizer.md) and must still be listed.
+  const files = [];
+  const stack = [commandDir];
+  while (stack.length > 0) {
+    const current = stack.pop();
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      const abs = path.join(current, entry.name);
+      if (entry.isDirectory()) stack.push(abs);
+      else if (entry.isFile() && entry.name.endsWith('.md') && entry.name !== 'menu.md') {
+        files.push(path.relative(commandDir, abs).split(path.sep).join('/'));
+      }
+    }
+  }
+  files.sort((a, b) => a.localeCompare(b));
 
   const entries = files.map((f) => {
     const text = fs.readFileSync(path.join(commandDir, f), 'utf8');
     const fm = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
     const descMatch = fm ? fm[1].match(/^description:\s*(.+)$/m) : null;
     const name = f.replace(/\.md$/, '');
-    return { name, description: descMatch ? descMatch[1].trim() : '(нет описания)' };
+    const rawDesc = descMatch ? descMatch[1].trim() : '';
+    // Strip wrapping YAML quotes so every entry renders consistently.
+    const description = rawDesc.replace(/^(["'])(.*)\1$/, '$2') || '(нет описания)';
+    return { name, description };
   });
 
   const commandList = entries.map((e) => `- \`/${e.name}\` — ${e.description}`).join('\n');
