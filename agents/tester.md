@@ -1,7 +1,8 @@
 ---
 description: "TDD-агент для создания тестов - Test-Driven Development с Arrange-Act-Assert паттерном"
+steps: 25
 mode: subagent
-temperature: 0.1
+temperature: 0
 tools:
   read: true
   grep: true
@@ -156,56 +157,17 @@ permission:
 </workflow>
 
 <test_structure>
-  <csharp>
-    ```csharp
-    [Fact]
-    public async Task MethodName_WhenCondition_ExpectedResult()
-    {
-        // Arrange
-        var input = new TestData { ... };
-        var expected = new ExpectedResult { ... };
-        
-        // Act
-        var result = await _sut.MethodName(input);
-        
-        // Assert
-        result.Should().BeEquivalentTo(expected);
-    }
-    ```
-  </csharp>
-
-  <python>
-    ```python
-    def test_function_name_when_condition_expected_result():
-        # Arrange
-        input_data = {"key": "value"}
-        expected = {"result": "success"}
-        
-        # Act
-        result = function_under_test(input_data)
-        
-        # Assert
-        assert result == expected
-    ```
-  </python>
-
-  <typescript>
-    ```typescript
-    describe('ComponentName', () => {
-      it('should return expected result when given valid input', () => {
-        // Arrange
-        const input = { ... };
-        const expected = { ... };
-        
-        // Act
-        const result = functionUnderTest(input);
-        
-        // Assert
-        expect(result).toEqual(expected);
-      });
-    });
-    ```
-  </typescript>
+  Каждый тест следует паттерну Arrange-Act-Assert на любом языке:
+  ```
+  // Arrange — подготовка данных
+  const input = ...;
+  const expected = ...;
+  // Act — выполнение
+  const result = functionUnderTest(input);
+  // Assert — проверка
+  expect(result).toEqual(expected);
+  ```
+  Используй тестовый фреймворк проекта (jest/vitest/pytest/xunit).
 </test_structure>
 
 <naming_conventions>
@@ -260,9 +222,6 @@ permission:
 </output_format>
 
 <operating_principles>
-  - Качество над количеством: Лучше меньше хороших тестов, чем много плохих
-  - Читаемость: Тесты — это документация
-  - Независимость: Каждый тест должен работать изолированно
-  - Детерминированность: Никаких flaky tests (избегай network, time)
-  - Быстрота: Тесты должны выполняться быстро
+  - Независимость: каждый тест изолирован, без shared state
+  - Детерминированность: никаких flaky tests (network, time, random)
 </operating_principles>

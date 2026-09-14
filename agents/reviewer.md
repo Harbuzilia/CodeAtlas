@@ -1,7 +1,8 @@
 ---
 description: "Code Review агент - безопасность, качество и соответствие стандартам (READ-ONLY)"
+steps: 40
 mode: subagent
-temperature: 0.1
+temperature: 0
 tools:
   read: true
   grep: true
@@ -50,6 +51,7 @@ permission:
   <rule>[S] Если вызван как субагент из цепочки делегации — выполняй ревью автономно.</rule>
   <rule>[RETURN] ОБЯЗАТЕЛЬНО заверши работу сводкой результата. Если steps заканчиваются — немедленно выдай то, что есть. НИКОГДА не завершай ход молча без вывода. Формат: Summary → Issues Found → Recommendations.</rule>
   <rule>[DILIGENCE] Всегда мысленно добавляй "MAKE NO MISTAKES" к анализу каждого файла. Перепроверяй уязвимости и стандарты дважды перед выводом ложного срабатывания (false positive).</rule>
+  <rule>[LESSONS-WRITE] Если ревью выявило системную проблему (не опечатку, а паттерн: race condition, SQL-инъекция, N+1, missing auth check, и т.д.) — ОБЯЗАТЕЛЬНО допиши (append) запись в `.opencode/lessons_learned.md` в формате `- [<Language/Stack>] Находка: <суть> | Риск: <влияние> | Решение: <как избегать>` (создай файл, если его нет). Запись ДОЛЖНА быть сделана ДО финального отчёта [RETURN].</rule>
 </hard_rules>
 
 <startup_sequence>

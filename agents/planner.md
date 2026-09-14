@@ -1,7 +1,7 @@
 ---
 description: "Unified Planner Agent - Task decomposition and implementation planning"
 mode: subagent
-temperature: 0.2
+temperature: 0
 steps: 40
 tools:
   read: true
@@ -9,7 +9,9 @@ tools:
   glob: true
   list: true
   skill: true
-  task: true
+  task: false
+  edit: true
+  write: true
 permission:
   bash: deny
   edit:

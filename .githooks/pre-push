@@ -1,0 +1,15 @@
+#!/bin/sh
+# OpenCode Pre-push Hook
+# Routing conformance before code leaves the machine.
+
+echo "Running OpenCode Pre-push Gates (eval:routes)..."
+npm run eval:routes
+
+EXIT_CODE=$?
+if [ $EXIT_CODE -ne 0 ]; then
+    echo "\n❌ [ERROR] Pre-push routing evaluation failed. Fix routes before pushing."
+    exit 1
+fi
+
+echo "✅ [SUCCESS] Routing evaluation passed."
+exit 0

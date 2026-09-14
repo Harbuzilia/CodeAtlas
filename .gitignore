@@ -1,0 +1,12 @@
+node_modules/
+.tmp/
+.aider*
+# .opencode/ is a GENERATED sync target (scripts/sync-targets.mjs) — never track it.
+# Source of truth: agents/, command/, skills/, context/, plugin/ at repo root.
+.opencode/
+*.log
+bun.lock
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,31 @@
+name: OpenCode Quality Gates CI
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  validate:
+    name: Validate Registry, Skills & Governance
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Full Quality Gates
+        run: npm run validate:all
+
+      - name: Run Functional Smoke Test
+        run: npm run smoke:functional
+
+
+      - name: Run Secret Leak Scanner
+        run: npm run scan:secrets

@@ -44,6 +44,8 @@
 - `externalscout`
 - `docwriter`
 - `uitester`
+- `architect`
+- `devops`
 
 Источник списка: секция `agent` в `opencode.json`.
 
@@ -57,6 +59,8 @@
 - `modern-design`
 - `modern-backend-upgrade`
 - `api-change-safe`
+- `architecture-design` (ADR, C4/Sequence диаграммы, системный дизайн -> `architect`)
+- `infra-setup` (Docker, CI/CD, K8s, деплой, мониторинг -> `devops`)
 
 Примечание: ID режимов и маршрутов остаются на английском как стабильные технические ключи.
 
@@ -65,6 +69,7 @@
 - `csharp`
 - `typescript`
 - `python`
+- `react-next-modern` (React 19, Next.js 15, Tailwind v4, Zustand)
 
 Когда используются:
 - code/test/debug задачи — обязательно соответствующий language skill.
@@ -82,15 +87,49 @@
 - `devops-docker` (multi-stage Docker, CI/CD, shell safety)
 - `git` (strict Conventional Commits)
 - `repomap`
+- `ast-index` (AST symbol/usages/hierarchy search)
 - `review-code-strategy`
 - `review-code-checklist`
 - `config-migration`
+- `performance-optimization` (CPU/Memory profiling, N+1 fix, benchmarking)
+- `e2e-playwright` (Playwright E2E, Page Object Model, visual testing)
+- `api-openapi-spec` (OpenAPI 3.1 Spec-first, schema validation)
+- `security-sast` (Static code security analysis, OWASP, dependency audit)
+- `architecture-adr` (Architecture Decision Records, C4/Sequence Mermaid)
+- `db-migration-safety` (Zero-downtime DB migrations, Expand-Contract)
+- `mock-service-virtualization` (MSW, API mocking, offline testing)
+- `observability-opentelemetry` (Distributed tracing, Prometheus, Health checks)
+- `i18n-localization` (Localization standards, pluralization, Intl APIs)
+- `prompt-engineering-advanced` (XML structured prompts, Few-Shot, Negative constraints)
+- `caching-redis-strategy` (Cache-Aside, Redis, Cache Stampede protection)
+- `grpc-graphql-contracts` (Protobuf 3, gRPC streaming, GraphQL SDL, DataLoader)
+- `websocket-realtime-events` (WebSockets, SSE, Heartbeat, Redis Pub/Sub)
+- `git-conflict-resolution` (3-way merge, semantic AST conflict resolution)
+- `feature-flags-trunk-based` (Trunk-based dev, canary rollouts, fallback safety)
+- `micro-frontends-federation` (Module Federation 2.0, singletons, event bus)
+- `event-driven-messaging` (Transactional Outbox, Kafka, RabbitMQ, DLQ)
+- `code-modernization-patterns` (Legacy modernization, ESM, async/await, React 19)
+- `secrets-config-management` (12-Factor App config, Zod env validation, secret masking)
 
 Когда используются:
 - external libs/framework/API -> `context7`
 - docs sync/release docs -> `docs-sync`
 - production/runtime инциденты -> `incident-response`
-- API contract/schema/status changes -> `api-change-safe`
+- API contract/schema/status changes -> `api-change-safe`, `api-openapi-spec`, `grpc-graphql-contracts`
+- E2E/UI браузерные тесты -> `e2e-playwright`, `mock-service-virtualization`
+- Профилирование и hot paths -> `performance-optimization`, `caching-redis-strategy`
+- Безопасность и PR review -> `security-sast`, `review-code-strategy`
+- Миграции БД -> `database-sql`, `db-migration-safety`
+- Инфраструктура и мониторинг -> `devops-docker`, `observability-opentelemetry`
+- Интернационализация и переводы -> `i18n-localization`
+- Промпт-инжиниринг и мета-агенты -> `prompt-engineering-advanced`
+- Real-time и WebSockets -> `websocket-realtime-events`
+- Разрешение конфликтов Git -> `git-conflict-resolution`
+- Раскатка фич и флаги -> `feature-flags-trunk-based`
+- Микрофронтенды -> `micro-frontends-federation`
+- Асинхронные события и очереди -> `event-driven-messaging`
+- Модернизация старого кода -> `code-modernization-patterns`
+- Переменные окружения и секреты -> `secrets-config-management`
 
 ## 7. One-shot режим
 По умолчанию OFF.
@@ -156,11 +195,10 @@
 - Использовать как runtime source of truth запрещено.
 
 ## 14. История и архив
-- Исторические снапшоты:
-  - `docs/legacy/history/AUDIT_REPORT.md`
-  - `docs/legacy/history/SUMMARY.md`
-- Архив:
-  - `docs/legacy/archive/`
+- Архитектурная карта системы: `docs/architecture/system_map.md`.
+- Каталог скриптов и npm-команд: `docs/modules/scripts.md`.
+- Атомарные бэкапы `.opencode`-файлов (создаются инструментами перед записью): `.opencode/history/`.
+- Журнал всех изменений и обоснований: `CHANGELOG.md`; трекер задач: `PLANS.md`.
 
 ## 15. Практичные архитектурные улучшения
 - Качество: запускать `npm run validate:all` перед merge и фиксировать результат в PR/отчете.

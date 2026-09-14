@@ -82,7 +82,7 @@ for (const skillName of requiredSkills) {
   }
 
   const text = fs.readFileSync(manifestPath, 'utf8');
-  const frontmatter = text.match(/^---\n([\s\S]*?)\n---/);
+  const frontmatter = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!frontmatter) {
     fail(`Skill manifest missing YAML frontmatter: skills/${skillName}/SKILL.md`);
     continue;
@@ -302,6 +302,33 @@ const patternsPath = path.join(root, 'context', 'project', 'patterns.md');
 if (!fs.existsSync(patternsPath)) {
   fail('Missing context/project/patterns.md');
 }
+
+// Halt-guard + telemetry parity — prevents silent regression of runtime guard
+const haltGuardRoot = path.join(root, 'plugin', 'halt-guard.js');
+const haltGuardOpencode = path.join(root, '.opencode', 'plugin', 'halt-guard.js');
+if (!fs.existsSync(haltGuardRoot)) fail('Missing plugin/halt-guard.js — runtime guard not distributed');
+if (!fs.existsSync(haltGuardOpencode)) fail('Missing .opencode/plugin/halt-guard.js — runtime guard not loaded');
+if (fs.existsSync(haltGuardRoot) && fs.existsSync(haltGuardOpencode)) {
+  const a = fs.readFileSync(haltGuardRoot, 'utf8');
+  const b = fs.readFileSync(haltGuardOpencode, 'utf8');
+  if (a !== b) fail('plugin/halt-guard.js and .opencode/plugin/halt-guard.js diverged — run sync');
+  if (!a.includes('parentID')) fail('halt-guard.js missing parentID guard — will nudge child sessions');
+  if (!a.includes('session.todo')) fail('halt-guard.js missing todo check — silent stalls not caught');
+  if (!a.includes('export default')) fail('halt-guard.js missing export — not a valid plugin');
+}
+const telemRoot = path.join(root, 'plugin', 'telemetry.js');
+const telemOpencode = path.join(root, '.opencode', 'plugin', 'telemetry.js');
+if (fs.existsSync(telemRoot) && fs.existsSync(telemOpencode)) {
+  const a = fs.readFileSync(telemRoot, 'utf8');
+  const b = fs.readFileSync(telemOpencode, 'utf8');
+  if (a !== b) fail('plugin/telemetry.js and .opencode/plugin/telemetry.js diverged');
+}
+const pkgRoot = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+const pkgOpencode = JSON.parse(fs.readFileSync(path.join(root, '.opencode', 'package.json'), 'utf8'));
+const verRoot = pkgRoot.dependencies?.['@opencode-ai/plugin'];
+const verOpencode = pkgOpencode.dependencies?.['@opencode-ai/plugin'];
+if (verRoot !== verOpencode) fail(`@opencode-ai/plugin version drift: root ${verRoot} vs .opencode ${verOpencode}`);
+
 
 if (process.exitCode && process.exitCode !== 0) {
   console.error(smokeMode ? 'Functional smoke FAILED. See errors above.' : 'Runtime governance validation finished with errors.');

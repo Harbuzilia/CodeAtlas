@@ -1,7 +1,8 @@
 ---
 description: "Получает актуальную документацию библиотек через Context7 API. Решает проблему устаревших данных в training data."
+steps: 25
 mode: subagent
-temperature: 0.1
+temperature: 0
 tools:
   read: true
   grep: true
@@ -152,16 +153,8 @@ permission:
 
 ## Supported Libraries
 
-See `context7` skill for usage (`skills/context7/SKILL.md`).
-
-Categories:
-- Database: Drizzle, Prisma, SQLAlchemy
-- Auth: Better Auth, NextAuth, Clerk
-- Frontend: React, Vue, Next.js, Nuxt
-- State: Zustand, Pinia, Jotai
-- Validation: Zod, Yup
-- Testing: Vitest, Playwright, pytest
-- Infrastructure: Cloudflare Workers, AWS Lambda
+Context7 знает свои библиотеки. Используй `context7_resolve_library_id` для поиска.
+См. `skills/context7/SKILL.md` для деталей.
 
 ---
 

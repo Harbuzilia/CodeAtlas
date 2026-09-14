@@ -46,9 +46,25 @@ Contains: Document templates, comment standards, API docs format
 Triggers: code review, ревью, проверь код
 Contains: Review checklist, Conventional Comments, severity levels
 
+### `core/workflows/resilience.md`
+Triggers: resilience, reliability, fault-tolerance, circuit breaker
+Contains: Resilience patterns, retry logic, circuit breaker, fallback strategies
+
+### `core/workflows/swarm-protocol.md`
+Triggers: swarm, multi-agent, coordination, parallel agents
+Contains: Swarm communication protocol, agent discovery, parallel execution
+
 ### `core/workflows/delegation.md`
 Triggers: delegate, передай, используй subagent
 Contains: When to delegate, context bundling, handoff format
+
+---
+
+## Config Contexts | Конфигурационные контексты
+
+### `core/config/paths.json`
+Triggers: path resolution, file structure, project layout
+Contains: Project path aliases, directory structure configuration
 
 ---
 
@@ -87,15 +103,22 @@ WHEN delegating to subagent:
 ```
 context/
 ├── index.md              # ← YOU ARE HERE
+├── navigation.md
 ├── core/
 │   ├── essential-patterns.md
+│   ├── navigation.md
+│   ├── config/
+│   │   └── paths.json
 │   ├── standards/
 │   │   ├── code.md
 │   │   ├── tests.md
-│   │   └── docs.md       # NEW
+│   │   └── docs.md
 │   └── workflows/
+│       ├── delegation.md
+│       ├── resilience.md
 │       ├── review.md
-│       └── delegation.md
+│       └── swarm-protocol.md
 └── project/
+    ├── navigation.md
     └── patterns.md
 ```
