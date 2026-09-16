@@ -1,6 +1,6 @@
 ---
 name: docs-sync
-description: docs-sync skill reference
+description: "Синхронизация документации после функциональных изменений: README/PROJECT_GUIDE в одном проходе, устранение противоречий, проверка ссылок; профиль release-docs-sync для релизных задач"
 ---
 
 # Docs Sync Skill

@@ -1,6 +1,6 @@
 ---
 name: context7
-description: context7 skill reference
+description: "Актуальные доки внешних библиотек через Context7 MCP (resolve_library_id → get_library_docs): обязателен при неуверенности в API и мажорных обновлениях (React 19, Pydantic v2) вместо памяти"
 ---
 
 # Context7 Integration Skill

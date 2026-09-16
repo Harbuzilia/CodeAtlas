@@ -1,6 +1,6 @@
 ---
 name: api-change-safe
-description: api-change-safe skill reference
+description: "Безопасные изменения API: инвентаризация затронутых эндпоинтов, классификация breaking/совместимых, версионирование и деприкация, план миграции для консьюмеров, контрактные тесты"
 ---
 
 # API Change Safe Skill

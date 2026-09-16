@@ -1,6 +1,6 @@
 ---
 name: git
-description: git skill reference
+description: "Git workflow: один коммит = один смысловой шаг, строгие Conventional Commits без эмодзи, git add явными путями, проверка diff перед коммитом, PR с summary/validation/risks"
 ---
 
 # Git Workflow Skill

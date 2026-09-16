@@ -1,6 +1,6 @@
 ---
 name: ast-index
-description: ast-index skill reference
+description: "AST-поиск по кодовой базе через CLI ast-index (SQLite, 23 языка): usages, hierarchy, callers, implementations, outline — вместо grep по символам, в 12-260 раз быстрее"
 ---
 
 # ast-index — AST-поиск по коду

@@ -1,6 +1,6 @@
 ---
 name: incident-response
-description: incident-response skill reference
+description: "Реакция на прод-инциденты: триаж и severity, containment (feature flag, rollback), root cause на минимальном репро, минимальный безопасный фикс, запись симптом → причина → fix → follow-up"
 ---
 
 # Incident Response Skill

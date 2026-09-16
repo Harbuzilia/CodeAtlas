@@ -1,6 +1,6 @@
 ---
 name: config-migration
-description: config-migration skill reference
+description: "Дисциплина миграций конфигурации: сначала source-of-truth корень, минимальный явный скоуп, синк в деплой-корень контролируемыми скриптами, валидация и drift-check после синка"
 ---
 
 # Config Migration Skill

@@ -1,6 +1,6 @@
 ---
 name: typescript
-description: typescript skill reference
+description: "TypeScript 5 strict паттерны: tsconfig strict + noUncheckedIndexedAccess, Zod как источник типов на границах API, unknown вместо any, интерфейсы для объектов, типы для unions"
 ---
 
 # TypeScript Skill

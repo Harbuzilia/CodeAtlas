@@ -1,6 +1,6 @@
 ---
 name: review-code-checklist
-description: review-code-checklist skill reference
+description: "Чеклист код-ревью по категориям: security, correctness, reliability, maintainability, performance, покрытие тестами; каждое issue с файлом, severity и минимальным фиксом"
 ---
 
 # Review Code Checklist Skill

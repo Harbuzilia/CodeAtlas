@@ -1,6 +1,6 @@
 ---
 name: devops-docker
-description: devops-docker skill reference
+description: "DevOps и инфраструктура: multi-stage Dockerfile с непривилегированным пользователем, CI/CD в порядке Lint → Test → Build без деплоя на падающих тестах, bash-скрипты с set -euo pipefail"
 ---
 
 # DevOps и Инфраструктура (Skill)

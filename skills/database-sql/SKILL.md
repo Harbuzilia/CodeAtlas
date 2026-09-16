@@ -1,6 +1,6 @@
 ---
 name: database-sql
-description: database-sql skill reference
+description: "Базы данных и SQL: параметризованные запросы против инъекций, борьба с N+1 (Include/joinedload/selectinload), версионированные миграции схемы, транзакции для многотабличной логики"
 ---
 
 # Базы данных и SQL (Skill)

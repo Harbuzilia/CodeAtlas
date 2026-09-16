@@ -1,6 +1,6 @@
 ---
 name: python
-description: python skill reference
+description: "Python 3.11+ паттерны: type hints везде, Pydantic v2, async I/O (httpx, AsyncSession), FastAPI routers → services → repositories, SQLAlchemy 2.0 (Mapped[T], selectinload), без bare except"
 ---
 
 # Python Skill

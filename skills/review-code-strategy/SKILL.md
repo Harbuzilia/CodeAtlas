@@ -1,6 +1,6 @@
 ---
 name: review-code-strategy
-description: review-code-strategy skill reference
+description: "Стратегия код-ревью: скоуп и risk profile, порядок security → correctness → reliability → maintainability → performance, факты отдельно от предположений, вердикт approve/request-changes/block"
 ---
 
 # Review Code Strategy Skill

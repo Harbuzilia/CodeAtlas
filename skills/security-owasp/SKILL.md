@@ -1,6 +1,6 @@
 ---
 name: security-owasp
-description: security-owasp skill reference
+description: "OWASP-безопасность: секреты в env/Key Vault, никогда в коде; XSS-санитизация и запрет dangerouslySetInnerHTML; CSRF-токены и SameSite; серверная валидация ввода (Pydantic/Zod/FluentValidation)"
 ---
 
 # Правила безопасности OWASP (Skill)

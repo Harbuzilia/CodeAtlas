@@ -1,6 +1,6 @@
 ---
 name: repomap
-description: repomap skill reference
+description: "Карта архитектуры проекта через Aider repo map (Tree-sitter + PageRank): генерация .opencode/repomap.txt одной bash-командой, мгновенный охват структуры вместо чтения сотен файлов"
 ---
 
 # Repository Map (Tree-sitter) Skill

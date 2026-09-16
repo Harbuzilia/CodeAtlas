@@ -1,6 +1,6 @@
 ---
 name: csharp
-description: csharp skill reference
+description: "C#/.NET 8+ паттерны: DI через интерфейсы, CancellationToken везде, без .Result/.Wait(), EF Core (AsNoTracking, split query, миграции), слои Domain/Application/Infrastructure/WebAPI"
 ---
 
 # C# / .NET Skill
