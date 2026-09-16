@@ -17,7 +17,7 @@ npm run validate:all && npm run scan:secrets && npm run eval:routes
 
 EXIT_CODE=$?
 if [ $EXIT_CODE -ne 0 ]; then
-    echo "\n❌ [ERROR] Pre-commit validation failed (Quality Gates, Secret Leaks or Routing). Please fix errors before committing."
+    printf '\n❌ [ERROR] Pre-commit validation failed (Quality Gates, Secret Leaks or Routing). Please fix errors before committing.\n'
     exit 1
 fi
 

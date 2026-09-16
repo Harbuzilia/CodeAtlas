@@ -41,6 +41,9 @@ jobs:
       - name: Validate registry, context refs, frontmatter, skills, runtime
         run: npm run validate:all
 
+      - name: Unit tests
+        run: npm test
+
       - name: Verify .opencode runtime mirror is generated from source
         run: npm run sync:check
 
