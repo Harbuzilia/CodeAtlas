@@ -1,6 +1,6 @@
 # Module Documentation: scripts
 
-Generated automatically via `npm run docgen` on 2026-09-14.
+Generated automatically via `npm run docgen` on 2026-09-16.
 
 ## 📄 `agent-matrix.mjs`
 
@@ -180,6 +180,10 @@ Generated automatically via `npm run docgen` on 2026-09-14.
 *Executable script or configuration module.*
 
 ## 📄 `validate-context-refs.mjs`
+
+*Executable script or configuration module.*
+
+## 📄 `validate-docs-sync.mjs`
 
 *Executable script or configuration module.*
 

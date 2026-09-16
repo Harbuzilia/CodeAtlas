@@ -97,8 +97,8 @@
 ## 2. Текущая матрица системы
 
 - **Агентов в реестре**: 12 (`openagent`, `contextscout`, `coder`, `tester`, `reviewer`, `debugger`, `planner`, `externalscout`, `docwriter`, `uitester`, `architect`, `devops`).
-- **Скиллов в системе**: 36 навыков (100% валидированы).
-- **Slash-команд**: 23 (`/menu`, `/commit`, `/plan`, `/review`, `/test`, `/optimize`, `/pr`, `/infra`, `/release`, `/i18n`, `/prompt`, `/docgen`, `/budget`, `/conflict`, `/doctor`, `/modernize`, `/matrix`, `/heal`, `/synthesize`, `/arch`, `/oracle`, `/bootstrap`, `/build-context-system`).
+- **Скиллов в системе**: 37 навыков (100% валидированы).
+- **Slash-команд**: 23 + сгенерированный `/menu` (`/commit`, `/plan`, `/review`, `/test`, `/optimize`, `/pr`, `/infra`, `/release`, `/i18n`, `/prompt`, `/prompt-engineering/prompt-optimizer`, `/docgen`, `/budget`, `/conflict`, `/doctor`, `/modernize`, `/matrix`, `/heal`, `/synthesize`, `/arch`, `/oracle`, `/bootstrap`, `/build-context-system`).
 - **Quality Gates & CI**: 100% прохождение (`validate:all`, `smoke:functional`, `eval:routes`, `radar`, `scan:secrets`, `impact`, `test:gap`, `bench`, `budget`, `doctor`, `db:explain`, `matrix`, `heal`, `drift`, `synthesize`, `memory`, `test:smart`, `test:chaos`, `perf:leaks`, `test:mutate`, `arch`, `oracle`, `pr:auto`, `test:flaky`, `memory:compact`, `bootstrap`, `menu:gen`, `heal:config`, `telemetry`, `onboard`, `watch`).
 
 ---

@@ -1,6 +1,6 @@
 # System Architecture Map (Live C4 Container & Workflow Model)
 
-*Generated automatically via `npm run arch` on 2026-09-14.*
+*Generated automatically via `npm run arch` on 2026-09-16.*
 
 ## 1. High-Level Agent & Subsystem Interactions
 

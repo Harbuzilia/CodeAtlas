@@ -18,7 +18,7 @@
 4) `instructions.md`
 
 Примечание:
-- `references/*` и `docs/legacy/*` не являются runtime-истиной;
+- сгенерированные карты (`docs/architecture/`, `docs/modules/`) и архив `.opencode/history/` не являются runtime-истиной;
 - если есть конфликт, приоритет у `opencode.json` и зарегистрированных `agents/*.md`.
 
 Если документация расходится с кодом и тестами:
@@ -110,6 +110,7 @@
 - `event-driven-messaging` (Transactional Outbox, Kafka, RabbitMQ, DLQ)
 - `code-modernization-patterns` (Legacy modernization, ESM, async/await, React 19)
 - `secrets-config-management` (12-Factor App config, Zod env validation, secret masking)
+- `frontend-design` (Anti-slop UI-дизайн: лендинги, дашборды, формы, WPF/WinUI, мобильные)
 
 Когда используются:
 - external libs/framework/API -> `context7`
@@ -130,6 +131,7 @@
 - Асинхронные события и очереди -> `event-driven-messaging`
 - Модернизация старого кода -> `code-modernization-patterns`
 - Переменные окружения и секреты -> `secrets-config-management`
+- Дизайн и генерация UI -> `frontend-design`
 
 ## 7. One-shot режим
 По умолчанию OFF.
@@ -190,17 +192,13 @@
 - **Dynamic Debugger**: Агент `debugger` больше не угадывает команды сборки (hardcoded `dotnet build`). Он анализирует контекст ошибки: запускает напрямую указанные `.bat`/`.sh` скрипты, ищет точки входа в `package.json` или `Makefile`. Если информации нет, запрашивает команду через `question tool`.
 - **UI Localization Enforcement**: В `openagent` внедрен чек: при необходимости генерации UI и отсутствии языка в настройках он ОДИН раз запрашивает предпочитаемый язык интерфейса и сохраняет его в `.opencode/project_settings.json`. Агент `coder` строго придерживается этой настройки при генерации визуальных компонентов.
 
-## 13. Политика references
-- `references/*` — только benchmark/read-only.
-- Использовать как runtime source of truth запрещено.
-
-## 14. История и архив
+## 13. История и архив
 - Архитектурная карта системы: `docs/architecture/system_map.md`.
 - Каталог скриптов и npm-команд: `docs/modules/scripts.md`.
 - Атомарные бэкапы `.opencode`-файлов (создаются инструментами перед записью): `.opencode/history/`.
 - Журнал всех изменений и обоснований: `CHANGELOG.md`; трекер задач: `PLANS.md`.
 
-## 15. Практичные архитектурные улучшения
+## 14. Практичные архитектурные улучшения
 - Качество: запускать `npm run validate:all` перед merge и фиксировать результат в PR/отчете.
 - Тесты: для каждого изменения поведения добавлять минимум один проверяющий тест или smoke-check сценарий.
 - Релизные проверки: перед релизом обязательный прогон `validate:runtime` + `smoke:functional` на чистом окружении.

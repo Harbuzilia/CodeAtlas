@@ -5,44 +5,39 @@ description: Интерактивная карта мультиагентной 
 # Matrix Command | Команда /matrix
 
 ## Назначение
-Вывести подробную живую матрицу всех 12 активных субагентов, их бюджетов шагов (`steps`), прав доступа на файлы, используемых инструментов и полного реестра из 36 специализированных навыков.
+Вывести подробную живую матрицу всех 12 активных агентов, их бюджетов шагов (`steps`), прав записи, полного реестра из 37 специализированных навыков и 23 slash-команд.
 
 ## Вход
-- `/matrix` — вывод полной таблицы агентов и навыков
+- `/matrix` — вывод полной таблицы агентов и навыков (эквивалент `npm run matrix`)
 - `/matrix <агент>` (например, `/matrix coder` или `/matrix devops`) — детальная карточка конкретного агента
 
-## Пример вывода
+## Пример вывода (`node scripts/agent-matrix.mjs`)
 ```
-====================================================
-        📋 OPENCODE AGENT CAPABILITY MATRIX        
-====================================================
+🤖 Active Agents (12):
 
-| openagent    | 50 | Оркестратор & Ambient Optimizer | write, edit, patch |
-| contextscout | 12 | Скаут кодовой базы (AST/Git)    | Только чтение (read-only) |
-| coder        | 50 | Супер-кодер (любой язык + TDD) | write, edit, patch |
-| tester       | 25 | TDD-агент (AAA unit/integration) | write, edit |
-| reviewer     | 12 | Code Review (SAST, READ-ONLY)   | Только чтение (read-only) |
-| debugger     | 25 | Диагност ошибок & Self-Learning | write, edit |
-| planner      | 40 | Декомпозитор задач (INVEST)     | write, edit |
-| externalscout| 12 | Скаут внешних API & Context7    | Только чтение (read-only) |
-| docwriter    | 15 | Технический писатель            | write, edit |
-| uitester     | 25 | UI/E2E тестировщик              | Только чтение (read-only) |
-| architect    | 30 | Системный архитектор (ADR/C4)   | write, edit |
-| devops       | 30 | DevOps & Инфраструктура         | write, edit |
-| openagent    | 40 | Оркестратор & Ambient Optimizer | task_state, navigation |
-| contextscout | 12 | Скаут кодовой базы (AST/Git)    | Только чтение (read-only) |
-| coder        | 35 | Разработчик (Clean Arch/TDD)   | src/**, tests/** |
-| tester       | 25 | Тестировщик (Unit/Integration)  | tests/**, *.spec.* |
-| reviewer     | 12 | SAST & Security ревьюер        | Только чтение (read-only) |
-| debugger     | 25 | Диагност ошибок & Self-Learning| lessons_learned.md |
-| planner      | 15 | Декомпозитор задач (INVEST)     | task_state.md, plans/** |
-| externalscout| 12 | Скаут внешних API & Context7    | Только чтение (read-only) |
-| docwriter    | 15 | Технический писатель            | docs/**, *.md |
-| uitester     | 20 | UI/E2E Тестировщик интерфейсов  | e2e/** |
-| architect    | 25 | Системный архитектор (ADR/C4)   | docs/adr/** |
-| devops       | 30 | DevOps & Инфраструктура         | Dockerfile*, compose*, k8s/** |
-🛠️ Валидированных навыков: 36
-⚡ Slash-команд: 23
+| Agent ID       | Steps | Role                            | Write Permissions             |
+| :------------- | :---- | :------------------------------ | :---------------------------- |
+| architect      |    30 | Системный архитектор — проектирование расп | write, edit                   |
+| coder          |    50 | Супер-кодер — любой язык + TDD mode + глуб | write, edit, patch            |
+| contextscout   |    30 | Субагент для поиска и извлечения релевантн | Read-only                     |
+| debugger       |    25 | Агент для автоматического исправления ошиб | write, edit                   |
+| devops         |    30 | DevOps & Infrastructure Engineer — Docker, | write, edit                   |
+| docwriter      |    15 | Автогенерация и обновление документации | write, edit                   |
+| externalscout  |    25 | Получает актуальную документацию библиотек | Read-only                     |
+| openagent      |    50 | Универсальный ассистент — координация, воп | write, edit, patch            |
+| planner        |    40 | Unified Planner Agent - Task decomposition | write, edit                   |
+| reviewer       |    40 | Code Review агент - безопасность, качество | Read-only                     |
+| tester         |    25 | TDD-агент для создания тестов - Test-Drive | write, edit                   |
+| uitester       |    25 | Visual UI Tester - проверяет визуальную ве | Read-only                     |
 
-====================================================
+🛠️  Validated Skills (37 total):
+`api-change-safe`, `api-openapi-spec`, `architecture-adr`, `ast-index`, `caching-redis-strategy`, `code-modernization-patterns`, `config-migration`, `context7`, `csharp`, `database-sql`, `db-migration-safety`, `devops-docker`, `docs-sync`, `e2e-playwright`, `event-driven-messaging`, `feature-flags-trunk-based`, `frontend-design`, `git`, `git-conflict-resolution`, `grpc-graphql-contracts`, `i18n-localization`, `incident-response`, `micro-frontends-federation`, `mock-service-virtualization`, `observability-opentelemetry`, `performance-optimization`, `prompt-engineering-advanced`, `python`, `repomap`, `react-next-modern`, `review-code-checklist`, `review-code-strategy`, `secrets-config-management`, `security-owasp`, `security-sast`, `typescript`, `websocket-realtime-events`
+
+⚡ Slash Commands (23 total):
+/arch, /bootstrap, /budget, /build-context-system, /commit, /conflict, /docgen, /doctor, /heal, /i18n, /infra, /matrix, /modernize, /optimize, /oracle, /plan, /pr, /prompt, /prompt-engineering/prompt-optimizer, /release, /review, /synthesize, /test
 ```
+
+## Права записи
+Колонка `Write Permissions` отражает фактические `tools:` агента: `write`/`edit`/`patch` включены только у пишущих агентов; `contextscout`, `externalscout`, `reviewer`, `uitester` — строго read-only (bash у contextscout запрещён на уровне `permission.bash: "deny"`).
+
+Бюджеты шагов берутся из фронтматтера `agents/*.md` (единый источник истины) и валидируются при каждом `npm run validate:all`.
