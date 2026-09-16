@@ -14,7 +14,6 @@ const targets = [
 ];
 
 const sourceDirs = ['skills', 'agents', 'command', 'context', 'plugin'];
-const extraSyncs = [{ src: '.opencode/plugin', dest: '.opencode/plugin' }];
 
 for (const target of targets) {
   try {
@@ -33,15 +32,6 @@ for (const target of targets) {
             continue;
           }
         }
-        fs.cpSync(srcPath, destPath, { recursive: true, force: true });
-        synced++;
-      }
-    }
-    for (const { src, dest } of extraSyncs) {
-      const srcPath = path.join(root, src);
-      const destPath = path.join(target.dir, dest);
-      if (fs.existsSync(srcPath)) {
-        fs.mkdirSync(path.dirname(destPath), { recursive: true });
         fs.cpSync(srcPath, destPath, { recursive: true, force: true });
         synced++;
       }

@@ -46,33 +46,41 @@ const fail = (msg) => {
 const ok = (msg) => console.log(`OK: ${msg}`);
 
 /**
- * Parse the tiny YAML subset used in agent frontmatter: top-level `key:` scalars
- * and one level of nested `key:` maps. Returns { scalars, maps }.
+ * Parse the YAML subset used in agent frontmatter: top-level scalars plus up to two
+ * levels of nested maps (`tools:` / `permission:` blocks, including second-level
+ * pattern maps like `permission.bash."rm -rf *": "ask"`). Keys and values may be
+ * quoted (pattern keys contain spaces and `*`). Returns { scalars, maps }.
  */
 function parseFrontmatter(text) {
   const fm = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!fm) return null;
   const scalars = {};
   const maps = {};
-  let current = null;
+  // Stack of open map blocks: the root receives top-level keys, every key with an
+  // empty value opens a nested block. Indentation decides which block a line joins.
+  const stack = [{ container: maps, indent: -1 }];
   for (const rawLine of fm[1].split(/\r?\n/)) {
     const line = rawLine.replace(/\s+$/, '');
     if (!line.trim() || line.trim().startsWith('#')) continue;
-    const nested = line.match(/^ {2}([A-Za-z_][\w-]*):\s*(.*)$/);
-    if (nested && current) {
-      maps[current][nested[1]] = nested[2].trim().replace(/^(["'])(.*)\1$/, '$2');
-      continue;
+    const indent = line.length - line.trimStart().length;
+    const entry = line.trim().match(/^(.+?):\s*(.*)$/);
+    if (!entry) continue;
+    while (stack.length > 1 && indent <= stack[stack.length - 1].indent) stack.pop();
+    const container = stack[stack.length - 1].container;
+    const key = entry[1].trim().replace(/^["'](.*)["']$/, '$1');
+    const value = entry[2].trim().replace(/^["'](.*)["']$/, '$1');
+    if (value === '') {
+      const block = {};
+      container[key] = block;
+      stack.push({ container: block, indent });
+    } else {
+      container[key] = value;
     }
-    const top = line.match(/^([A-Za-z_][\w-]*):\s*(.*)$/);
-    if (top) {
-      const [, key, value] = top;
-      if (value === '') {
-        maps[key] = maps[key] || {};
-        current = key;
-      } else {
-        scalars[key] = value;
-        current = null;
-      }
+  }
+  for (const key of Object.keys(maps)) {
+    if (typeof maps[key] !== 'object') {
+      scalars[key] = maps[key];
+      delete maps[key];
     }
   }
   return { scalars, maps };
@@ -111,7 +119,9 @@ for (const file of files) {
     const permKey = tool in TOOL_PERMISSION ? TOOL_PERMISSION[tool] : tool;
     if (permKey === null) continue; // no permission analog exists
     const value = permission[permKey];
-    const denied = value === 'deny' || (typeof value === 'object' && value !== undefined);
+    // A tool is denied only by a domain action: "deny" or {"*": "deny"}. A pattern
+    // map (e.g. bash: { "npm *": "allow", "*": "ask" }) leaves the tool ENABLED.
+    const denied = value === 'deny' || (typeof value === 'object' && value['*'] === 'deny');
     if (!denied) {
       fail(
         `agents/${file}: tools.${tool}=false is NOT enforced — a permission: block exists but never denies ` +

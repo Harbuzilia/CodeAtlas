@@ -79,9 +79,39 @@ for (const dir of MIRRORED_DIRS) {
   }
 }
 
+// The runtime needs its own package.json: plugins are ESM ("type": "module") and
+// validate-runtime-governance.mjs verifies the @opencode-ai/plugin version against it.
+// Nothing else creates this file, so a fresh clone without this step crashes CI.
+function buildRuntimePackage() {
+  const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+  return JSON.stringify(
+    {
+      name: 'opencode-runtime',
+      private: true,
+      type: 'module',
+      dependencies: { '@opencode-ai/plugin': pkg.dependencies?.['@opencode-ai/plugin'] ?? 'latest' },
+    },
+    null,
+    2,
+  ) + '\n';
+}
+
+const runtimePkgPath = path.join(runtimeDir, 'package.json');
+if (checkOnly) {
+  const expected = buildRuntimePackage();
+  if (!fs.existsSync(runtimePkgPath)) {
+    issues.push('.opencode/package.json: missing (generated from root package.json)');
+  } else if (fs.readFileSync(runtimePkgPath, 'utf8') !== expected) {
+    issues.push('.opencode/package.json: differs from root package.json');
+  }
+} else {
+  fs.mkdirSync(runtimeDir, { recursive: true });
+  fs.writeFileSync(runtimePkgPath, buildRuntimePackage(), 'utf8');
+}
+
 if (checkOnly) {
   if (issues.length === 0) {
-    console.log(`OK: .opencode/ runtime is in sync with source (${MIRRORED_DIRS.length} dirs).`);
+    console.log(`OK: .opencode/ runtime is in sync with source (${MIRRORED_DIRS.length} dirs + package.json).`);
     process.exit(0);
   }
   console.error(`FAIL: .opencode/ runtime is stale — ${issues.length} difference(s):`);
@@ -91,4 +121,4 @@ if (checkOnly) {
   process.exit(1);
 }
 
-console.log(`OK: mirrored ${mirrored} dirs from repo root into .opencode/ runtime.`);
+console.log(`OK: mirrored ${mirrored} dirs from repo root into .opencode/ runtime + generated package.json.`);

@@ -90,10 +90,28 @@ const skills = fs.existsSync(skillsDir)
 console.log(`\n🛠️  Validated Skills (${skills.length} total):`);
 console.log(skills.map((s) => `\`${s}\``).join(', '));
 
+// Command discovery must be recursive: nested groups (command/<group>/<cmd>.md)
+// resolve to /<group>/<cmd>. The generated menu.md is not a real command.
+function listCommands(dir) {
+  if (!fs.existsSync(dir)) return [];
+  const out = [];
+  const stack = [dir];
+  while (stack.length > 0) {
+    const current = stack.pop();
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      if (entry.isDirectory()) stack.push(path.join(current, entry.name));
+      else if (entry.isFile() && entry.name.endsWith('.md') && entry.name !== 'menu.md') {
+        out.push(
+          path.relative(dir, path.join(current, entry.name)).split(path.sep).join('/').replace(/\.md$/, '')
+        );
+      }
+    }
+  }
+  return out.sort();
+}
+
 const cmdDir = path.join(root, 'command');
-const commands = fs.existsSync(cmdDir)
-  ? fs.readdirSync(cmdDir).filter((f) => f.endsWith('.md')).map((f) => f.replace('.md', '')).sort()
-  : [];
+const commands = listCommands(cmdDir);
 console.log(`\n⚡ Slash Commands (${commands.length} total):`);
 console.log(commands.map((c) => `/${c}`).join(', '));
 

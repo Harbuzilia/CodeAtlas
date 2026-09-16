@@ -38,7 +38,9 @@ function renderTree(nodes, indent = '') {
       text += `${indent}- **${node.name}/**\n`;
       text += renderTree(node.children, indent + '  ');
     } else {
-      text += `${indent}- [${node.name}](file:///${path.join(root, 'context', node.path).replace(/\\/g, '/')})\n`;
+      // Relative to context/navigation.md — stays valid on any checkout
+      // (absolute file:/// links only resolve on the machine that generated them).
+      text += `${indent}- [${node.name}](${node.path})\n`;
     }
   }
   return text;

@@ -19,11 +19,26 @@ const skillDirs = fs.existsSync(skillsDir) ? fs.readdirSync(skillsDir).filter(d 
 console.log(`\n🧠 Active Skills: ${skillDirs.length}`);
 skillDirs.forEach(s => console.log(`   - ${s}`));
 
-// 3. Commands Stats
+// 3. Commands Stats (recursive: nested groups count too; menu.md is generated, not a command)
+function listCommandFiles(dir) {
+  const out = [];
+  const stack = [dir];
+  while (stack.length > 0) {
+    const current = stack.pop();
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      if (entry.isDirectory()) stack.push(path.join(current, entry.name));
+      else if (entry.isFile() && entry.name.endsWith('.md') && entry.name !== 'menu.md') {
+        out.push(path.relative(dir, path.join(current, entry.name)).split(path.sep).join('/').replace(/\.md$/, ''));
+      }
+    }
+  }
+  return out.sort();
+}
+
 const cmdDir = path.join(root, 'command');
-const cmdFiles = fs.existsSync(cmdDir) ? fs.readdirSync(cmdDir).filter(f => f.endsWith('.md')) : [];
+const cmdFiles = fs.existsSync(cmdDir) ? listCommandFiles(cmdDir) : [];
 console.log(`\n⚡ Slash Commands: ${cmdFiles.length}`);
-cmdFiles.forEach(c => console.log(`   - /${c.replace('.md', '')}`));
+cmdFiles.forEach(c => console.log(`   - /${c}`));
 
 // 4. Lessons Learned Stats
 const lessonsPath = path.join(root, '.opencode', 'lessons_learned.md');
