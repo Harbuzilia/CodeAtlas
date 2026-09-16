@@ -11,9 +11,6 @@ mkdir -p .opencode
 GLOBAL_SKILLS_PATH="$HOME/.config/opencode/skills"
 LOCAL_SKILLS_PATH=".opencode/skills"
 
-GLOBAL_LEGACY_SKILL_PATH="$HOME/.config/opencode/skill"
-LOCAL_LEGACY_SKILL_PATH=".opencode/skill"
-
 if [ -d "$GLOBAL_SKILLS_PATH" ]; then
     if [ ! -L "$LOCAL_SKILLS_PATH" ] && [ ! -d "$LOCAL_SKILLS_PATH" ]; then
         echo "Creating symlink for discoverable skills..."
@@ -40,17 +37,6 @@ if [ -d "$GLOBAL_BIN_PATH" ]; then
     fi
 else
     echo "Warning: Global bin directory not found ($GLOBAL_BIN_PATH)."
-fi
-
-# Keep legacy link support during transition.
-if [ -d "$GLOBAL_LEGACY_SKILL_PATH" ]; then
-    if [ ! -L "$LOCAL_LEGACY_SKILL_PATH" ] && [ ! -d "$LOCAL_LEGACY_SKILL_PATH" ]; then
-        echo "Creating legacy skill symlink (transition compatibility)..."
-        ln -s "$GLOBAL_LEGACY_SKILL_PATH" "$LOCAL_LEGACY_SKILL_PATH"
-        echo "Symlink created: $LOCAL_LEGACY_SKILL_PATH -> $GLOBAL_LEGACY_SKILL_PATH"
-    else
-        echo "Directory or symlink already exists at $LOCAL_LEGACY_SKILL_PATH"
-    fi
 fi
 
 if [ -f .gitignore ]; then

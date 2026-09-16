@@ -3,6 +3,43 @@
 Этот файл является единым источником правды по всем внесенным изменениям в проект: **где**, **что** было обновлено, **почему** (техническое обоснование) и **какой эффект** это дало. Обновляется после каждой итерации доработок.
 
 ---
+## [2026-09-16] — Полный аудит: 11 багов, гейт docs-sync, 23 теста, release-пайплайн
+
+Седьмая волна (ветка `feat/audit-polish`): полный аудит конфиг-набора с эмпирической проверкой семантики opencode 1.18.18. Полный отчёт — [`docs/audit-2026-09-16.md`](docs/audit-2026-09-16.md).
+
+### 1. Критические фиксы ([`scripts/sync-local.mjs`](scripts/sync-local.mjs), [`scripts/sync-targets.mjs`](scripts/sync-targets.mjs), [`scripts/validate-agent-permissions.mjs`](scripts/validate-agent-permissions.mjs))
+
+- **CI-фатальный**: `.opencode/package.json` существовал только локально — свежий клон ловил ENOENT в `validate:all`/`smoke`. Теперь `sync-local.mjs` генерирует его (версия `@opencode-ai/plugin` из корневого package.json), `--check` сверяет байт-в-байт.
+- `sync-targets.mjs`: удалён `extraSyncs` — он создавал вложенный `.opencode/.opencode/plugin/` и мусорил в глобальных таргетах.
+- `validate-agent-permissions.mjs`: парсер frontmatter переписан на стек вложенности (2 уровня, ключи-паттерны в кавычках). Раньше `permission.bash: {"*": "deny"}` парсился как пустая строка → ложный FAIL валидного агента и молчаливый пропуск паттерн-мап, оставлявшей инструмент включённым.
+
+### 2. Реальная семантика permissions в opencode 1.18.18 (все 12 агентов)
+
+- Установлено через `opencode debug agent`: при наличии `permission:` карта `tools:` игнорируется; path-globs в permission не матчатся; enforced только доменный `deny` или `{"*": "deny"}`.
+- Каждый `tools: X: false` продублирован `permission.X: deny`; гейт проверяет это правило. `contextscout` теперь строго read-only (bash запрещён).
+
+### 3. Release-пайплайн ([`scripts/release-gen.mjs`](scripts/release-gen.mjs))
+
+- Реализовано по доке `command/release.md`: гейты `validate:all` + `scan:secrets` + `eval:routes` до бампа, changelog-секция из Conventional Commits между последним тегом и HEAD, бамп `package.json` **и** `registry.json` (хирургически, форматирование сохраняется), честный dry-run, `--no-verify`/`--no-tag`.
+- Дополнительно найден тестами: маркер вставки `/^---\r?\n/` не матчился (CHANGELOG начинается с `#` заголовка) → секция встала бы выше заголовка. Исправлен на `/m`.
+
+### 4. Новый гейт docs-sync ([`scripts/validate-docs-sync.mjs`](scripts/validate-docs-sync.mjs), 79 проверок)
+
+- Дрейф класса «36 vs 37 навыков» (коммит 048a805) больше не проходит: счётчики скиллов/команд в `PLANS.md`, `PROJECT_GUIDE.md`, `command/matrix.md`, `command/menu.md` сверяются с диском; список команд в PLANS — двунаправленно. Включён в `validate:all`, покрыт мутационным тестом.
+
+### 5. Тесты: 3 → 23 ([`tests/`](tests/))
+
+- Герметичные регресс-тесты в temp-каталогах: `sync-local` (ENOENT-регресс, drift: differs/stale/missing), `sync-targets` (нет вложенного `.opencode/.opencode`), `validate-agent-permissions` (вложенные карты, паттерн-мапы, edit-globs), `validate-docs-sync`, `generate-menu` (вложенные команды, снятие YAML-кавычек), `release-gen` (dry-run/бамп/changelog/теги/дрифт/гейты).
+- `npm test` добавлен в CI и pre-push. Mutation-скор 100% (6/6 KILLED, тень пересоздаётся каждый запуск).
+
+### 6. Контент и чистка
+
+- 16 placeholder-описаний скиллов (`«X skill reference»`) заменены на реальные триггеры по телам скиллов.
+- Мёртвые ссылки (`docs/legacy/*`, layout `agent/`, `.agent/workflows/`), дубли и устаревшие бюджеты в `matrix.md`, пропуски в `navigation.md` — исправлены; `sync-context-index` генерит относительные ссылки вместо `file:///E:/...`.
+- Удалены: `.tmp/` (протухшая тень мутаций, debug-копии), `.opencode/.opencode/` (артефакт extraSyncs), `.opencode/specs/` (стабы, пересоздаются синтезатором). `task_state.md` — пути актуализированы. `opencode-init.sh` — legacy-симлинки `skill/` удалены.
+- Создан [`README.md`](README.md) (RU): состав, установка, ключевые команды.
+
+---
 ## [2026-08-23] — Telemetry v2 (токены/ошибки), coverage-чеки роутов, watch mode, pre-push
 
 Шестая волна: наблюдаемость расширена до токенов и надёжности инструментов, покрытие роутов стало обязательным контрактом.
