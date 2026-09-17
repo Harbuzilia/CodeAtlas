@@ -97,6 +97,12 @@ Remove-Item -Recurse -Force  # rm -rf
   - `event-driven-messaging` — Transactional Outbox, Kafka, RabbitMQ, DLQ
   - `code-modernization-patterns` — Code modernization, ESM, async/await, React 19
   - `secrets-config-management` — 12-Factor config, Zod env validation, secret masking
+  - `systematic-debugging` — Систематическая отладка: гипотезы, минимальный репро, фикс причины
+  - `root-cause-tracing` — Поиск первопричины: 5 Почему, бисекция git, археология коммитов
+  - `verification-before-completion` — Доказательная верификация перед «готово»
+  - `test-driven-development` — TDD: RED-GREEN-REFACTOR с дисциплиной объёма
+  - `writing-plans` — Планы для исполнения агентами: шаги 2-5 минут с проверками
+  - `requesting-code-review` — Запрос код-ревью и дисциплина ответов по severity
 </skill_loading>
 
 ---
@@ -192,7 +198,7 @@ User -> openagent -> [delegate when needed]
 
 ## Skills System
 
-Канонический реестр скиллов (37 шт.) — в секции «Skill Loading Protocol» выше. Формат файлов: `skills/<name>/SKILL.md`.
+Канонический реестр скиллов (43 шт.) — в секции «Skill Loading Protocol» выше. Формат файлов: `skills/<name>/SKILL.md`.
 
 ## Skill Activation Matrix
 
@@ -208,6 +214,11 @@ User -> openagent -> [delegate when needed]
 | Debug/build fix | language skill for target file type + `incident-response` | Yes | debugger |
 | Documentation synchronization | `docs-sync` | Yes for docs-sync tasks | OpenAgent / docwriter |
 | Release preparation / pre-tag sync | `docs-sync` (release-docs-sync profile) | Yes | OpenAgent / docwriter |
+| Any bug / debug task | `systematic-debugging` + `root-cause-tracing` | Yes | debugger / coder |
+| Completion / handoff of any task | `verification-before-completion` | Yes | all agents |
+| New feature implementation with tests | `test-driven-development` | Yes | coder / tester |
+| Task decomposition / plan authoring | `writing-plans` | Yes | planner |
+| PR preparation / review request | `requesting-code-review` | Yes | OpenAgent -> reviewer |
 
 Rules:
 1. OpenAgent chooses skill set before delegation and passes it in prompt.
