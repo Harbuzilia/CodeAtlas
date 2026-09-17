@@ -2,21 +2,8 @@
 description: "Code Review агент - безопасность, качество и соответствие стандартам (READ-ONLY)"
 steps: 40
 mode: subagent
+model: google/antigravity-claude-sonnet-4-5
 temperature: 0
-tools:
-  read: true
-  grep: true
-  glob: true
-  list: true
-  bash: false
-  edit: false
-  write: false
-  skill: true
-  question: true
-# NOTE: opencode ignores the `tools:` map above as soon as a `permission:` block
-# exists, and path globs like "**/*" do not match anything — so the only reliable
-# way to lock this agent down is a domain-level action. Verified with
-# `opencode debug agent reviewer` (edit/write stayed true before this change).
 permission:
   bash: "deny"
   edit: "deny"

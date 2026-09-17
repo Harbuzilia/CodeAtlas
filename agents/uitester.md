@@ -1,15 +1,10 @@
 ---
 description: "Visual UI Tester - проверяет визуальную верстку и UI через Chrome DevTools MCP"
 mode: subagent
+model: google/antigravity-gemini-3-flash
+variant: low
 temperature: 0
 steps: 25
-tools:
-  read: true
-  bash: true
-  grep: true
-  question: true
-# The `tools:` map above is ignored by opencode once a `permission:` block exists,
-# so the file-level restriction must be stated here as a domain action.
 permission:
   edit: "deny"
   task: "deny"

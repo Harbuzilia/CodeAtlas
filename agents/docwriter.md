@@ -2,17 +2,9 @@
 description: "Автогенерация и обновление документации"
 steps: 15
 mode: subagent
+model: google/antigravity-gemini-3-flash
+variant: medium
 temperature: 0
-tools:
-  read: true
-  write: true
-  edit: true
-  grep: true
-  glob: true
-  list: true
-  task: false
-  skill: true
-  question: true
 permission:
   edit: "allow"
   task: "deny"

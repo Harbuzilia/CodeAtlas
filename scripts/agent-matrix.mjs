@@ -22,7 +22,7 @@ function parseFrontmatter(filePath) {
   const maps = {};
 
   for (const line of lines) {
-    // Nested key under currentKey, e.g. inside `tools:` map:
+    // Nested key under currentKey, e.g. inside `permission:` map:
     //   tools:
     //     read: true
     const nested = line.match(/^\s{2,}([A-Za-z0-9_]+):\s*(.+)$/);
@@ -61,25 +61,33 @@ if (fs.existsSync(opencodePath)) {
 }
 
 const agents = agentFiles.map((file) => {
-  const id = file.replace('.md', '');
+  const id = file.replace(/\.md/, '');
   const fm = parseFrontmatter(path.join(agentsDir, file));
   const steps = parseInt(fm.steps, 10) || 0;
   const role = (fm.description || '—').replace(/^["']|["']$/g, '').slice(0, 42);
-  const writeTools = ['write', 'edit', 'patch'].filter((t) => fm.tools?.[t] === true);
+  // Write permissions come from permission.edit (the single mechanism since
+  // the tools: maps were removed): the edit permission also governs write/patch.
+  const editRule = fm.permission?.edit;
+  let write;
+  if (editRule === 'deny') write = 'Read-only';
+  else if (typeof editRule === 'object') write = 'edit (path patterns)';
+  else write = 'edit, write, patch'; // "allow" or unset (default allow)
+  const model = (fm.model ? String(fm.model).replace(/^[a-z-]+\//, '') : '—') + (fm.variant ? `:${fm.variant}` : '');
   return {
     id,
     steps,
     role,
     mode: fm.mode || (registered.has(id) ? 'subagent' : 'primary'),
-    write: writeTools.length > 0 ? writeTools.join(', ') : 'Read-only'
+    write,
+    model
   };
 });
 
 console.log(`🤖 Active Agents (${agents.length}):\n`);
-console.log('| Agent ID       | Steps | Role                            | Write Permissions             |');
-console.log('| :------------- | :---- | :------------------------------ | :---------------------------- |');
+console.log('| Agent ID       | Steps | Model                         | Role                            | Write Permissions             |');
+console.log('| :------------- | :---- | :---------------------------- | :------------------------------ | :---------------------------- |');
 for (const a of agents) {
-  console.log(`| ${a.id.padEnd(14)} | ${a.steps.toString().padStart(5)} | ${a.role.padEnd(31)} | ${a.write.padEnd(29)} |`);
+  console.log(`| ${a.id.padEnd(14)} | ${a.steps.toString().padStart(5)} | ${a.model.padEnd(29)} | ${a.role.padEnd(31)} | ${a.write.padEnd(29)} |`);
 }
 
 const skillsDir = path.join(root, 'skills');

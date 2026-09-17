@@ -2,11 +2,9 @@
 description: "Субагент для поиска и извлечения релевантного контекста перед выполнением задач"
 steps: 30
 mode: subagent
+model: google/antigravity-gemini-3-flash
+variant: minimal
 temperature: 0
-tools:
-  read: true
-  grep: true
-  glob: true
 permission:
   bash: "deny"
   edit: "deny"

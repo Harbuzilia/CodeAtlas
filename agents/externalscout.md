@@ -2,13 +2,9 @@
 description: "Получает актуальную документацию библиотек через Context7 API. Решает проблему устаревших данных в training data."
 steps: 25
 mode: subagent
+model: google/antigravity-gemini-3-flash
+variant: minimal
 temperature: 0
-tools:
-  read: true
-  grep: true
-  glob: true
-  skill: true
-  webfetch: true
 permission:
   bash:
     "*": "deny"

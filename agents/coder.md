@@ -1,23 +1,10 @@
 ---
 description: "Супер-кодер — любой язык + TDD mode + глубокая экспертиза"
 mode: subagent
+model: google/antigravity-gemini-3-pro
+variant: high
 temperature: 0
 steps: 50
-tools:
-  read: true
-  edit: true
-  write: true
-  grep: true
-  glob: true
-  bash: true
-  patch: true
-  list: true
-  task: false
-  skill: true
-  todowrite: true
-  todoread: true
-  question: true
-
 permission:
   task: "deny"
   bash:

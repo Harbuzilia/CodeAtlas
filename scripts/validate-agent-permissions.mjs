@@ -1,28 +1,23 @@
-// Guards a class of defect that was invisible until it was measured against the
-// real runtime: an agent's declared restrictions were not enforced at all.
+// Guards the agent permission layer — the single tool-restriction mechanism.
 //
-// Established on opencode 1.18.18 with `opencode debug agent <name>`:
-//   1. As soon as an agent has a `permission:` block, its `tools:` map is ignored
-//      and every tool is enabled again (e.g. coder resolved task=true while its
-//      own frontmatter said `task: false`).
-//   2. Path globs inside `permission` never match: `"**/*": "deny"`, `"**": "deny"`,
-//      `"*.md": "deny"` and `"docs/adr/**": "allow"` all left the tool enabled.
-//      Only a domain-level action (`"deny"`, or `{"*": "deny"}`) is enforced.
-//   3. `tools: X: false` is honoured only while no `permission:` block exists.
-//
-// Therefore: every tool an agent declares as `false` must ALSO be denied in
-// `permission`, and `edit`/`write` must never be expressed as a path glob.
+// Established on opencode 1.18.18 with `opencode debug agent` and confirmed by
+// upstream docs:
+//   1. The legacy `tools:` map is deprecated; worse, since 1.18.26 a bug
+//      (#46873) lets tools-derived rules override user permission rules
+//      (last-match-wins). The pack therefore uses `permission:` ONLY — every
+//      agent's tools: map was removed; this gate keeps it that way.
+//   2. Path globs inside `permission.edit` never matched on 1.18.18 (verified:
+//      tools submit worktree-relative paths, and our glob patterns left edit
+//      enabled) — such rules are flagged as ineffective.
+//   3. Domain actions ("deny" / "allow" / "ask") and per-command bash patterns
+//      DO work; subagent delegation is locked via `permission.task: "deny"`
+//      on every subagent (openagent keeps the "*" allow).
 
 import fs from 'node:fs';
 import path from 'node:path';
 
 const root = process.cwd();
 const agentsDir = path.join(root, 'agents');
-
-const KNOWN_TOOLS = new Set([
-  'read', 'edit', 'write', 'bash', 'grep', 'glob', 'list', 'task', 'skill',
-  'todowrite', 'todoread', 'question', 'patch', 'webfetch', 'websearch', 'lsp',
-]);
 
 // Permission keys opencode understands. Note there is no `write` permission:
 // the `write` tool is governed by `edit` (verified: denying edit also resolves write=false).
@@ -31,23 +26,18 @@ const PERMISSION_KEYS = new Set([
   'todowrite', 'question', 'webfetch', 'websearch', 'lsp', 'doom_loop', 'skill',
 ]);
 
-// Tool -> the permission that actually governs it. `null` = no permission analog.
-const TOOL_PERMISSION = {
-  write: 'edit',
-  todoread: null,
-};
-
 let hasErrors = false;
 
 const fail = (msg) => {
   console.error(`FAIL: ${msg}`);
   hasErrors = true;
 };
+
 const ok = (msg) => console.log(`OK: ${msg}`);
 
 /**
  * Parse the YAML subset used in agent frontmatter: top-level scalars plus up to two
- * levels of nested maps (`tools:` / `permission:` blocks, including second-level
+ * levels of nested maps (`permission:` blocks, including second-level
  * pattern maps like `permission.bash."rm -rf *": "ask"`). Keys and values may be
  * quoted (pattern keys contain spaces and `*`). Returns { scalars, maps }.
  */
@@ -102,36 +92,27 @@ for (const file of files) {
   const tools = maps.tools;
   const permission = maps.permission;
 
-  for (const key of Object.keys(tools || {})) {
-    if (!KNOWN_TOOLS.has(key)) fail(`agents/${file}: unknown tool "${key}" in tools:`);
+  // Rule 1: the deprecated tools: map must not come back.
+  if (tools !== undefined) {
+    fail(
+      `agents/${file}: deprecated \`tools:\` map present (${Object.keys(tools).length} keys) — opencode ignores ` +
+        `it in favour of permission (and 1.18.26+ lets it override user rules, issue #46873). Use \`permission:\` only.`,
+    );
   }
-  for (const key of Object.keys(permission || {})) {
+
+  // Rule 2: permission is now the single mechanism — it must exist.
+  if (!permission) {
+    fail(`agents/${file}: no \`permission:\` block — the only tool-restriction mechanism in this pack`);
+    continue;
+  }
+
+  for (const key of Object.keys(permission)) {
     if (!PERMISSION_KEYS.has(key)) fail(`agents/${file}: unknown permission key "${key}"`);
   }
 
-  // Rule 1 + 3: a declared `false` must survive the presence of a permission block.
-  const declaredOff = Object.entries(tools || {})
-    .filter(([, v]) => v === 'false')
-    .map(([k]) => k);
-
-  for (const tool of declaredOff) {
-    if (!permission) continue; // tools alone are honoured in this case
-    const permKey = tool in TOOL_PERMISSION ? TOOL_PERMISSION[tool] : tool;
-    if (permKey === null) continue; // no permission analog exists
-    const value = permission[permKey];
-    // A tool is denied only by a domain action: "deny" or {"*": "deny"}. A pattern
-    // map (e.g. bash: { "npm *": "allow", "*": "ask" }) leaves the tool ENABLED.
-    const denied = value === 'deny' || (typeof value === 'object' && value['*'] === 'deny');
-    if (!denied) {
-      fail(
-        `agents/${file}: tools.${tool}=false is NOT enforced — a permission: block exists but never denies ` +
-          `"${permKey}" (opencode 1.18.18 ignores the tools map in that case). Add permission.${permKey}: "deny".`,
-      );
-    }
-  }
-
-  // Rule 2: path globs in edit are silently ignored — flag them so intent is not lost.
-  const editRule = permission?.edit;
+  // Rule 3: path globs in permission.edit are silently ignored on 1.18.18 —
+  // flag them so the intent is not lost.
+  const editRule = permission.edit;
   if (typeof editRule === 'object' && editRule !== undefined) {
     const keys = Object.keys(editRule);
     if (keys.some((k) => k !== '*')) {
@@ -147,4 +128,4 @@ if (hasErrors) {
   console.error('\nAgent permission validation failed.');
   process.exit(1);
 }
-ok(`Agent permissions enforced: ${files.length} agents checked (tools:false mirrored by permission deny)`);
+ok(`Agent permissions enforced: ${files.length} agents checked (permission-only, no deprecated tools maps)`);

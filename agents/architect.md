@@ -4,21 +4,10 @@
 # no permission). The agent name comes from the opencode.json key / filename.
 description: "Системный архитектор — проектирование распределенных систем, генерация ADR и Mermaid диаграмм"
 mode: subagent
+model: google/antigravity-claude-opus-4-5-thinking
+variant: low
 temperature: 0
 steps: 30
-tools:
-  read: true
-  grep: true
-  glob: true
-  list: true
-  skill: true
-  task: false
-  write: true
-  edit: true
-  question: true
-# Domain-level actions only: opencode ignores path globs in permission, so a
-# "write only docs/adr/**" rule cannot be expressed and is enforced by the prompt.
-# `task: "deny"` keeps the agent from delegating (the orchestrator routes).
 permission:
   task: "deny"
   bash: "deny"

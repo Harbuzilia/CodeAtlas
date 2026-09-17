@@ -1,18 +1,10 @@
 ---
 description: "Unified Planner Agent - Task decomposition and implementation planning"
 mode: subagent
+model: google/antigravity-gemini-3-pro
+variant: high
 temperature: 0
 steps: 40
-tools:
-  read: true
-  grep: true
-  glob: true
-  list: true
-  skill: true
-  task: false
-  edit: true
-  write: true
-  question: true
 permission:
   task: "deny"
   bash: "deny"

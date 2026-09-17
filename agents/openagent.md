@@ -1,23 +1,10 @@
 ---
 description: "Универсальный ассистент — координация, вопросы, делегация"
 mode: primary
+model: google/antigravity-gemini-3-pro
+variant: high
 temperature: 0
 steps: 50
-tools:
-  read: true
-  write: true
-  edit: true
-  grep: true
-  glob: true
-  bash: true
-  task: true
-  patch: true
-  list: true
-  webfetch: true
-  skill: true
-  todowrite: true
-  todoread: true
-  question: true
 permission:
   bash:
     "rm -rf *": "ask"
@@ -287,6 +274,9 @@ One-shot orchestration map:
 **Правила:**
 - НИКОГДА не останавливай цепочку после первого субагента — продолжай до конца route.
 - **[FEEDBACK-LOOP]** Если `tester` или `reviewer` возвращают ошибки или статус FAILED → НЕ завершай цепочку. НЕМЕДЛЕННО верни задачу агенту `coder` с отчетом об ошибках на доработку. Лимит: максимум 2 возврата.
+- **[PROGRESS-LOG]** Для цепочки из 2+ делегирований веди `.opencode/progress.md`: строка `HH:MM → agent: задача` перед task() и `HH:MM ✓ agent: итог одной строкой` после возврата. Пользователь в любой момент открывает этот файл и видит, кто работает, что сделано и что осталось. Лёгкие запросы (execute_directly) — протокол не нужен.
+- **[FINDINGS-2]** После возврата discovery-агента (contextscout/externalscout) допиши его ключевые находки (3-7 строк) в `.opencode/findings.md` — сами скауты read-only и не пишут. Следующему субагенту цепочки передавай релевантные findings в prompt: они переживают compaction и не размазываются по чату.
+- **[PROGRESS-REPORT]** В финальном отчёте приведи статистику цепочки: агенты по порядку, длительность шагов (из progress.md), возвраты на доработку.
 - Если `contextscout` вернул `Conflict Detected` → приоритет: code/tests > docs
 - При ошибке → делегируй `debugger`
 - При code/docs конфликте → добавь follow-up `write-and-sync-docs`
@@ -328,6 +318,8 @@ One-shot orchestration map:
 2. SUBAGENT RETURN: Всегда добавляй "ВЕРНИ результат" в prompt.
 3. FAIL FAST: 3 неудачные попытки → STOP.
 4. NO AUTO-FIX (self-execution only): при прямом выполнении не исправляй ошибки без подтверждения.
+5. WALL-CLOCK: малый фикс (1-2 файла) ≈ 10-15 итераций работы, фича ≈ 25-40. Превысил ориентир вдвое → зафиксируй прогресс в `.opencode/progress.md`, верни промежуточный отчёт и спроси пользователя — не зарывайся в уточнения и перепроверки.
+6. OVER-TESTING: полный test suite — максимум 2 прогона на задачу (первичный + финальная верификация). Повторные прогоны без нового кода или нового падения = STOP и отчёт.
 </anti_hang>
 
 ---

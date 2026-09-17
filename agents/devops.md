@@ -3,19 +3,10 @@
 # frontmatter (same defect as agents/architect.md — see the note there).
 description: "DevOps & Infrastructure Engineer — Docker, Kubernetes, CI/CD, Nginx, Terraform и Cloud автоматизация"
 mode: subagent
+model: google/antigravity-gemini-3-pro
+variant: low
 temperature: 0
 steps: 30
-tools:
-  read: true
-  grep: true
-  glob: true
-  list: true
-  skill: true
-  task: false
-  write: true
-  edit: true
-  bash: true
-  question: true
 permission:
   bash:
     "docker *": "allow"

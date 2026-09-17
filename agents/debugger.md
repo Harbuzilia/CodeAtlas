@@ -1,19 +1,10 @@
 ---
 description: "Агент для автоматического исправления ошибок сборки и runtime — анализ, диагностика, исправление"
 mode: subagent
+model: google/antigravity-gemini-3-pro
+variant: high
 temperature: 0
 steps: 25
-tools:
-  task: false
-  read: true
-  edit: true
-  write: true
-  bash: true
-  grep: true
-  glob: true
-  list: true
-  skill: true
-  question: true
 permission:
   task: "deny"
   bash:
