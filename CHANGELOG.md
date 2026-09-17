@@ -3,6 +3,49 @@
 Этот файл является единым источником правды по всем внесенным изменениям в проект: **где**, **что** было обновлено, **почему** (техническое обоснование) и **какой эффект** это дало. Обновляется после каждой итерации доработок.
 
 ---
+## [2026-09-17] — Code Atlas: слой моделей, анти-сталлинг, переносимость, Windows
+
+Восьмая волна (ветка `feat/atlas-polish`): финальная полировка до «закрытого продукта» под брендом **Code Atlas** (репо [Harbuzilia/CodeAtlas](https://github.com/Harbuzilia/CodeAtlas), package `code-atlas`, MIT). Исследование: официальные доки opencode 1.18.x + лучшие решения комьюнити (awesome-opencode, superpowers, wshobson/agents, ECC, planning-with-files — см. план волны).
+
+### 1. Слой моделей — «лазеечка» переназначения ([`config/model-presets.json`](config/model-presets.json), [`scripts/model-presets.mjs`](scripts/model-presets.mjs))
+
+- Раньше все 12 агентов работали на одной глобальной модели (5 из 6 моделей каталога не использовались). Теперь назначение «агент → модель» живёт в frontmatter агентов и управляется пресетами-как-данные: `quality` (по умолчанию: реализация — Gemini 3 Pro high, ревью/тесты — Claude Sonnet 4.5, архитектура — Opus 4.5 Thinking low, discovery — Flash), `balanced`, `cost`, `speed`.
+- `npm run models:apply -- <preset>` применяет пресет хирургически (форматирование frontmatter сохраняется, EOL не ломается — покрыто регресс-тестом), `--check` — гейт дрейфа в `validate:all`, `npm run models` — карта назначений, команда `/presets`. Новая модель (MiniMax, GPT-5.x, Astro) = строка в пресете + запись в каталоге `opencode.json`.
+- Починены устаревшие ссылки на модели: `workflows/resilience.md` (Gemini 2.5/Claude 3.7 → реальные ID каталога), `token-budget-tracker.mjs` (тарифы по фактической модели агента, а не глобальный хардкод).
+
+### 2. Скорость и прогресс (анти «3 фикса = 3 часа»)
+
+- **Прогресс-протокол**: для цепочек 2+ делегирований оркестратор ведёт `.opencode/progress.md` (`HH:MM → agent: задача` / `HH:MM ✓ agent: итог`) — живой канал «что происходит сейчас»; после discovery-агентов ключевые находки дописываются в `.opencode/findings.md` и передаются следующему субагенту (переживают компакцию). Правила в `openagent.md` + `delegation.md`.
+- **Длительности задач**: `telemetry.js` пишет маркеры старта делегирования и `durationMs`; `routing-telemetry` показывает per-agent median/p90/max и самого медленного агента как кандидата на смену пресета.
+- **halt-guard v3**: делегирование `task()`, оборванное временной ошибкой провайдера (429/timeout), получает ровно один retry-nudge на упавший part (максимум 2 на сессию) — раньше потерянный субагент молча стопорил цепочку.
+- **Анти-перетестирование**: правила [SCOPE]/[NO-RELOOP]/[NO-RERERUN] у tester (полный suite ≤2 прогонов), wall-clock ориентиры и OVER-TESTING в anti-hang протоколе.
+
+### 3. Заимствованное ядро скиллов (37 → 43, из obra/superpowers, MIT)
+
+`systematic-debugging` (гипотезы → минимальный репро → фикс причины), `root-cause-tracing` (5 Почему, бисекция git, археология коммитов), `verification-before-completion` (доказательное «готово»), `test-driven-development` (RED-GREEN-REFACTOR с дисциплиной объёма), `writing-plans` (шаги 2-5 минут с проверками), `requesting-code-review` (запрос ревью + severity-дисциплина ответов). Каталоги и счётчики обновлены (гейт docs-sync: 91 проверка).
+
+### 4. Универсальный конфиг + Windows
+
+- **Deprecated `tools:` карты удалены из всех 12 агентов** — permission-only. opencode игнорирует tools при permission, а с 1.18.26 tools-derived правила ломают пользовательские permission (issue #46873). Гейт `validate-agent-permissions` теперь запрещает возврат tools-карт; `agent-matrix` показывает Model-колонку и права из `permission.edit`.
+- `.gitattributes`: LF-нормализация (CRLF только `*.ps1/*.cmd/*.bat`, `*.exe` binary) — свежие клоны стабильны.
+- `opencode-init.sh`: `ln -s` с верификацией и fallback-копией (Git Bash без native symlinks делал молчаливую протухающую копию).
+- Аудит `shell:true`-спавнов: все команды кросс-шельные (npm/git/node/uvx) — cmd.exe-safe. README: установка (npm/choco/scoop), `OPENCODE_GIT_BASH_PATH`, зеркала копиями без Developer Mode, WSL-заметка из доков.
+
+### 5. Кросс-харнес переносимость
+
+- Корневой [`AGENTS.md`](AGENTS.md) — портативный вход для любых харнесов (opencode/Codex/Cursor читают AGENTS.md нативно), без дублирования instructions.md.
+- `sync-targets`: пятый таргет `~/.agents/skills` (стандарт Agent Skills/agentskills.io, только скиллы, без вложенности).
+- [`docs/PORTABILITY.md`](docs/PORTABILITY.md): карта «что куда» (opencode/.opencode, OMP ~/.pi, Pi, любой харнес — AGENTS.md + скиллы), слои переносимости, рецепт добавления нового харнеса (включая «Dipsic» — по формату).
+
+### 6. GitHub-финализация
+
+`package.json` → `code-atlas`, `registry.json` repository → реальный URL, LICENSE (MIT), README — бренд Code Atlas. Ветки/PR в Harbuzilia/CodeAtlas (CI Node 20 прогоняется по-настоящему).
+
+### 7. Тесты и мутации
+
+32 теста (было 23): +5 model-presets (apply/check/drift/CRLF-регресс/list), +3 plugin-runtime-behaviors (task-retry, fatal-игнор, durations), permission-фикстуры переписаны под permission-only, sync-targets — 5 таргетов. Мутационный скор 100% (7/7 — добавлен model-presets; раннер получил per-target args). Полный прогон: `npm test` 32/32, `validate:all`, `sync:check`, `eval:routes` 12/12, `scan:secrets`, `smoke:functional` — зелёные.
+
+---
 ## [2026-09-16] — Полный аудит: 11 багов, гейт docs-sync, 23 теста, release-пайплайн
 
 Седьмая волна (ветка `feat/audit-polish`): полный аудит конфиг-набора с эмпирической проверкой семантики opencode 1.18.18. Полный отчёт — [`docs/audit-2026-09-16.md`](docs/audit-2026-09-16.md).
