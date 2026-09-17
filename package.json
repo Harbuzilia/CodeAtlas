@@ -16,7 +16,7 @@
     "validate:all": "npm run sync:local && npm run validate:registry && npm run validate:context-refs && npm run validate:frontmatter-sync && npm run validate:skills && npm run validate:agent-permissions && npm run validate:models && npm run validate:docs-sync && npm run validate:runtime",
     "models": "node scripts/model-presets.mjs",
     "models:apply": "node scripts/model-presets.mjs --apply",
-    "test": "node --test",
+    "test": "node scripts/run-tests.mjs",
     "smoke:functional": "node validate-runtime-governance.mjs --smoke",
     "eval:routes": "node scripts/eval-scenarios.mjs",
     "setup:hooks": "node scripts/setup-hooks.mjs",
