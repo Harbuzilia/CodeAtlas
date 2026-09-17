@@ -209,13 +209,6 @@
         "@upstash/context7-mcp"
       ]
     },
-    "ddg-search": {
-      "type": "local",
-      "command": [
-        "uvx",
-        "duckduckgo-mcp-server"
-      ]
-    },
     "github-grep": {
       "type": "remote",
       "url": "https://mcp.grep.app"
