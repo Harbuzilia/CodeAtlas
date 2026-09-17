@@ -73,6 +73,15 @@ export default async function Telemetry({ directory }) {
     }
   };
 
+  // Task (delegation) wall-clock timing: message.part.updated fires when the
+  // task tool part enters "running", tool.execute.after fires when it returns.
+  // Serial routes guarantee one task per root session at a time, so a plain
+  // session -> startTime map is exact enough. Shared across double-loaded
+  // plugin copies, pruned like the dedupe map.
+  const STARTS_KEY = Symbol.for('opencode.telemetry.taskStarts');
+  const taskStarts = (globalThis[STARTS_KEY] ??= new Map());
+  const STARTS_MAX = 200;
+
   return {
     'tool.execute.after': async (input) => {
       try {
@@ -83,10 +92,15 @@ export default async function Telemetry({ directory }) {
           session: input?.sessionID ?? null,
           tool
         };
-        // Task tool = orchestrator delegation: capture the chosen subagent.
+        // Task tool = orchestrator delegation: capture the chosen subagent
+        // and the wall-clock duration of the delegated work.
         if (tool === 'task') {
           record.type = 'delegate';
           record.agent = input?.args?.subagent_type ?? 'unknown';
+          const sid = record.session;
+          const startedAt = sid ? taskStarts.get(sid) : undefined;
+          if (sid) taskStarts.delete(sid);
+          if (startedAt) record.durationMs = Date.now() - startedAt;
         }
         append(record);
       } catch {
@@ -118,9 +132,23 @@ export default async function Telemetry({ directory }) {
             });
           }
         }
-        // Tool failures (dedup by part id downstream).
+        // Tool failures (dedup by part id downstream) + task start markers.
         if (event?.type === 'message.part.updated') {
           const part = event.properties?.part;
+          if (part?.type === 'tool' && part.tool === 'task' && part.state?.status === 'running') {
+            if (part.sessionID) {
+              taskStarts.set(part.sessionID, Date.now());
+              if (taskStarts.size > STARTS_MAX) {
+                taskStarts.delete(taskStarts.keys().next().value);
+              }
+            }
+            append({
+              ts: new Date().toISOString(),
+              type: 'delegate_start',
+              part: part.id ?? null,
+              session: part.sessionID ?? null
+            });
+          }
           if (part?.type === 'tool' && part.state?.status === 'error') {
             append({
               ts: new Date().toISOString(),

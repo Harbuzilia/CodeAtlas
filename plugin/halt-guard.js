@@ -5,9 +5,13 @@
 //   Turn ends with no tool call, session goes idle, work stops.
 // Problem 2: provider throws a transient error (429/5xx/overloaded/network)
 //   mid-route — session dies silently, no recovery.
-// This plugin watches session.idle and session.error, injecting a synthetic
-// continuation. Design: NEVER throw, bounded (3 nudges + 2 error retries per
-// session), root sessions only (parentID guard), prompt-only guard fallback.
+// Problem 3: a task() delegation dies on a transient provider error — the whole
+//   subagent run is lost and the chain stalls (subagent sessions are not
+//   guarded directly, so we nudge the ROOT session to re-issue the task once).
+// This plugin watches session.idle, session.error and message.part.updated,
+// injecting a synthetic continuation. Design: NEVER throw, bounded (3 nudges +
+// 2 error retries per session + 1 retry per failed task part, 2 task retries
+// per session), root sessions only (parentID guard), prompt-only guard fallback.
 
 const TERMINAL_RE = /(Работа завершена|FAILED)\.?\s*Возвращаю управление\./;
 const DELEGATION_RE = /(передаю|делегирую|делегац|передал|вызываю\s*task|task\s*\(|handoff|delegat|next\s+agent|следующ.*агент|продолж.*цепочк)/i;
@@ -20,6 +24,12 @@ const MAX_NUDGES = 3;
 const MAX_ERROR_RETRIES = 2;
 const ERROR_BACKOFF_MS = 5000;
 const MAX_MAP_SIZE = 200;
+// A failed task() delegation (subagent) killed by a transient provider error
+// loses the whole subagent run. One retry nudge per failed part, hard-capped
+// per session — this guards the chain without feeding retry loops.
+const MAX_TASK_RETRIES_PER_SESSION = 2;
+// Env-overridable for tests (tests set HALT_GUARD_TASK_BACKOFF_MS=0).
+const TASK_BACKOFF_MS = Number(process.env.HALT_GUARD_TASK_BACKOFF_MS ?? 3000);
 
 export default async function HaltGuard({ client }) {
   // opencode loads this plugin twice when it exists in BOTH the global config
@@ -27,9 +37,16 @@ export default async function HaltGuard({ client }) {
   // per-session budgets in one process-wide registry, otherwise each copy counts
   // independently and a session gets nudged/retried up to 2x the intended limit.
   const STATE_KEY = Symbol.for('opencode.halt-guard.state');
-  const shared = (globalThis[STATE_KEY] ??= { nudges: new Map(), errRetries: new Map() });
+  const shared = (globalThis[STATE_KEY] ??= {
+    nudges: new Map(),
+    errRetries: new Map(),
+    taskRetried: new Set(), // part ids already nudged
+    sessionTaskRetries: new Map(), // sessionID -> count
+  });
   const nudges = shared.nudges; // sessionID -> { count, lastMsgId }
   const errRetries = shared.errRetries; // sessionID -> count
+  const taskRetried = shared.taskRetried;
+  const sessionTaskRetries = shared.sessionTaskRetries;
 
   const getNudgeState = (sid) => {
     if (!nudges.has(sid)) nudges.set(sid, { count: 0, lastMsgId: null });
@@ -102,6 +119,58 @@ export default async function HaltGuard({ client }) {
             });
           } catch {
             // bounded — count attempt even on failure
+          }
+          return;
+        }
+
+        // --- Failed delegation retry (subagent killed by transient error) ---
+        // The task tool runs in the ROOT session, so part.sessionID is the
+        // orchestrator — no parentID check needed (subagents have task denied).
+        if (event?.type === 'message.part.updated') {
+          const part = event?.properties?.part;
+          if (part?.type === 'tool' && part.tool === 'task' && part.state?.status === 'error') {
+            const sid = part.sessionID ?? null;
+            const partId = part.id ?? null;
+            const errObj = part.state?.error;
+            const errText =
+              typeof errObj === 'string'
+                ? errObj
+                : [errObj?.name, errObj?.message, part.state?.output].filter(Boolean).join(' ').slice(0, 300);
+            if (
+              sid &&
+              partId &&
+              errText &&
+              !FATAL_RE.test(errText) &&
+              RETRYABLE_RE.test(errText) &&
+              !taskRetried.has(partId) &&
+              (sessionTaskRetries.get(sid) ?? 0) < MAX_TASK_RETRIES_PER_SESSION
+            ) {
+              taskRetried.add(partId);
+              sessionTaskRetries.set(sid, (sessionTaskRetries.get(sid) ?? 0) + 1);
+              pruneMap(sessionTaskRetries);
+              if (taskRetried.size > MAX_MAP_SIZE) {
+                // keep the set bounded: drop the oldest entries
+                const drop = taskRetried.size - MAX_MAP_SIZE;
+                let i = 0;
+                for (const k of taskRetried) {
+                  if (i++ >= drop) break;
+                  taskRetried.delete(k);
+                }
+              }
+              await new Promise((r) => setTimeout(r, TASK_BACKOFF_MS));
+              const text =
+                `[HALT-GUARD] Делегирование task() оборвалось временной ошибкой провайдера: «${errText.slice(0, 160).replace(/\n/g, ' ')}». ` +
+                `Повтори task() для того же агента и той же задачи один раз — не начинай заново: субагент мог частично выполнить работу. ` +
+                `Если повтор упадёт — сообщи пользователю и остановись.`;
+              try {
+                await client.session.prompt({
+                  path: { id: sid },
+                  body: { parts: [{ type: 'text', text }] },
+                });
+              } catch {
+                // bounded — count attempt even on failure
+              }
+            }
           }
           return;
         }

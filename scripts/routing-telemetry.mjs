@@ -43,6 +43,32 @@ const perAgent = new Map();
 const perTool = new Map();
 const perDay = new Map();
 
+// Wall-clock duration per delegated task. New journal entries carry
+// durationMs (computed by the telemetry plugin); older ones only have
+// delegate_start markers — reconstruct from those.
+const openStarts = new Map(); // session -> start ts (ms)
+const durationsByAgent = new Map(); // agent -> [ms]
+for (const r of records) {
+  if (r.type === 'delegate_start' && r.session) openStarts.set(r.session, Date.parse(r.ts));
+  if (r.type !== 'delegate') continue;
+  let ms = r.durationMs;
+  if (ms == null && r.session && openStarts.has(r.session)) {
+    ms = Date.parse(r.ts) - openStarts.get(r.session);
+    openStarts.delete(r.session);
+  }
+  if (ms != null && ms >= 0) {
+    const list = durationsByAgent.get(r.agent) ?? [];
+    list.push(ms);
+    durationsByAgent.set(r.agent, list);
+  }
+}
+
+const fmtDur = (ms) => {
+  const s = Math.round(ms / 1000);
+  if (s < 60) return `${s}s`;
+  return `${Math.floor(s / 60)}m ${s % 60}s`;
+};
+
 for (const r of records) {
   const day = String(r.ts).slice(0, 10);
   perDay.set(day, (perDay.get(day) || 0) + 1);
@@ -68,6 +94,28 @@ if (delegations.length > 0) {
   for (const [agent, s] of sorted) {
     console.log(`  ${agent.padEnd(16)} ${String(s.count).padStart(5)}x   last: ${String(s.last).slice(0, 16).replace('T', ' ')}`);
   }
+}
+
+// --- Task durations (wall-clock per delegation) ------------------------------
+if (durationsByAgent.size > 0) {
+  console.log('\nTask durations (wall-clock per delegation):');
+  const rows = [...durationsByAgent.entries()]
+    .map(([agent, list]) => {
+      const s = [...list].sort((a, b) => a - b);
+      const median = s[Math.floor(s.length / 2)];
+      const p90 = s[Math.min(s.length - 1, Math.floor(s.length * 0.9))];
+      return { agent, n: s.length, median, p90, max: s[s.length - 1], total: s.reduce((a, b) => a + b, 0) };
+    })
+    .sort((a, b) => b.total - a.total);
+  for (const r of rows) {
+    console.log(
+      `  ${r.agent.padEnd(16)} ${String(r.n).padStart(4)}x  median ${fmtDur(r.median).padStart(8)}  p90 ${fmtDur(r.p90).padStart(8)}  max ${fmtDur(r.max).padStart(8)}`,
+    );
+  }
+  const slowest = rows[0];
+  console.log(
+    `  💡 самый долгий агент: ${slowest.agent} (median ${fmtDur(slowest.median)}) — кандидат на смену модели/пресета (/presets)`,
+  );
 }
 
 // --- Dead-agent radar -------------------------------------------------------
