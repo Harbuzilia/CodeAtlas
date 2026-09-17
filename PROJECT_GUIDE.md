@@ -19,7 +19,8 @@
 
 Примечание:
 - сгенерированные карты (`docs/architecture/`, `docs/modules/`) и архив `.opencode/history/` не являются runtime-истиной;
-- если есть конфликт, приоритет у `opencode.json` и зарегистрированных `agents/*.md`.
+- если есть конфликт, приоритет у `opencode.json` и зарегистрированных `agents/*.md`;
+- портативный вход для любых харнесов — корневой `AGENTS.md` (не дублирует `instructions.md`); карта переносимости — `docs/PORTABILITY.md`, таргет стандарта Agent Skills — `~/.agents/skills` (только скиллы, через `sync:all`).
 
 Если документация расходится с кодом и тестами:
 - истина по поведению = код и тесты;
@@ -49,7 +50,18 @@
 
 Источник списка: секция `agent` в `opencode.json`.
 
-## 5. Функциональные режимы (Functional Modes)
+## 5. Модели и пресеты
+
+Назначение «агент → модель» живёт в frontmatter агентов (`model:` + `variant:`) и управляется пресетами — данными в `config/model-presets.json`:
+
+- **Пресеты**: `quality` (каждой роли сильная модель: реализация — Gemini 3 Pro high, ревью/тесты — Claude Sonnet 4.5, архитектура — Opus 4.5 Thinking, discovery — Flash), `balanced`, `cost`, `speed`.
+- **Управление**: `/presets` (карта + список) · `npm run models:apply -- <preset>` (применить) · `npm run models` (текущие назначения).
+- **Гейт**: `validate:models` в `validate:all` — дрейф frontmatter от активного пресета = FAIL.
+- **Каталог моделей**: `provider.models` в `opencode.json` (провайдер `google`, 6 моделей). Новая модель = запись в каталог + строка в пресете.
+- Рантайм-переключатель **текущей сессии** — встроенная TUI-команда `/models`; пресеты управляют конфигом на постоянной основе.
+- Тарифы для `/budget` берутся по фактической модели каждого агента (оценки в `scripts/token-budget-tracker.mjs`, переопределяются полем `cost` в каталоге).
+
+## 6. Функциональные режимы (Functional Modes)
 - `implement-feature`
 - `fix-production-bug`
 - `add-tests-for-module`
@@ -64,7 +76,7 @@
 
 Примечание: ID режимов и маршрутов остаются на английском как стабильные технические ключи.
 
-## 6. Скиллы
+## 7. Скиллы
 ### 6.1 Языковые (`skills/<name>/SKILL.md`)
 - `csharp`
 - `typescript`
@@ -111,6 +123,12 @@
 - `code-modernization-patterns` (Legacy modernization, ESM, async/await, React 19)
 - `secrets-config-management` (12-Factor App config, Zod env validation, secret masking)
 - `frontend-design` (Anti-slop UI-дизайн: лендинги, дашборды, формы, WPF/WinUI, мобильные)
+- `systematic-debugging` (систематическая отладка: гипотезы → минимальный репро → фикс причины)
+- `root-cause-tracing` (поиск первопричины: 5 Почему, бисекция git, археология коммитов)
+- `verification-before-completion` (доказательная верификация перед «готово»)
+- `test-driven-development` (TDD: RED-GREEN-REFACTOR, дисциплина объёма тестов)
+- `writing-plans` (планы для исполнения: шаги 2-5 минут с точными файлами и проверками)
+- `requesting-code-review` (запрос ревью и ответы по severity; критичное блокирует мёрдж)
 
 Когда используются:
 - external libs/framework/API -> `context7`
@@ -132,8 +150,13 @@
 - Модернизация старого кода -> `code-modernization-patterns`
 - Переменные окружения и секреты -> `secrets-config-management`
 - Дизайн и генерация UI -> `frontend-design`
+- Баги и отладка -> `systematic-debugging`, `root-cause-tracing`
+- Завершение задачи/передача результата -> `verification-before-completion`
+- Новая фича с тестами -> `test-driven-development`
+- Декомпозиция и планы -> `writing-plans`
+- Подготовка PR к ревью -> `requesting-code-review`
 
-## 7. One-shot режим
+## 8. One-shot режим
 По умолчанию OFF.
 
 Явные триггеры включения:
@@ -146,25 +169,25 @@
 
 Без триггера one-shot запрещен.
 
-## 8. Quality Gates
+## 9. Quality Gates
 Обязательные команды:
-- `npm run validate:all`
+- `npm run validate:all` (включая `validate:models` — дрейф пресета моделей)
 - `npm run validate:runtime`
 - `npm run smoke:functional`
 
 Если любой gate не проходит — результат не считается готовым.
 
-## 9. Установщик и обновление
+## 10. Установщик и обновление
 - Локальная установка: `npm run install:local -- --target=<path>`
 - Локальная проверка обновлений: `npm run update:local -- --target=<path> --check`
 
-## 10. GitHub/Git качество
+## 11. GitHub/Git качество
 - Используем `git` skill при задачах с коммитами/PR.
 - Коммит не обязателен для каждого шага: коммитим только завершенные и полезные изменения.
 - Один коммит = один смысловой шаг.
 - PR без шума: clear summary, validation, risks.
 
-## 11. Политика качества (человеческий уровень)
+## 12. Политика качества (человеческий уровень)
 Цель — не "маскировка", а реально сильный инженерный результат:
 - писать конкретно и по фактам проекта;
 - избегать шаблонной воды и повторов;
@@ -187,18 +210,18 @@
 - читаемость и предсказуемость важнее "хитрых" решений;
 - перед финалом обязательный self-check качества.
 
-## 12. Ключевые механизмы (Global Skills, Debugger, Localization)
+## 13. Ключевые механизмы (Global Skills, Debugger, Localization)
 - **Universal Global Skills**: Агенты (`coder`, `tester`, `debugger`) используют name-based вызов скиллов (например, `skill({ name: "typescript" })`) и fallback-чтение manifest-файлов: `read("~/.config/opencode/skills/<name>/SKILL.md")` (на Windows: `%USERPROFILE%/.config/opencode/skills/<name>/SKILL.md`). Это гарантирует discoverable-layout и переносимость.
 - **Dynamic Debugger**: Агент `debugger` больше не угадывает команды сборки (hardcoded `dotnet build`). Он анализирует контекст ошибки: запускает напрямую указанные `.bat`/`.sh` скрипты, ищет точки входа в `package.json` или `Makefile`. Если информации нет, запрашивает команду через `question tool`.
 - **UI Localization Enforcement**: В `openagent` внедрен чек: при необходимости генерации UI и отсутствии языка в настройках он ОДИН раз запрашивает предпочитаемый язык интерфейса и сохраняет его в `.opencode/project_settings.json`. Агент `coder` строго придерживается этой настройки при генерации визуальных компонентов.
 
-## 13. История и архив
+## 14. История и архив
 - Архитектурная карта системы: `docs/architecture/system_map.md`.
 - Каталог скриптов и npm-команд: `docs/modules/scripts.md`.
 - Атомарные бэкапы `.opencode`-файлов (создаются инструментами перед записью): `.opencode/history/`.
 - Журнал всех изменений и обоснований: `CHANGELOG.md`; трекер задач: `PLANS.md`.
 
-## 14. Практичные архитектурные улучшения
+## 15. Практичные архитектурные улучшения
 - Качество: запускать `npm run validate:all` перед merge и фиксировать результат в PR/отчете.
 - Тесты: для каждого изменения поведения добавлять минимум один проверяющий тест или smoke-check сценарий.
 - Релизные проверки: перед релизом обязательный прогон `validate:runtime` + `smoke:functional` на чистом окружении.

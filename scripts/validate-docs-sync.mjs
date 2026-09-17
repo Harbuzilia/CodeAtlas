@@ -9,7 +9,7 @@
 //     invented; the generated `/menu` is explicitly excluded from the list).
 //   - command/matrix.md: every "N навык(ов)" and "N slash-команд" claim, and
 //     that every disk skill is mentioned somewhere in the matrix.
-//   - PROJECT_GUIDE.md: every disk skill appears in the §6 catalogue.
+//   - PROJECT_GUIDE.md: every disk skill appears in the §7 catalogue.
 //   - command/menu.md: the "Slash-команды (N)" claim.
 
 import fs from 'node:fs';
@@ -112,7 +112,7 @@ const guide = read('PROJECT_GUIDE.md');
 for (const s of skills) {
   checks += 1;
   if (!guide.includes(`\`${s}\``)) {
-    fail(`PROJECT_GUIDE.md: навык \`${s}\` отсутствует в каталоге §6`);
+    fail(`PROJECT_GUIDE.md: навык \`${s}\` отсутствует в каталоге §7`);
   }
 }
 

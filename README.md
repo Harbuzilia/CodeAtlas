@@ -1,7 +1,11 @@
-# Opencode1 — конфиг-набор для Opencode CLI
+# Code Atlas — конфиг-набор для Opencode CLI
 
 Готовый пакет конфигурации для [Opencode](https://opencode.ai): закидываешь в проект —
 и у тебя своя мультиагентная система со скиллами, slash-командами, валидаторами и релизным пайплайном.
+Репозиторий: [Harbuzilia/CodeAtlas](https://github.com/Harbuzilia/CodeAtlas). Лицензия: MIT.
+
+> Переносимость: скиллы соответствуют стандарту Agent Skills (agentskills.io),
+> инструкции — корневому `AGENTS.md`; opencode-специфика вынесена отдельно (см. `docs/PORTABILITY.md`).
 
 ## Что внутри
 
@@ -9,25 +13,33 @@
 |-----------|-------|-----------|
 | Агенты | 12 (openagent — оркестратор, contextscout, coder, tester, reviewer и др.) | `agents/` |
 | Скиллы | 37 (языки, безопасность, DevOps, AST-поиск, design) | `skills/` |
-| Slash-команды | 23 + генерируемый `/menu` | `command/` |
+| Slash-команды | 24 + генерируемый `/menu` | `command/` |
 | Плагины | 2 (halt-guard — авто-продолжение при зависании делегирования, telemetry — журнал роутинга) | `plugin/` |
 | Скрипты | ~50 генераторов, валидаторов, бенчмарков | `scripts/` |
+| Пресеты моделей | quality / balanced / cost / speed (агент → модель) | `config/model-presets.json` |
 | Контекст-система | стандарты кода/тестов/доков, workflow-протоколы | `context/` |
 
 Правила системы: `opencode.json` (source of truth) → `PROJECT_GUIDE.md` (обзор) → `PLANS.md` (трекер) → `CHANGELOG.md` (история).
 
 ## Установка
 
-Требования: Node.js 20+, git.
+Требования: Node.js 20+, git, [opencode CLI](https://opencode.ai/docs/) (`npm install -g opencode-ai`, также `choco install opencode` / `scoop install opencode`).
 
 ```bash
-git clone <repo> && cd opencode-config
+git clone https://github.com/Harbuzilia/CodeAtlas.git && cd CodeAtlas
 npm ci
 npm run sync:local     # генерирует runtime-зеркало .opencode/ из корня репо
 npm run setup:hooks    # ставит git-хуки (pre-commit = полный прогон гейтов)
 ```
 
 Запускай `opencode` из корня репозитория — он подхватит `opencode.json`, агентов и команды.
+
+### Windows
+
+- Shell-инструмент opencode сам выбирает pwsh → powershell → Git Bash → cmd; если авто-детекция Git Bash хромает — задай `OPENCODE_GIT_BASH_PATH` (путь к `bash.exe`).
+- `.opencode/` зеркалится **копиями** (`sync:local`), не симлинками — Developer Mode не нужен. `opencode-init.ps1` — каноничный init-скрипт для новых репо (Windows), `opencode-init.sh` — для Linux/macOS/Git Bash с fallback-копией.
+- Линейные окончания закреплены в `.gitattributes` (LF в репо, CRLF только для `*.ps1/*.cmd/*.bat`).
+- Официальные доки рекомендуют WSL ради скорости файловой системы — нативный Windows поддерживается этим набором полностью; скрипты проверены на Git Bash + cmd.
 
 Установка в другой проект (копирует набор и ставит хуки):
 
@@ -39,9 +51,10 @@ npm run install:local -- --target=<путь-к-проекту>
 
 | Команда | Что делает |
 |---------|------------|
-| `npm run validate:all` | Все гейты: registry, ссылки, frontmatter, скиллы, права агентов, синк доков |
+| `npm run validate:all` | Все гейты: registry, ссылки, frontmatter, скиллы, права агентов, модели, синк доков |
 | `npm test` | Юнит-тесты (node:test) |
 | `npm run test:mutate` | Мутационное тестирование валидаторов (100% kill rate) |
+| `npm run models:apply -- <пресет>` | Переназначить модели агентам (quality / balanced / cost / speed) |
 | `npm run menu:gen` | Регенерация `command/menu.md` |
 | `npm run matrix` | Живая матрица агентов: бюджеты шагов, права, реестр скиллов |
 | `npm run doctor` | Диагностика окружения opencode |
@@ -54,7 +67,8 @@ npm run install:local -- --target=<путь-к-проекту>
 ## Slash-команды (в opencode)
 
 Ключевые: `/menu` (карта всех команд), `/plan`, `/review`, `/test`, `/commit`, `/pr`,
-`/matrix`, `/release`, `/doctor`, `/heal`, `/i18n`, `/prompt-engineering/prompt-optimizer`.
+`/matrix`, `/presets` (карта моделей), `/release`, `/doctor`, `/heal`, `/i18n`,
+`/prompt-engineering/prompt-optimizer`.
 
 ## Гарантии качества
 
@@ -62,8 +76,9 @@ npm run install:local -- --target=<путь-к-проекту>
 - **Git-хуки**: pre-commit гоняет `validate:all`, pre-push — тесты + smoke.
 - **Мутационное тестирование**: валидаторы обязаны ловить подсаженные дефекты.
 - **Docs-sync гейт**: заявленные числа скиллов/команд в доках сверяются с диском.
-- **Права агентов проверены на opencode 1.18.18**: `tools: false` дублируется `permission: deny`
-  (см. `scripts/validate-agent-permissions.mjs` — с комментариями, что реально enforced в рантайме).
+- **Права агентов — permission-only**: deprecated `tools:` карты удалены из всех 12 агентов
+  (opencode их игнорирует, а с 1.18.26 они ломают пользовательские permission-правила, issue #46873);
+  гейт `validate-agent-permissions` запрещает их возврат и проверяет неэффективные path-globs.
 
 ## Важно
 

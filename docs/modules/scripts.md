@@ -1,6 +1,6 @@
 # Module Documentation: scripts
 
-Generated automatically via `npm run docgen` on 2026-09-16.
+Generated automatically via `npm run docgen` on 2026-09-17.
 
 ## 📄 `agent-matrix.mjs`
 
@@ -88,6 +88,10 @@ Generated automatically via `npm run docgen` on 2026-09-16.
 *Executable script or configuration module.*
 
 ## 📄 `install-local.mjs`
+
+*Executable script or configuration module.*
+
+## 📄 `model-presets.mjs`
 
 *Executable script or configuration module.*
 
