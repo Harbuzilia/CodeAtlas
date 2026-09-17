@@ -11,11 +11,13 @@ import path from 'node:path';
 import test from 'node:test';
 import { makeTmp, rmTmp, runScript, write } from './helpers.mjs';
 
-test('syncs all four targets without nesting .opencode inside .opencode', () => {
+test('syncs all five targets without nesting .opencode inside .opencode', () => {
   const tmp = makeTmp('sync-targets-');
   const home = makeTmp('sync-targets-home-');
   try {
-    for (const d of ['skills', 'agents', 'command', 'context', 'plugin']) {
+    // Skills are directories in the real repo (skills/<name>/SKILL.md).
+    write('skills/myskill/marker.txt', 'content of skills\n', tmp);
+    for (const d of ['agents', 'command', 'context', 'plugin']) {
       write(`${d}/marker.txt`, `content of ${d}\n`, tmp);
     }
 
@@ -40,7 +42,7 @@ test('syncs all four targets without nesting .opencode inside .opencode', () => 
       assert.ok(!fs.existsSync(path.join(global, '.opencode')), `${global} must not contain .opencode/`);
     }
 
-    // Every target received the source dirs with their content.
+    // The four full targets receive every source dir with its content.
     for (const target of [
       path.join(tmp, '.opencode'),
       path.join(home, '.config', 'opencode'),
@@ -48,11 +50,18 @@ test('syncs all four targets without nesting .opencode inside .opencode', () => 
       path.join(home, '.pi'),
     ]) {
       for (const d of ['skills', 'agents', 'command', 'context', 'plugin']) {
-        assert.ok(
-          fs.existsSync(path.join(target, d, 'marker.txt')),
-          `${target}/${d}/marker.txt must exist`,
-        );
+        const rel = d === 'skills' ? path.join('skills', 'myskill', 'marker.txt') : path.join(d, 'marker.txt');
+        assert.ok(fs.existsSync(path.join(target, rel)), `${target}/${rel} must exist`);
       }
+    }
+
+    // The Agent Skills standard target is the skills ROOT: no skills/ nesting,
+    // and it carries only skills — no agents/commands/plugins.
+    const agentsStd = path.join(home, '.agents', 'skills');
+    assert.ok(fs.existsSync(path.join(agentsStd, 'myskill', 'marker.txt')), '~/.agents/skills/<skill> layout');
+    assert.ok(!fs.existsSync(path.join(agentsStd, 'skills')), 'no nested skills/skills');
+    for (const d of ['agents', 'command', 'context', 'plugin']) {
+      assert.ok(!fs.existsSync(path.join(agentsStd, d)), `~/.agents/skills must not contain ${d}/`);
     }
   } finally {
     rmTmp(tmp);
