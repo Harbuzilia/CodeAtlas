@@ -1,0 +1,73 @@
+{
+  "active": "quality",
+  "presets": {
+    "quality": {
+      "description": "Каждой роли её сильная сторона: тяжёлая реализация на Gemini 3 Pro (high), ревью/тесты на Claude Sonnet 4.5, архитектура на Opus 4.5 Thinking, быстрый discovery на Flash.",
+      "agents": {
+        "openagent": { "model": "google/antigravity-gemini-3-pro", "variant": "high" },
+        "coder": { "model": "google/antigravity-gemini-3-pro", "variant": "high" },
+        "planner": { "model": "google/antigravity-gemini-3-pro", "variant": "high" },
+        "debugger": { "model": "google/antigravity-gemini-3-pro", "variant": "high" },
+        "reviewer": { "model": "google/antigravity-claude-sonnet-4-5" },
+        "tester": { "model": "google/antigravity-claude-sonnet-4-5" },
+        "architect": { "model": "google/antigravity-claude-opus-4-5-thinking", "variant": "low" },
+        "devops": { "model": "google/antigravity-gemini-3-pro", "variant": "low" },
+        "contextscout": { "model": "google/antigravity-gemini-3-flash", "variant": "minimal" },
+        "externalscout": { "model": "google/antigravity-gemini-3-flash", "variant": "minimal" },
+        "uitester": { "model": "google/antigravity-gemini-3-flash", "variant": "low" },
+        "docwriter": { "model": "google/antigravity-gemini-3-flash", "variant": "medium" }
+      }
+    },
+    "balanced": {
+      "description": "Основа работы на Gemini 3 Pro (low) без глубокого thinking; ревью остаётся на Sonnet; тесты и infra на Flash high.",
+      "agents": {
+        "openagent": { "model": "google/antigravity-gemini-3-pro", "variant": "low" },
+        "coder": { "model": "google/antigravity-gemini-3-pro", "variant": "low" },
+        "planner": { "model": "google/antigravity-gemini-3-pro", "variant": "low" },
+        "debugger": { "model": "google/antigravity-gemini-3-pro", "variant": "low" },
+        "reviewer": { "model": "google/antigravity-claude-sonnet-4-5" },
+        "tester": { "model": "google/antigravity-gemini-3-flash", "variant": "high" },
+        "architect": { "model": "google/antigravity-claude-sonnet-4-5-thinking", "variant": "low" },
+        "devops": { "model": "google/antigravity-gemini-3-flash", "variant": "high" },
+        "contextscout": { "model": "google/antigravity-gemini-3-flash", "variant": "minimal" },
+        "externalscout": { "model": "google/antigravity-gemini-3-flash", "variant": "minimal" },
+        "uitester": { "model": "google/antigravity-gemini-3-flash", "variant": "low" },
+        "docwriter": { "model": "google/antigravity-gemini-3-flash", "variant": "medium" }
+      }
+    },
+    "cost": {
+      "description": "Минимум дорогих моделей: Pro (low) только для реализации и дебага, всё остальное — Flash; ревью держит Sonnet как порог качества.",
+      "agents": {
+        "openagent": { "model": "google/antigravity-gemini-3-flash", "variant": "high" },
+        "coder": { "model": "google/antigravity-gemini-3-pro", "variant": "low" },
+        "planner": { "model": "google/antigravity-gemini-3-flash", "variant": "high" },
+        "debugger": { "model": "google/antigravity-gemini-3-pro", "variant": "low" },
+        "reviewer": { "model": "google/antigravity-claude-sonnet-4-5" },
+        "tester": { "model": "google/antigravity-gemini-3-flash", "variant": "high" },
+        "architect": { "model": "google/antigravity-gemini-3-flash", "variant": "high" },
+        "devops": { "model": "google/antigravity-gemini-3-flash", "variant": "high" },
+        "contextscout": { "model": "google/antigravity-gemini-3-flash", "variant": "minimal" },
+        "externalscout": { "model": "google/antigravity-gemini-3-flash", "variant": "minimal" },
+        "uitester": { "model": "google/antigravity-gemini-3-flash", "variant": "low" },
+        "docwriter": { "model": "google/antigravity-gemini-3-flash", "variant": "medium" }
+      }
+    },
+    "speed": {
+      "description": "Всё на Flash: максимальная скорость итераций, минимум thinking. Для прототипов и простых задач.",
+      "agents": {
+        "openagent": { "model": "google/antigravity-gemini-3-flash", "variant": "high" },
+        "coder": { "model": "google/antigravity-gemini-3-flash", "variant": "high" },
+        "planner": { "model": "google/antigravity-gemini-3-flash", "variant": "high" },
+        "debugger": { "model": "google/antigravity-gemini-3-flash", "variant": "high" },
+        "reviewer": { "model": "google/antigravity-gemini-3-flash", "variant": "high" },
+        "tester": { "model": "google/antigravity-gemini-3-flash", "variant": "high" },
+        "architect": { "model": "google/antigravity-gemini-3-flash", "variant": "high" },
+        "devops": { "model": "google/antigravity-gemini-3-flash", "variant": "high" },
+        "contextscout": { "model": "google/antigravity-gemini-3-flash", "variant": "minimal" },
+        "externalscout": { "model": "google/antigravity-gemini-3-flash", "variant": "minimal" },
+        "uitester": { "model": "google/antigravity-gemini-3-flash", "variant": "low" },
+        "docwriter": { "model": "google/antigravity-gemini-3-flash", "variant": "medium" }
+      }
+    }
+  }
+}

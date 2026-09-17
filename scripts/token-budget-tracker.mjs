@@ -58,21 +58,59 @@ if (!hasRealData) {
 // 2. Compute and display real stats.
 // ---------------------------------------------------------------------------
 
+// Price each agent by ITS model (from the active preset in agent frontmatter),
+// not by a single global guess. Rates are public-list estimates per 1M tokens;
+// a `cost: {input, output}` field on a model in opencode.json overrides them.
+const DEFAULT_RATES = { input: 1.25, output: 5.0 };
+const MODEL_RATES_USD = {
+  'antigravity-gemini-3-pro': { input: 2.0, output: 12.0 },
+  'antigravity-gemini-3-flash': { input: 0.3, output: 2.5 },
+  'antigravity-claude-sonnet-4-5': { input: 3.0, output: 15.0 },
+  'antigravity-claude-sonnet-4-5-thinking': { input: 3.0, output: 15.0 },
+  'antigravity-claude-opus-4-5-thinking': { input: 5.0, output: 25.0 },
+  'antigravity-gpt-oss-120b': { input: 0.1, output: 0.6 },
+};
+
+function rateForModel(modelId) {
+  if (!modelId) return DEFAULT_RATES;
+  const id = modelId.replace(/^([^/]+)\//, '').replace(/:[^:]*$/, ''); // strip provider/ and :variant
+  return MODEL_RATES_USD[id] ?? DEFAULT_RATES;
+}
+
+/** The model an agent runs on: frontmatter model: (preset-written), else the global default. */
+function agentModel(agent) {
+  const agentFile = path.join(root, 'agents', `${agent}.md`);
+  if (fs.existsSync(agentFile)) {
+    const fm = fs.readFileSync(agentFile, 'utf8').match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    const model = fm ? fm[1].match(/^model:\s*(.+)$/m) : null;
+    if (model) return model[1].trim().replace(/^["'](.*)["']$/, '$1');
+  }
+  try {
+    return JSON.parse(fs.readFileSync(path.join(root, 'opencode.json'), 'utf8')).model || null;
+  } catch {
+    return null;
+  }
+}
+
 let totalInput = 0;
 let totalOutput = 0;
+let estimatedCostUSD = 0;
 
 console.log('📊 Token Consumption Breakdown by Agent:\n');
 for (const [agent, data] of Object.entries(stats)) {
   const total = data.input + data.output;
   totalInput += data.input;
   totalOutput += data.output;
-  console.log(`   - ${agent.padEnd(14)}: ${total.toString().padStart(6)} tokens (In: ${data.input} | Out: ${data.output})`);
+  const model = agentModel(agent);
+  const rates = rateForModel(model);
+  estimatedCostUSD += (data.input / 1_000_000) * rates.input + (data.output / 1_000_000) * rates.output;
+  console.log(
+    `   - ${agent.padEnd(14)}: ${total.toString().padStart(6)} tokens (In: ${data.input} | Out: ${data.output})` +
+      `${model ? `  [${model}]` : ''}`,
+  );
 }
 
 const totalTokens = totalInput + totalOutput;
-
-// Pricing estimates: Input ~$1.25/M, Output ~$5.00/M (Gemini 2.5 Pro approximate).
-const estimatedCostUSD = (totalInput / 1_000_000 * 1.25) + (totalOutput / 1_000_000 * 5.00);
 const budgetLimit = 250_000;
 const pctUsed = ((totalTokens / budgetLimit) * 100).toFixed(1);
 

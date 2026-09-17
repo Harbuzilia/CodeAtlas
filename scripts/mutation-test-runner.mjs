@@ -50,6 +50,17 @@ const testTargets = [
     // match disk, so drift goes undetected — unless the baseline fails.
     mutate: (content) =>
       content.replace('Number(skillCountPlans[1]) !== skills.length', 'Number(skillCountPlans[1]) === skills.length')
+  },
+  {
+    name: 'model-presets.mjs',
+    test: 'node scripts/model-presets.mjs --check',
+    // Without --check the script just prints the table and exits 0 — the gate
+    // mode itself is part of the mutant's execution contract.
+    args: '--check',
+    // Invert the drift comparison: an in-sync repo suddenly reports drift on
+    // every agent, so the --check gate must fail.
+    mutate: (content) =>
+      content.replace('if (current.model !== expected.model) {', 'if (current.model === expected.model) {')
   }
 ];
 
@@ -100,7 +111,7 @@ for (const t of testTargets) {
   // because its input contract changed or its guard was disabled.
   let killed = false;
   try {
-    execSync(`node ${shadowPath}`, { cwd: root, stdio: 'pipe', encoding: 'utf8' });
+    execSync(`node ${shadowPath} ${t.args ?? ''}`, { cwd: root, stdio: 'pipe', encoding: 'utf8' });
   } catch {
     killed = true;
   }

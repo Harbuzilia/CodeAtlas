@@ -10,14 +10,17 @@
 ## 2. Иерархия провайдеров (Provider Fallback Mesh)
 
 ```
-[1. Primary Provider: Google Antigravity (Gemini 2.5 Pro)]
+[1. Primary Provider: Google Antigravity (antigravity-gemini-3-pro)]
       │ (При HTTP 429 / Timeout > 30s)
       ▼
-[2. Secondary Fast Provider: Google Antigravity (Gemini 2.5 Flash)]
+[2. Secondary Fast Provider: Google Antigravity (antigravity-gemini-3-flash)]
       │ (При недоступности сервиса Google)
       ▼
-[3. Failover Fallback: CCS Providers (Claude 3.7 Sonnet / GPT-4.5)]
+[3. Failover Fallback: antigravity-claude-sonnet-4-5 / antigravity-gpt-oss-120b]
 ```
+
+> Каталог моделей — `opencode.json` (провайдер `google`); назначения по ролям — пресет
+> `config/model-presets.json` (команда `/presets`). Список выше — реальные ID из каталога.
 
 ---
 
