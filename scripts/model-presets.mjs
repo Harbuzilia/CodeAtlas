@@ -56,19 +56,28 @@ const agentFiles = fs
   .sort();
 
 // --- integrity: presets must reference real agents, real models, real variants ---
+// An empty agents map is the special "inherit" preset: no model lines at all,
+// agents inherit the session model (projects with their own provider catalog).
+const isInheritPreset = (preset) => Object.keys(preset.agents).length === 0;
+
 const catalog = readCatalog();
 for (const [presetName, preset] of Object.entries(presets)) {
   for (const [agent, entry] of Object.entries(preset.agents)) {
     if (!agentFiles.includes(agent)) fail(`пресет "${presetName}": неизвестный агент "${agent}"`);
     if (!catalog.has(entry.model)) {
-      fail(`пресет "${presetName}", агент ${agent}: модель "${entry.model}" отсутствует в каталоге opencode.json`);
+      fail(
+        `пресет "${presetName}", агент ${agent}: модель "${entry.model}" отсутствует в каталоге opencode.json. ` +
+          `Примените \`npm run models:apply -- inherit\` (агенты унаследуют модель сессии) или добавьте свою модель/пресет под локальный каталог.`,
+      );
     }
     if (entry.variant && !catalog.get(entry.model).has(entry.variant)) {
       fail(`пресет "${presetName}", агент ${agent}: вариант "${entry.variant}" не объявлен для ${entry.model}`);
     }
   }
-  for (const agent of agentFiles) {
-    if (!preset.agents[agent]) fail(`пресет "${presetName}": не покрывает агента "${agent}" (пресеты должны быть полными)`);
+  if (!isInheritPreset(preset)) {
+    for (const agent of agentFiles) {
+      if (!preset.agents[agent]) fail(`пресет "${presetName}": не покрывает агента "${agent}" (пресеты должны быть полными)`);
+    }
   }
 }
 if (!presets[active]) fail(`активный пресет "${active}" не найден в config/model-presets.json`);
@@ -84,7 +93,8 @@ function readAssignment(agent) {
   return { model: strip(model?.[1]), variant: strip(variant?.[1]) };
 }
 
-/** Rewrite model/variant lines in an agent's frontmatter, keeping formatting. */
+/** Rewrite model/variant lines in an agent's frontmatter, keeping formatting.
+ *  An entry without model/variant strips the corresponding line (inherit). */
 function writeAssignment(agent, entry) {
   const file = path.join(AGENTS_DIR, `${agent}.md`);
   const text = fs.readFileSync(file, 'utf8');
@@ -93,13 +103,17 @@ function writeAssignment(agent, entry) {
   const eol = match[0].startsWith('---\r\n') ? '\r\n' : '\n';
   let fm = match[1];
 
-  if (/^model:/m.test(fm)) {
-    fm = fm.replace(/^model:[^\n]*/m, `model: ${entry.model}`);
-  } else {
-    // No model line yet: insert right after `mode:` (present in all our agents).
-    // Capture excludes \r so a CRLF frontmatter keeps exactly one line ending.
-    if (/^mode:/m.test(fm)) fm = fm.replace(/^(mode:[^\r\n]*)/m, `$1${eol}model: ${entry.model}`);
-    else fm = `model: ${entry.model}${eol}${fm}`;
+  if (entry.model) {
+    if (/^model:/m.test(fm)) {
+      fm = fm.replace(/^model:[^\n]*/m, `model: ${entry.model}`);
+    } else {
+      // No model line yet: insert right after `mode:` (present in all our agents).
+      // Capture excludes \r so a CRLF frontmatter keeps exactly one line ending.
+      if (/^mode:/m.test(fm)) fm = fm.replace(/^(mode:[^\r\n]*)/m, `$1${eol}model: ${entry.model}`);
+      else fm = `model: ${entry.model}${eol}${fm}`;
+    }
+  } else if (/^model:/m.test(fm)) {
+    fm = fm.replace(/^model:[^\n]*\r?\n?/m, '');
   }
 
   if (entry.variant) {
@@ -132,14 +146,21 @@ if (!presets[showPreset]) fail(`пресет "${showPreset}" не найден`)
 
 if (args.includes('--check')) {
   const issues = [];
+  const inherit = isInheritPreset(presets[active]);
   for (const agent of agentFiles) {
-    const expected = presets[active].agents[agent];
+    const expected = presets[active].agents[agent] ?? {};
     const current = readAssignment(agent);
-    if (current.model !== expected.model) {
-      issues.push(`${agent}: model "${current.model ?? '—'}" ≠ пресет "${expected.model}"`);
+    const wantModel = inherit ? undefined : expected.model;
+    const wantVariant = inherit ? undefined : expected.variant;
+    if (current.model !== wantModel) {
+      issues.push(
+        inherit
+          ? `${agent}: model "${current.model}" назначена, но активен пресет inherit (модель должна наследоваться)`
+          : `${agent}: model "${current.model ?? '—'}" ≠ пресет "${wantModel}"`,
+      );
     }
-    if ((current.variant ?? undefined) !== (expected.variant ?? undefined)) {
-      issues.push(`${agent}: variant "${current.variant ?? '—'}" ≠ пресет "${expected.variant ?? '—'}"`);
+    if ((current.variant ?? undefined) !== (wantVariant ?? undefined)) {
+      issues.push(`${agent}: variant "${current.variant ?? '—'}" ≠ пресет "${wantVariant ?? '—'}"`);
     }
   }
   if (issues.length > 0) {
@@ -155,9 +176,12 @@ if (args.includes('--check')) {
 if (args.includes('--apply')) {
   const target = args[args.indexOf('--apply') + 1];
   if (!target || !presets[target]) fail(`укажи пресет: --apply <${Object.keys(presets).join('|')}>`);
-  for (const [agent, entry] of Object.entries(presets[target].agents)) {
+  const assignments = isInheritPreset(presets[target])
+    ? agentFiles.map((agent) => [agent, {}]) // inherit: strip model/variant everywhere
+    : Object.entries(presets[target].agents);
+  for (const [agent, entry] of assignments) {
     writeAssignment(agent, entry);
-    console.log(`   ✅ ${agent}: ${entry.model}${entry.variant ? `:${entry.variant}` : ''}`);
+    console.log(`   ✅ ${agent}: ${entry.model ? `${entry.model}${entry.variant ? `:${entry.variant}` : ''}` : 'наследует модель сессии'}`);
   }
   // Flip the active marker in the presets file (surgical, keeps formatting).
   const raw = fs.readFileSync(PRESETS_PATH, 'utf8');

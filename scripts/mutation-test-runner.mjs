@@ -60,7 +60,7 @@ const testTargets = [
     // Invert the drift comparison: an in-sync repo suddenly reports drift on
     // every agent, so the --check gate must fail.
     mutate: (content) =>
-      content.replace('if (current.model !== expected.model) {', 'if (current.model === expected.model) {')
+      content.replace('if (current.model !== wantModel) {', 'if (current.model === wantModel) {')
   }
 ];
 

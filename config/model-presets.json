@@ -1,6 +1,10 @@
 {
   "active": "quality",
   "presets": {
+    "inherit": {
+      "description": "Без назначений: агенты наследуют модель сессии. Для проектов со своим провайдером (DashScope/GLM, OpenRouter и т.п.) — примените `npm run models:apply -- inherit` или свой пресет под локальный каталог моделей.",
+      "agents": {}
+    },
     "quality": {
       "description": "Каждой роли её сильная сторона: тяжёлая реализация на Gemini 3 Pro (high), ревью/тесты на Claude Sonnet 4.5, архитектура на Opus 4.5 Thinking, быстрый discovery на Flash.",
       "agents": {

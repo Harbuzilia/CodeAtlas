@@ -67,6 +67,39 @@ check('Context Navigation Index (context/navigation.md)', fs.existsSync(navPath)
 const opencodeDir = path.join(root, '.opencode');
 check('Local .opencode Configuration Directory', fs.existsSync(opencodeDir), 'Run `npm run sync:all` or `.\\opencode-init.ps1`');
 
+// 7. Agent models vs the local provider catalog (WARN only).
+// An agent frontmatter model that the project's opencode.json cannot resolve
+// kills the whole turn at prompt time ("Model not found") — no silent fallback.
+// Catch it here instead, and point at the preset tooling.
+if (opencodeValid) {
+  try {
+    const cfg = JSON.parse(fs.readFileSync(opencodeJsonPath, 'utf8'));
+    const catalog = new Set();
+    for (const [providerId, provider] of Object.entries(cfg.provider || {})) {
+      for (const modelId of Object.keys(provider.models || {})) catalog.add(`${providerId}/${modelId}`);
+    }
+    const unknown = [];
+    for (const a of agentFiles) {
+      const fm = fs.readFileSync(path.join(root, 'agents', a), 'utf8').match(/^---\r?\n([\s\S]*?)\r?\n---/);
+      const model = fm ? fm[1].match(/^model:\s*(.+)$/m) : null;
+      if (model) {
+        const id = model[1].trim().replace(/^["'](.*)["']$/, '$1').replace(/:[^:/]+$/, '');
+        if (!catalog.has(id)) unknown.push(`${a.replace('.md', '')} -> ${id}`);
+      }
+    }
+    if (unknown.length === 0) {
+      check('Agent models resolvable in local opencode.json catalog', true);
+    } else {
+      console.log(`⚠️ Agent models missing from the local catalog: ${unknown.join(', ')}`);
+      console.log('   A model opencode cannot resolve kills the turn ("Model not found").');
+      console.log('   Fix: npm run models:apply -- inherit   (or -- <preset> matching this catalog)');
+      issues++;
+    }
+  } catch {
+    // catalog unreadable — skip the warning, validate:all covers syntax
+  }
+}
+
 console.log('\n----------------------------------------------------');
 if (issues === 0) {
   console.log('🎉 All systems are 100% healthy and ready for autonomous agent execution!');
