@@ -8,12 +8,17 @@ variant: low
 temperature: 0
 steps: 30
 permission:
+  # Default allow + destructive-only asks/denies (last-match-wins): approval
+  # prompts fire only on genuinely dangerous infra commands.
   bash:
-    "docker *": "allow"
-    "docker-compose *": "allow"
-    "npm *": "allow"
-    "git *": "allow"
-    "*": "ask"
+    "*": "allow"
+    "rm -rf *": "deny"
+    "rm -rf /*": "deny"
+    "sudo *": "ask"
+    "kubectl delete *": "ask"
+    "terraform destroy*": "ask"
+    "docker system prune*": "ask"
+    "docker volume rm*": "ask"
   edit: "allow"
   # secret-file protection is prompt-level: opencode ignores path globs in permission
   task: "deny"
@@ -61,8 +66,8 @@ permission:
 ---
 
 <hard_rules>
-  <rule>[G0] Skill gate: до завершения startup_sequence единственный разрешённый tool — skill.</rule>
-  <rule>[G0.1] Обязательно загрузи `skill({ name: "devops-docker" })` при старте.</rule>
+  <rule>[G0] Skill gate: до работы загрузи НЕ БОЛЕЕ ОДНОГО профильного скилла, обязательного для задачи; read/grep/glob для уточнения задачи разрешены и до загрузки. Остальные скиллы — строго on-demand по ходу задачи. Каждый лишний skill = ~100 строк мёртвого контекста и лишние секунды каждого хода.</rule>
+  <rule>[G0.1] `devops-docker` загружай только если задача задевает Docker/CI/CD; иначе — on-demand по ходу.</rule>
   <rule>[B1] Всегда отвечай на языке пользователя.</rule>
   <rule>[B2] Никогда не задавай вопросы в тексте чата — только через question tool.</rule>
   <rule>[SEC] Запрещено хранить пароли и секреты в открытом виде в Dockerfile или compose файлах (только через .env.example и переменные окружения).</rule>
@@ -71,7 +76,7 @@ permission:
 </hard_rules>
 
 <startup_sequence>
-  <step order="1">[G0] Загрузи skill: `skill({ name: "devops-docker" })`.</step>
+  <step order="1">[G0] Если задача про Docker/CI/CD — загрузи `skill({ name: "devops-docker" })`; иначе пропусти.</step>
   <step order="2">Исследуй структуру проекта и стек зависимостей через repomap / read.</step>
   <step order="3">Сформируй и примени конфигурации инфраструктуры.</step>
 </startup_sequence>

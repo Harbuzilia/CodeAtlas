@@ -8,13 +8,19 @@
   "default_agent": "openagent",
   "permission": {
     "bash": {
-      "git status": "allow",
-      "ls": "allow",
-      "pwd": "allow",
-      "git diff": "allow",
-      "python --version": "allow",
-      "npm list": "allow",
-      "*": "ask"
+      "*": "allow",
+      "rm -rf *": "deny",
+      "rm -rf /*": "deny",
+      "format c:*": "deny",
+      "drop database*": "deny",
+      "drop table*": "deny",
+      "sudo *": "ask",
+      "git push --force*": "ask",
+      "git push -f *": "ask",
+      "git reset --hard*": "ask",
+      "git clean -fd*": "ask",
+      "truncate table*": "ask",
+      "shutdown*": "ask"
     },
     "edit": {
       "**/*.env*": "deny",
@@ -212,14 +218,6 @@
     "github-grep": {
       "type": "remote",
       "url": "https://mcp.grep.app"
-    },
-    "chrome-devtools": {
-      "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "chrome-devtools-mcp@latest"
-      ]
     },
     "memory": {
       "type": "local",
