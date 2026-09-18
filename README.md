@@ -40,12 +40,18 @@ npm run setup:hooks    # ставит git-хуки (pre-commit = полный п
 - `.opencode/` зеркалится **копиями** (`sync:local`), не симлинками — Developer Mode не нужен. `opencode-init.ps1` — каноничный init-скрипт для новых репо (Windows), `opencode-init.sh` — для Linux/macOS/Git Bash с fallback-копией.
 - Линейные окончания закреплены в `.gitattributes` (LF в репо, CRLF только для `*.ps1/*.cmd/*.bat`).
 - Официальные доки рекомендуют WSL ради скорости файловой системы — нативный Windows поддерживается этим набором полностью; скрипты проверены на Git Bash + cmd.
+- Кодировки: PowerShell может вернуть mojibake на не-ASCII (upstream #23636, фиксы не смёржены). Garbled-выводу не верь: повтори с префиксом `[Console]::OutputEncoding = [System.Text.Encoding]::UTF8;` или через Git Bash (агенты это знают из instructions).
 
 Установка в другой проект (копирует набор и ставит хуки):
 
 ```bash
 npm run install:local -- --target=<путь-к-проекту>
+npm run models:apply -- inherit   # проект со своим провайдером: агенты наследуют модель сессии
+# или: npm run models:apply -- <пресет под локальный каталог моделей>
 ```
+
+Без этого шага в проекте с чужим провайдером агенты с захардкоженными моделями упадут с
+«Model not found» (фолбэка в opencode нет). `npm run doctor` подсветит несоответствия WARN-ом.
 
 ## Ключевые команды
 
@@ -79,6 +85,12 @@ npm run install:local -- --target=<путь-к-проекту>
 - **Права агентов — permission-only**: deprecated `tools:` карты удалены из всех 12 агентов
   (opencode их игнорирует, а с 1.18.26 они ломают пользовательские permission-правила, issue #46873);
   гейт `validate-agent-permissions` запрещает их возврат и проверяет неэффективные path-globs.
+- **Ноль approval-спама**: bash по умолчанию `allow`; аппрувы только на деструктив
+  (`rm -rf`, `sudo`, force-push, `reset --hard`, drop/truncate — deny/ask последними правилами).
+- **Без зависаний**: плагин `bash-guard` блокирует foreground dev-серверы/вотчеры до того, как они
+  повесят shell-tool (upstream #49169); halt-guard уважает пользовательский abort и не воскрешает сессию.
+- **Браузер**: `playwright-cli` (primary, интерактив + рост e2e-спеков) и `agent-browser`
+  (визуал/a11y/vitals/профили/диагностика); Playwright MCP — опционально, не по умолчанию.
 
 ## Важно
 

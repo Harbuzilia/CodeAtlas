@@ -3,6 +3,70 @@
 Этот файл является единым источником правды по всем внесенным изменениям в проект: **где**, **что** было обновлено, **почему** (техническое обоснование) и **какой эффект** это дало. Обновляется после каждой итерации доработок.
 
 ---
+## [2026-09-18] — Волна 9: скорость ×N, ноль approval-спама, безотказность, браузер = два CLI
+
+Причина волны: боевая эксплуатация пака в реальном проекте (Windows, провайдер DashScope/GLM):
+600 строк кода в час-три, approval на каждую команду, зависание foreground dev-сервера с
+воскрешением сессии halt-guard'ом после пользовательского abort.
+
+### 1. Ноль approval-спама ([`opencode.json`](opencode.json), агенты)
+
+- `permission.bash`: `"*": "allow"` первым правилом, деструктив (`rm -rf`, `sudo`, force-push,
+  `reset --hard`, `clean -fd`, drop/truncate, shutdown, `format c:`) — deny/ask ПОСЛЕДНИМИ
+  (last-match-wins). Раньше `"*": "ask"` требовал подтверждения на каждую команду и копировался
+  `install-local` в целевые проекты.
+- `devops`/`uitester`: широкие `"*": "ask"` заменены на default-allow + деструктив-списки
+  (uitester получил browser-CLI без аппрувов).
+
+### 2. Скорость
+
+- **LIGHT-ROUTE** (`openagent.md`, `delegation.md`): правка ≤3 файлов без риск-триггеров
+  (API/БД/миграции/auth/security/публичные интерфейсы/CI) → один coder с самопроверкой,
+  без reviewer/tester; полные цепочки — по риск-триггерам или явному запросу.
+- **[G0] релакс**: до работы ≤1 обязательный скилл (read/grep/glob разрешены до загрузки);
+  reviewer-чеклист и скиллы devops/architect — on-demand по типу задачи.
+- Прогресс-протокол ужат: 1 запись на делегирование + итог цепочки; findings.md только после contextscout.
+- `instructions.md` урезан 398 → ~150 строк без потери семантики (описания скиллов дублировали
+  skill-tool; дубли delegation-правил свернуты в указатели) — меньше контекста каждый turn.
+
+### 3. Безотказность ([`plugin/halt-guard.js`](plugin/halt-guard.js), [`plugin/bash-guard.js`](plugin/bash-guard.js))
+
+- halt-guard: пользовательский abort (`MessageAbortedError`, interrupted-парты «Tool execution
+  aborted») больше НЕ трактуется как временная ошибка (`aborted` убран из RETRYABLE_RE); сессия
+  помечается и молчит (ни resume, ни нуджей) до следующего сообщения пользователя; APIError
+  проверяется по `data.isRetryable`/statusCode.
+- Новый плагин `bash-guard`: `tool.execute.before` блокирует foreground dev-серверы/вотчеры
+  (`pnpm dev`, `npm run dev|start`, `tsx watch`, `vite/next/nuxt/astro dev`, `nodemon`, `uvicorn`,
+  `dotnet watch`, `http-server`) без detach-маркеров и пайпы вотчеров в Select-Object/head —
+  текст ошибки учит модель детач-запуску с логом и healthcheck (upstream #49169, pipe-EOF висание).
+- `instructions.md`: блок LONG-RUNNING PROCESSES (детач + лог + healthcheck, без пайпов в EOF-ждущие).
+
+### 4. Браузер: два CLI-пути вместо Chrome DevTools MCP
+
+- Вердикт верификации 2026-09: Microsoft сам рекомендует coding-агентам CLI+skills вместо MCP
+  (README playwright-mcp); хостинг MCP в opencode глючит (#42191, #31554); agent-browser на
+  Windows имел pipe-висание (лечится обёрткой), но жив и полезен как второй путь.
+- Новые скиллы: `playwright-cli` (primary: open/snapshot+ref/click/fill/screenshot/console/find,
+  generate-locator и recording → постоянные спеки @playwright/test) и `agent-browser`
+  (визуал/diff/a11y/vitals/профили/doctor/trace/HAR; питфолл stdout-пайпа задокументирован).
+- `uitester` переведён на два CLI с fallback-цепочкой; chrome-devtools MCP удалён из `opencode.json`;
+  упоминания вычищены (e2e-playwright, openagent, registry, instructions); Playwright MCP —
+  опциональным сниппетом с `--caps` в доках, не по умолчанию; `memory` MCP не тронут.
+
+### 5. Модели: переносимость без потери механизма
+
+- Пресет `inherit` (пустой маппинг): `models:apply -- inherit` снимает model/variant со всех
+  агентов — для проектов со своим провайдером (иначе «Model not found» убивает turn, фолбэка нет).
+- `doctor`: WARN-чек «модели агентов vs локальный каталог» + подсказка models:apply.
+- README/PROJECT_GUIDE: шаг `models:apply` сразу после install:local.
+
+### 6. Прочее
+
+- Windows-кодировки: заметка про mojibake PowerShell (#23636) в instructions/README.
+- Скиллов 45 (было 43); счётчики синхронизированы (docs-sync 91+ проверок).
+- Тесты 34/34 (+3 resilience: abort-семантика ×2, bash-guard); мутация и полный прогон зелёные.
+
+---
 ## [2026-09-17] — Code Atlas: слой моделей, анти-сталлинг, переносимость, Windows
 
 Восьмая волна (ветка `feat/atlas-polish`): финальная полировка до «закрытого продукта» под брендом **Code Atlas** (репо [Harbuzilia/CodeAtlas](https://github.com/Harbuzilia/CodeAtlas), package `code-atlas`, MIT). Исследование: официальные доки opencode 1.18.x + лучшие решения комьюнити (awesome-opencode, superpowers, wshobson/agents, ECC, planning-with-files — см. план волны).

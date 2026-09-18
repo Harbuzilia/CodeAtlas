@@ -58,6 +58,7 @@
 - **Управление**: `/presets` (карта + список) · `npm run models:apply -- <preset>` (применить) · `npm run models` (текущие назначения).
 - **Гейт**: `validate:models` в `validate:all` — дрейф frontmatter от активного пресета = FAIL.
 - **Каталог моделей**: `provider.models` в `opencode.json` (провайдер `google`, 6 моделей). Новая модель = запись в каталог + строка в пресете.
+- **Установка в проект со своим провайдером** (DashScope/GLM, OpenRouter и т.п.): модель, которой нет в локальном каталоге, убивает turn («Model not found», фолбэка нет). Сразу после установки выполни `npm run models:apply -- inherit` (агенты наследуют модель сессии) или `-- <свой пресет>` под локальный каталог; `npm run doctor` WARN-ом подсветит несоответствия.
 - Рантайм-переключатель **текущей сессии** — встроенная TUI-команда `/models`; пресеты управляют конфигом на постоянной основе.
 - Тарифы для `/budget` берутся по фактической модели каждого агента (оценки в `scripts/token-budget-tracker.mjs`, переопределяются полем `cost` в каталоге).
 
@@ -129,6 +130,8 @@
 - `test-driven-development` (TDD: RED-GREEN-REFACTOR, дисциплина объёма тестов)
 - `writing-plans` (планы для исполнения: шаги 2-5 минут с точными файлами и проверками)
 - `requesting-code-review` (запрос ревью и ответы по severity; критичное блокирует мёрдж)
+- `playwright-cli` (интерактивные браузер-проверки: snapshot/ref-клики/скриншоты/консоль + рост e2e-спеков)
+- `agent-browser` (визуальный аудит, a11y/vitals, логины через профили, doctor/trace/HAR, diff)
 
 Когда используются:
 - external libs/framework/API -> `context7`
@@ -155,6 +158,7 @@
 - Новая фича с тестами -> `test-driven-development`
 - Декомпозиция и планы -> `writing-plans`
 - Подготовка PR к ревью -> `requesting-code-review`
+- UI/E2E проверки в браузере -> `playwright-cli` (primary), `agent-browser` (визуал/диагностика)
 
 ## 8. One-shot режим
 По умолчанию OFF.
@@ -222,6 +226,10 @@
 - Журнал всех изменений и обоснований: `CHANGELOG.md`; трекер задач: `PLANS.md`.
 
 ## 15. Практичные архитектурные улучшения
+- Разрешения: bash по умолчанию `allow`; аппрувы только на деструктив (`rm -rf`, `sudo`, force-push, `reset --hard`, drop/truncate и т.п. — deny/ask последними правилами, last-match-wins) в `opencode.json` и permission-картах агентов. Цель — ноль approval-спама на обычной работе.
+- Браузер: два CLI-пути — `playwright-cli` (primary: интерактивные проверки + рост e2e-спеков) и `agent-browser` (визуал/a11y/vitals/профили/диагностика). Playwright MCP не поднят по умолчанию (хостинг MCP в opencode глючит: #42191, #31554); опционально: `"playwright": {"type":"local","command":["npx","-y","@playwright/mcp@latest","--caps","core"]}` в `mcp` opencode.json.
+- Долгие процессы: dev-серверы/вотчеры только детачённо с логом и healthcheck; плагин `bash-guard` блокирует foreground-запуск до зависания (upstream #49169); daemon-CLI не пайпить в Select-Object/head (pipe-EOF висание).
+- Halt-guard уважает пользовательский abort: MessageAbortedError и interrupted-парты помечают сессию — авто-возобновления и нуджи молчат до следующего сообщения пользователя.
 - Качество: запускать `npm run validate:all` перед merge и фиксировать результат в PR/отчете.
 - Тесты: для каждого изменения поведения добавлять минимум один проверяющий тест или smoke-check сценарий.
 - Релизные проверки: перед релизом обязательный прогон `validate:runtime` + `smoke:functional` на чистом окружении.
