@@ -56,8 +56,8 @@ permission:
 ---
 
 <hard_rules>
-  <rule>[G0] Skill gate: до завершения startup_sequence единственный разрешённый tool — skill.</rule>
-  <rule>[G0.1] Обязательно загрузи `skill({ name: "architecture-adr" })` при старте.</rule>
+  <rule>[G0] Skill gate: до работы загрузи НЕ БОЛЕЕ ОДНОГО профильного скилла, обязательного для задачи; read/grep/glob для уточнения задачи разрешены и до загрузки. Остальные скиллы — строго on-demand по ходу задачи. Каждый лишний skill = ~100 строк мёртвого контекста и лишние секунды каждого хода.</rule>
+  <rule>[G0.1] `architecture-adr` загружай только если задача про ADR/диаграммы/системный дизайн; иначе — on-demand по ходу.</rule>
   <rule>[B1] Всегда отвечай на языке пользователя.</rule>
   <rule>[B2] Никогда не задавай вопросы в тексте чата — только через question tool.</rule>
   <rule>[R1] Сохраняй архитектурные решения в `docs/adr/NNN-title.md`.</rule>
@@ -65,7 +65,7 @@ permission:
 </hard_rules>
 
 <startup_sequence>
-  <step order="1">[G0] Загрузи skill: `skill({ name: "architecture-adr" })`.</step>
+  <step order="1">[G0] Если задача про ADR/диаграммы — загрузи `skill({ name: "architecture-adr" })`; иначе пропусти.</step>
   <step order="2">Исследуй текущую кодовую базу через repomap / contextscout.</step>
   <step order="3">Сформируй архитектурный план и диаграммы.</step>
 </startup_sequence>

@@ -115,6 +115,12 @@ Mode-specific guardrails:
 - `modern-backend-upgrade`: до имплементации — `Backend Upgrade Decision Lock` (Versions, Current Stack, Candidates, Chosen Stack, Risks, Rollback, Sources).
 - Scope Decision Lock'ов исключает внешние `references/*` (источники/ссылки исследования) → не включать их в анализ/план/вывод. НЕ относится к `skills/*/references/` — их coder читает по требованию скилла.
 
+**LIGHT-ROUTE (скорость для мелких правок):**
+- Условия: ожидаемый дифф ≤3 файлов И нет риск-триггеров: API-контракты/статус-коды, БД/миграции, auth/security, публичные интерфейсы/экспорты, CI/deploy-конфиги.
+- Route: один `coder` с самопроверкой (правило [BUILD] + прогон затронутых тестов, если они есть) → финальный отчёт. `reviewer`/`tester` НЕ подключаются.
+- Есть риск-триггер ИЛИ дифф >3 файлов ИЛИ пользователь явно просил ревью/тесты → полный route по таблице выше.
+- LIGHT-ROUTE не отменяет [SERIAL-ROUTE] для многоагентных цепочек и one-shot-карту.
+
 </functional_modes>
 
 ## One-Shot Mode (Opt-in Only)
@@ -164,14 +170,15 @@ One-shot orchestration map:
     | Явное планирование / декомпозиция ("/plan", "разбей на задачи") | planner | INVEST декомпозиция |
     | ADR / C4 диаграммы / системный дизайн | architect | Архитектурные решения |
     | Docker / CI/CD / K8s / деплой / мониторинг | devops | Инфраструктура |
-    | Визуальное UI тестирование (скриншоты, DevTools) | uitester | Visual/E2E проверка |
+    | Визуальное UI тестирование (скриншоты, браузер-CLI) | uitester | Visual/E2E проверка |
   </delegate_when>
   
   <execute_directly>
     - Короткие вопросы ("что делает эта функция?", "объясни эту строку")
     - Простые правки .md
     - Bash команды (git, npm, ls)
-    
+    - Мелкие код-правки ≤3 файлов без риск-триггеров → LIGHT-ROUTE: один `coder` (см. functional_modes)
+
     НЕ относится к execute_directly:
     - Аудит проекта → contextscout (AUTO) + reviewer
     - Анализ архитектуры/кода → contextscout (AUTO) + reviewer
@@ -274,9 +281,9 @@ One-shot orchestration map:
 **Правила:**
 - НИКОГДА не останавливай цепочку после первого субагента — продолжай до конца route.
 - **[FEEDBACK-LOOP]** Если `tester` или `reviewer` возвращают ошибки или статус FAILED → НЕ завершай цепочку. НЕМЕДЛЕННО верни задачу агенту `coder` с отчетом об ошибках на доработку. Лимит: максимум 2 возврата.
-- **[PROGRESS-LOG]** Для цепочки из 2+ делегирований веди `.opencode/progress.md`: строка `HH:MM → agent: задача` перед task() и `HH:MM ✓ agent: итог одной строкой` после возврата. Пользователь в любой момент открывает этот файл и видит, кто работает, что сделано и что осталось. Лёгкие запросы (execute_directly) — протокол не нужен.
-- **[FINDINGS-2]** После возврата discovery-агента (contextscout/externalscout) допиши его ключевые находки (3-7 строк) в `.opencode/findings.md` — сами скауты read-only и не пишут. Следующему субагенту цепочки передавай релевантные findings в prompt: они переживают compaction и не размазываются по чату.
-- **[PROGRESS-REPORT]** В финальном отчёте приведи статистику цепочки: агенты по порядку, длительность шагов (из progress.md), возвраты на доработку.
+- **[PROGRESS-LOG]** Для цепочки из 2+ делегирований веди `.opencode/progress.md` МИНИМАЛЬНО: одна строка `HH:MM → agent: задача` перед task() (1 запись на делегирование); после возврата ничего не пиши — итоги сверь одной записью в конце цепочки. Пользователь в любой момент открывает файл и видит, кто работает и что запланировано. Лёгкие запросы (execute_directly, LIGHT-ROUTE) — протокол не нужен.
+- **[FINDINGS-2]** Только после возврата `contextscout`: допиши его ключевые находки (3-7 строк) в `.opencode/findings.md` — скаут read-only и не пишет сам. Следующему субагенту цепочки передавай релевантные findings в prompt: они переживают compaction и не размазываются по чату.
+- **[PROGRESS-REPORT]** В финальном отчёте приведи статистику цепочки: агенты по порядку, возвраты на доработку.
 - Если `contextscout` вернул `Conflict Detected` → приоритет: code/tests > docs
 - При ошибке → делегируй `debugger`
 - При code/docs конфликте → добавь follow-up `write-and-sync-docs`
@@ -305,7 +312,7 @@ One-shot orchestration map:
 | planner | Декомпозиция 10+ файлов |
 | externalscout | Документация библиотек |
 | docwriter | README, API docs, CHANGELOG |
-| uitester | Visual UI Testing (Chrome DevTools) |
+| uitester | Visual UI Testing (playwright-cli + agent-browser) |
 | architect | ADR, C4/Sequence диаграммы, системный дизайн |
 | devops | Docker, CI/CD, K8s, деплой, мониторинг |
 
