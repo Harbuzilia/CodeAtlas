@@ -8,6 +8,10 @@
 // Problem 3: a task() delegation dies on a transient provider error — the whole
 //   subagent run is lost and the chain stalls (subagent sessions are not
 //   guarded directly, so we nudge the ROOT session to re-issue the task once).
+// Problem 4: a USER abort (Esc) used to look like a transient error ("aborted")
+//   and got auto-resumed against the user's wish. Now MessageAbortedError and
+//   interrupted tool parts mark the session; no resume/nudge until the user
+//   writes again.
 // This plugin watches session.idle, session.error and message.part.updated,
 // injecting a synthetic continuation. Design: NEVER throw, bounded (3 nudges +
 // 2 error retries per session + 1 retry per failed task part, 2 task retries
@@ -16,13 +20,16 @@
 const TERMINAL_RE = /(Работа завершена|FAILED)\.?\s*Возвращаю управление\./;
 const DELEGATION_RE = /(передаю|делегирую|делегац|передал|вызываю\s*task|task\s*\(|handoff|delegat|next\s+agent|следующ.*агент|продолж.*цепочк)/i;
 // Transient provider failures — worth one bounded auto-resume.
-const RETRYABLE_RE = /(rate.?limit|429|overload|too many|\b5\d\d\b|timeout|timed? ?out|ECONNRESET|ETIMEDOUT|ECONNREFUSED|fetch failed|network|socket|stream|aborted)/i;
+// NOTE: "aborted" is deliberately NOT here: a user abort surfaces with the same
+// wording but must never be auto-resumed (see MessageAbortedError handling).
+const RETRYABLE_RE = /(rate.?limit|429|overload|too many|\b5\d\d\b|timeout|timed? ?out|ECONNRESET|ETIMEDOUT|ECONNREFUSED|fetch failed|network|socket|stream)/i;
 // Fatal — never auto-resume (auth, billing, hard quota). User must act.
 const FATAL_RE = /(401|403|unauthorized|forbidden|invalid.{0,12}api.?key|incorrect.{0,12}api.?key|insufficient.?quota|billing|payment|permission denied)/i;
 
 const MAX_NUDGES = 3;
 const MAX_ERROR_RETRIES = 2;
-const ERROR_BACKOFF_MS = 5000;
+// Env-overridable for tests (tests set HALT_GUARD_ERROR_BACKOFF_MS=0).
+const ERROR_BACKOFF_MS = Number(process.env.HALT_GUARD_ERROR_BACKOFF_MS ?? 5000);
 const MAX_MAP_SIZE = 200;
 // A failed task() delegation (subagent) killed by a transient provider error
 // loses the whole subagent run. One retry nudge per failed part, hard-capped
@@ -42,11 +49,13 @@ export default async function HaltGuard({ client }) {
     errRetries: new Map(),
     taskRetried: new Set(), // part ids already nudged
     sessionTaskRetries: new Map(), // sessionID -> count
+    aborted: new Set(), // sessions the USER aborted — never auto-resume these
   });
   const nudges = shared.nudges; // sessionID -> { count, lastMsgId }
   const errRetries = shared.errRetries; // sessionID -> count
   const taskRetried = shared.taskRetried;
   const sessionTaskRetries = shared.sessionTaskRetries;
+  const aborted = shared.aborted;
 
   const getNudgeState = (sid) => {
     if (!nudges.has(sid)) nudges.set(sid, { count: 0, lastMsgId: null });
@@ -92,12 +101,33 @@ export default async function HaltGuard({ client }) {
           return;
         }
 
+        // A new user message means the user is back in control — clear the
+        // abort mark so later genuine stalls can be nudged again.
+        if (event?.type === 'message.updated') {
+          const info = event?.properties?.info;
+          if (info?.role === 'user' && info.sessionID) aborted.delete(info.sessionID);
+          return;
+        }
+
         // --- Provider error auto-resume (bounded) ---
         if (event?.type === 'session.error') {
           const sessionID = getSessionId(event);
           if (!sessionID) return;
+          const errObj = event?.properties?.error;
+          // User pressed Esc/abort: MessageAbortedError. NEVER auto-resume —
+          // remember the mark so the following session.idle also stays silent.
+          if (errObj?.name === 'MessageAbortedError' || /abort/i.test(String(errObj?.name ?? ''))) {
+            aborted.add(sessionID);
+            return;
+          }
           const errText = extractErrorText(event);
-          if (!errText || FATAL_RE.test(errText) || !RETRYABLE_RE.test(errText)) return;
+          if (!errText || FATAL_RE.test(errText)) return;
+          // Prefer structured retryability from the API error; fall back to text.
+          const retryable =
+            errObj?.name === 'APIError'
+              ? errObj?.data?.isRetryable === true || RETRYABLE_RE.test(errText)
+              : RETRYABLE_RE.test(errText);
+          if (!retryable) return;
           if (!(await isRootSession(sessionID))) return;
 
           const count = errRetries.get(sessionID) ?? 0;
@@ -128,6 +158,15 @@ export default async function HaltGuard({ client }) {
         // orchestrator — no parentID check needed (subagents have task denied).
         if (event?.type === 'message.part.updated') {
           const part = event?.properties?.part;
+          if (part?.type === 'tool' && part.state?.status === 'error') {
+            const sid = part.sessionID ?? null;
+            // User-aborted tool call ("Tool execution aborted", interrupted
+            // metadata): respect it — mark the session and never retry.
+            if (part.state?.metadata?.interrupted === true || /tool execution aborted|user aborted/i.test(String(part.state?.error ?? ''))) {
+              if (sid) aborted.add(sid);
+              return;
+            }
+          }
           if (part?.type === 'tool' && part.tool === 'task' && part.state?.status === 'error') {
             const sid = part.sessionID ?? null;
             const partId = part.id ?? null;
@@ -178,6 +217,8 @@ export default async function HaltGuard({ client }) {
         if (event?.type !== 'session.idle') return;
         const sessionID = event.properties?.sessionID;
         if (!sessionID) return;
+        // Idle right after a user abort: stay silent until the user writes again.
+        if (aborted.has(sessionID)) return;
         if (!(await isRootSession(sessionID))) return;
 
         let res;
