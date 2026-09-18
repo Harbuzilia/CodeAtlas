@@ -18,7 +18,7 @@ function readJson(p) {
 }
 
 function getFrontmatterId(filePath) {
-  const text = fs.readFileSync(filePath, 'utf8');
+  const text = fs.readFileSync(filePath, 'utf8').replace(/\r\n/g, '\n');
   const match = text.match(/^---\n([\s\S]*?)\n---/);
   if (!match) return null;
   const idMatch = match[1].match(/^id:\s*(.+)$/m);

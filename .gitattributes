@@ -1,0 +1,19 @@
+# Normalize line endings: repo stores LF, Windows checkouts get LF too.
+# CRLF sneak-ins (whole-file diffs after scripted edits) are prevented at the
+# source instead of being fixed by tolerant regexes everywhere.
+* text=auto eol=lf
+
+# Windows scripts keep CRLF (PowerShell 5.1 chokes on LF-only in some edge cases).
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Binaries — never normalize.
+*.exe binary
+*.png binary
+*.jpg binary
+*.ico binary
+*.zip binary
+
+# Lockfiles are machine-generated; keep as-is.
+package-lock.json -text

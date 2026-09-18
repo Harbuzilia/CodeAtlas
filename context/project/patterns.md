@@ -95,7 +95,8 @@ Rule: если есть конфликт в документации, следу
 ## Documentation Hygiene | Гигиена документации
 
 - Runtime точка входа: `PROJECT_GUIDE.md`.
-- Исторические материалы: `docs/legacy/history/` и `docs/legacy/archive/`.
+- Сгенерированные карты: `docs/architecture/system_map.md` и `docs/modules/scripts.md`.
+- Архив атомарных бэкапов: `.opencode/history/`.
 - Файлы с пометкой legacy не использовать как источник runtime-правды.
 
 ---
