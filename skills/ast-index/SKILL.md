@@ -12,8 +12,9 @@ description: "AST-поиск по кодовой базе через CLI ast-ind
 
 ## Бинарник и настройка
 
-`~/.config/opencode/bin/ast-index.exe` (глобально), в проекте — `.opencode/bin/ast-index.exe` (symlink).
+Порядок разрешения бинаря: 1) `.opencode/bin/ast-index.exe` в репо Code Atlas; 2) `%LOCALAPPDATA%\ast-index\ast-index.exe`; 3) `~/.config/opencode/bin/ast-index.exe`.
 Индекс в `%LOCALAPPDATA%\ast-index\`. Первый `rebuild` ~1s, дальше — инкрементальный `update`.
+Вне репо Code Atlas бинаря может не быть (45 МБ экзешник специально НЕ синхронизируется в глобальные таргеты): предупреди одной строкой и работай без ast-index (grep/repomap), НЕ падая и не повторяя попытки.
 
 ## Команды
 

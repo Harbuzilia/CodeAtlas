@@ -34,6 +34,10 @@ for (const file of files) {
   const rel = path.relative(root, file).replace(/\\/g, '/');
   // Skip tooling scripts — they are not product code.
   if (rel.startsWith('scripts/') || rel.includes('test') || rel.includes('spec') || rel.includes('validate')) continue;
+  // Runtime plugins are branch-dense by nature (event switches, guards) and are
+  // covered by dedicated plugin tests; the complexity heuristic only produces
+  // 95% "HIGH-risk" noise here.
+  if (rel.startsWith('plugin/')) continue;
 
   const content = fs.readFileSync(file, 'utf8');
   const lines = content.split(/\r?\n/).length;

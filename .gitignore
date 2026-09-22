@@ -10,3 +10,5 @@ bun.lock
 Thumbs.db
 .vscode/
 .idea/
+# ZCode session workspace (plans/state) — local only
+.zcode/
