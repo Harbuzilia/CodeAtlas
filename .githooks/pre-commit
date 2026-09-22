@@ -1,0 +1,25 @@
+#!/bin/sh
+# OpenCode Pre-commit Hook
+# Ensures 100% Quality Gates pass before any commit.
+# Blocks direct commits to main/master.
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
+    echo ""
+    echo "❌ [BLOCKED] Direct commit to '$BRANCH' is not allowed."
+    echo "   Create a feature branch first:  git checkout -b feat/<name>"
+    echo "   Then commit there and open a PR."
+    exit 1
+fi
+
+echo "Running OpenCode Quality Gates (validate:all, scan:secrets, eval:routes)..."
+npm run validate:all && npm run scan:secrets && npm run eval:routes
+
+EXIT_CODE=$?
+if [ $EXIT_CODE -ne 0 ]; then
+    printf '\n❌ [ERROR] Pre-commit validation failed (Quality Gates, Secret Leaks or Routing). Please fix errors before committing.\n'
+    exit 1
+fi
+
+echo "✅ [SUCCESS] Quality Gates, Secret Checks and Routing Evaluation passed."
+exit 0

@@ -15,6 +15,9 @@ Navigation for core standards and workflows.
 | Essential patterns | `essential-patterns.md` | High |
 | Code review | `workflows/review.md` | Critical for reviews |
 | Delegation | `workflows/delegation.md` | Critical for handoffs |
+| Resilience | `workflows/resilience.md` | High for recovery |
+| Swarm coordination | `workflows/swarm-protocol.md` | High for parallel work |
+| Path conventions | `config/paths.json` | Reference |
 
 ---
 
@@ -43,6 +46,22 @@ Navigation for core standards and workflows.
 ### `workflows/delegation.md`
 - When: Delegating to subagents
 - Contains: Context bundling, handoff format
+
+### `workflows/resilience.md`
+- When: Recovering from failed runs, drift, degraded state
+- Contains: Recovery paths, rollback rules
+
+### `workflows/swarm-protocol.md`
+- When: Coordinating multiple agents in parallel
+- Contains: Swarm roles, sync rules
+
+---
+
+## Config Directory
+
+### `config/paths.json`
+- When: Resolving repo path conventions
+- Contains: Canonical location of standards, workflows, docs, history
 
 ---
 

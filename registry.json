@@ -1,12 +1,13 @@
 {
-    "version": "1.0.0",
+    "version": "2.1.0",
     "schema_version": "1.0.0",
-    "repository": "https://github.com/user/opencode-config",
+    "repository": "https://github.com/Harbuzilia/CodeAtlas",
     "categories": {
         "core": "Core agents for primary operations",
         "code": "Code-related subagents",
         "planning": "Planning and decomposition agents",
-        "research": "External research and documentation agents"
+        "research": "External research and documentation agents",
+        "infra": "Infrastructure, DevOps and deployment agents"
     },
     "components": {
         "agents": [
@@ -28,7 +29,11 @@
                     "subagent:reviewer",
                     "subagent:debugger",
                     "subagent:planner",
-                    "subagent:docwriter"
+                    "subagent:docwriter",
+                    "subagent:externalscout",
+                    "subagent:uitester",
+                    "subagent:architect",
+                    "subagent:devops"
                 ],
                 "category": "core"
             }
@@ -152,7 +157,7 @@
                 "name": "UITester",
                 "type": "subagent",
                 "path": "agents/uitester.md",
-                "description": "Visual UI Testing (Chrome DevTools)",
+                "description": "Visual UI Testing (playwright-cli + agent-browser)",
                 "tags": [
                     "ui",
                     "testing",
@@ -160,6 +165,35 @@
                 ],
                 "dependencies": [],
                 "category": "code"
+            },
+            {
+                "id": "architect",
+                "name": "Architect",
+                "type": "subagent",
+                "path": "agents/architect.md",
+                "description": "Системный архитектор — проектирование распределенных систем, генерация ADR и Mermaid диаграмм",
+                "tags": [
+                    "architecture",
+                    "adr",
+                    "system-design"
+                ],
+                "dependencies": [],
+                "category": "planning"
+            },
+            {
+                "id": "devops",
+                "name": "DevOps",
+                "type": "subagent",
+                "path": "agents/devops.md",
+                "description": "DevOps & Infrastructure Engineer — Docker, Kubernetes, CI/CD, Nginx, Terraform",
+                "tags": [
+                    "devops",
+                    "docker",
+                    "ci-cd",
+                    "infra"
+                ],
+                "dependencies": [],
+                "category": "infra"
             }
         ]
     }
