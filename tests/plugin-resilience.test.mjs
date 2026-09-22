@@ -100,6 +100,24 @@ test('halt-guard does not resume non-retryable API errors', async () => {
   assert.equal(prompts.length, 0, 'isRetryable=false must not trigger a resume');
 });
 
+test('secret-guard blocks secret file access via file tools and bash, passes normal work', async () => {
+  const guard = await (await load('plugin/secret-guard.js')).default({});
+  const hook = guard['tool.execute.before'];
+  const fileTool = (tool, file_path) => hook({ tool, sessionID: 's', callID: 'c' }, { args: { file_path } });
+  const bash = (command) => hook({ tool: 'bash', sessionID: 's', callID: 'c' }, { args: { command } });
+
+  await assert.rejects(() => fileTool('read', 'apps/crm/.env'), /SECRET-GUARD/);
+  await assert.rejects(() => fileTool('read', 'C:\\secrets\\server.key'), /SECRET-GUARD/);
+  await assert.rejects(() => fileTool('edit', '/home/u/.ssh/id_rsa'), /SECRET-GUARD/);
+  await assert.rejects(() => bash('cat .env.production'), /SECRET-GUARD/);
+  await assert.rejects(() => bash('Get-Content deploy.pem'), /SECRET-GUARD/);
+
+  await fileTool('read', 'src/app.ts');
+  await fileTool('edit', 'apps/crm/.env.example');
+  await bash('npm test');
+  await bash('cat README.md');
+});
+
 test('bash-guard blocks foreground dev servers and pipe hangs, passes bounded commands', async () => {
   const guard = await (await load('plugin/bash-guard.js')).default({});
   const hook = guard['tool.execute.before'];

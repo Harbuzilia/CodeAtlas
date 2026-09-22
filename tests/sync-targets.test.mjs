@@ -11,7 +11,7 @@ import path from 'node:path';
 import test from 'node:test';
 import { makeTmp, rmTmp, runScript, write } from './helpers.mjs';
 
-test('syncs all five targets without nesting .opencode inside .opencode', () => {
+test('syncs default targets without nesting .opencode inside .opencode', () => {
   const tmp = makeTmp('sync-targets-');
   const home = makeTmp('sync-targets-home-');
   try {
@@ -20,6 +20,7 @@ test('syncs all five targets without nesting .opencode inside .opencode', () => 
     for (const d of ['agents', 'command', 'context', 'plugin']) {
       write(`${d}/marker.txt`, `content of ${d}\n`, tmp);
     }
+    write('AGENTS.md', '# portable entry\n', tmp);
 
     // HOME/USERPROFILE override keeps the "global" targets inside the temp home.
     const r = runScript('scripts/sync-targets.mjs', {
@@ -27,6 +28,14 @@ test('syncs all five targets without nesting .opencode inside .opencode', () => 
       env: { USERPROFILE: home, HOME: home },
     });
     assert.equal(r.status, 0, r.stderr);
+
+    // The shared Agent Skills dir is opt-in: a default run must not touch it.
+    assert.ok(
+      !fs.existsSync(path.join(home, '.agents', 'skills')),
+      '~/.agents/skills must stay untouched without the opt-in flag',
+    );
+    // The portable entry point travels with the global opencode target.
+    assert.ok(fs.existsSync(path.join(home, '.config', 'opencode', 'AGENTS.md')));
 
     // The bug #2 artifact must not reappear...
     assert.ok(
@@ -54,6 +63,24 @@ test('syncs all five targets without nesting .opencode inside .opencode', () => 
         assert.ok(fs.existsSync(path.join(target, rel)), `${target}/${rel} must exist`);
       }
     }
+
+  } finally {
+    rmTmp(tmp);
+    rmTmp(home);
+  }
+});
+
+test('the shared Agent Skills target syncs only with the opt-in flag', () => {
+  const tmp = makeTmp('sync-targets-');
+  const home = makeTmp('sync-targets-home-');
+  try {
+    write('skills/myskill/marker.txt', 'content of skills\n', tmp);
+
+    const r = runScript('scripts/sync-targets.mjs', {
+      cwd: tmp,
+      env: { USERPROFILE: home, HOME: home, CODE_ATLAS_SYNC_AGENTS_SKILLS: '1' },
+    });
+    assert.equal(r.status, 0, r.stderr);
 
     // The Agent Skills standard target is the skills ROOT: no skills/ nesting,
     // and it carries only skills — no agents/commands/plugins.
