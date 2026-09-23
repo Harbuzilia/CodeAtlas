@@ -20,7 +20,7 @@ function buildFixture() {
   write('command/two.md', '---\ndescription: second\n---\nbody', tmp);
   write(
     'command/menu.md',
-    'Slash-команды (3):\n- `/one` — first\n- `/two` — second\n- `/matrix` — matrix\n',
+    'Slash-команды (4):\n- `/one` — first\n- `/two` — second\n- `/matrix` — matrix\n- `/doctor` — doctor\n',
     tmp,
   );
   write(
@@ -28,7 +28,7 @@ function buildFixture() {
     [
       '# Plans',
       '- **Скиллов в системе**: 3 навыка (100% валидированы).',
-      '- **Slash-команд**: 3 (`/one`, `/two`, `/matrix`).',
+      '- **Slash-команд**: 4 (`/one`, `/two`, `/matrix`, `/doctor`).',
       '',
     ].join('\n'),
     tmp,
@@ -40,7 +40,14 @@ function buildFixture() {
   );
   write(
     'command/matrix.md',
-    '---\ndescription: matrix\n---\n\nРеестр из 3 навыков и 3 slash-команд: alpha, beta, gamma.\n',
+    '---\ndescription: matrix\n---\n\nРеестр из 3 навыков и 4 slash-команд: alpha, beta, gamma.\n',
+    tmp,
+  );
+  write('README.md', '# T\n\n| Скиллы | 3 (test) | `skills/` |\n| Slash-команды | 4 + меню | `command/` |\n', tmp);
+  write('command/doctor.md', '---\ndescription: doctor\n---\n\n✅ Skills Inventory    : 3/3 skills verified\n', tmp);
+  write(
+    'docs/architecture/system_map.md',
+    '# Map\n\n- Slash commands: 4 (/one, /two, /matrix, /doctor)\n- Skills: 3 (alpha, beta, gamma)\n',
     tmp,
   );
   return tmp;
@@ -51,7 +58,7 @@ test('fixture in sync passes', () => {
   try {
     const r = runScript('scripts/validate-docs-sync.mjs', { cwd: tmp });
     assert.equal(r.status, 0, r.stdout + r.stderr);
-    assert.match(r.stdout, /3 skills \/ 3 commands/);
+    assert.match(r.stdout, /3 skills \/ 4 commands/);
   } finally {
     rmTmp(tmp);
   }

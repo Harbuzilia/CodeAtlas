@@ -12,8 +12,8 @@
 | Компонент | Объём | Где лежит |
 |-----------|-------|-----------|
 | Агенты | 12 (openagent — оркестратор, contextscout, coder, tester, reviewer и др.) | `agents/` |
-| Скиллы | 37 (языки, безопасность, DevOps, AST-поиск, design) | `skills/` |
-| Slash-команды | 24 + генерируемый `/menu` | `command/` |
+| Скиллы | 38 (языки, безопасность, DevOps, AST-поиск, design) | `skills/` |
+| Slash-команды | 25 + генерируемый `/menu` | `command/` |
 | Плагины | 2 (halt-guard — авто-продолжение при зависании делегирования, telemetry — журнал роутинга) | `plugin/` |
 | Скрипты | ~50 генераторов, валидаторов, бенчмарков | `scripts/` |
 | Пресеты моделей | quality / balanced / cost / speed (агент → модель) | `config/model-presets.json` |

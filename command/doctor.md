@@ -20,7 +20,7 @@ description: Комплексная 360° диагностика окружен�
 ✅ Node.js Runtime     : v20.14.0 (>= 18.0.0 required)
 ✅ Git Configuration   : Installed & Configured
 ✅ Agent Manifests     : 12/12 agent files present
-✅ Skills Inventory    : 43/43 skills verified
+✅ Skills Inventory    : 38/38 skills verified
 ✅ Runtime Mirror      : .opencode/ synced with source
 ✅ Quality Gate Health : 100% Operational
 

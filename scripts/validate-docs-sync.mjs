@@ -126,11 +126,50 @@ if (!menuCount) {
   fail(`command/menu.md: заявлено ${menuCount[1]} команд, на диске ${commands.length}`);
 }
 
+// --- Ungated-but-user-visible counts: README, doctor sample, system_map ---
+// These rotted silently before (README said 37 while disk had 45, doctor 43/43,
+// system_map 23/37). Cheap regex gates close the hole.
+const readme = read('README.md');
+checks += 1;
+const readmeSkills = readme.match(/\| Скиллы \| (\d+) /);
+if (!readmeSkills) fail('README.md: строка "| Скиллы | N" не найдена');
+else if (Number(readmeSkills[1]) !== skills.length) {
+  fail(`README.md: заявлено ${readmeSkills[1]} скиллов, на диске ${skills.length}`);
+}
+checks += 1;
+const readmeCmds = readme.match(/\| Slash-команды \| (\d+) /);
+if (!readmeCmds) fail('README.md: строка "| Slash-команды | N" не найдена');
+else if (Number(readmeCmds[1]) !== commands.length) {
+  fail(`README.md: заявлено ${readmeCmds[1]} команд, на диске ${commands.length}`);
+}
+
+const doctor = read('command/doctor.md');
+checks += 1;
+const doctorSkills = doctor.match(/(\d+)\/\d+ skills verified/);
+if (!doctorSkills) fail('command/doctor.md: пример "N/N skills verified" не найден');
+else if (Number(doctorSkills[1]) !== skills.length) {
+  fail(`command/doctor.md: в примере ${doctorSkills[1]} скиллов, на диске ${skills.length}`);
+}
+
+const sysmap = read('docs/architecture/system_map.md');
+checks += 1;
+const sysmapSkills = sysmap.match(/- Skills: (\d+) /);
+if (!sysmapSkills) fail('system_map.md: строка "- Skills: N" не найдена');
+else if (Number(sysmapSkills[1]) !== skills.length) {
+  fail(`system_map.md: заявлено ${sysmapSkills[1]} скиллов, на диске ${skills.length} (перегенерируй: npm run arch)`);
+}
+checks += 1;
+const sysmapCmds = sysmap.match(/- Slash commands: (\d+) /);
+if (!sysmapCmds) fail('system_map.md: строка "- Slash commands: N" не найдена');
+else if (Number(sysmapCmds[1]) !== commands.length) {
+  fail(`system_map.md: заявлено ${sysmapCmds[1]} команд, на диске ${commands.length} (перегенерируй: npm run arch)`);
+}
+
 if (hasErrors) {
   console.error('\nDocs sync validation failed.');
   process.exit(1);
 }
 ok(
   `Docs in sync: ${skills.length} skills / ${commands.length} commands match ` +
-    `PLANS.md, PROJECT_GUIDE.md, matrix.md, menu.md (${checks} checks)`
+    `PLANS.md, PROJECT_GUIDE.md, matrix.md, menu.md, README, doctor, system_map (${checks} checks)`
 );

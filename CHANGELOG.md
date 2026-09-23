@@ -3,6 +3,36 @@
 Этот файл является единым источником правды по всем внесенным изменениям в проект: **где**, **что** было обновлено, **почему** (техническое обоснование) и **какой эффект** это дало. Обновляется после каждой итерации доработок.
 
 ---
+## [2026-09-18] — Волна 10: идеальная система — роутинг, передачи, скорость, чистые скиллы
+
+Финальная полировка по результатам трёх ревизий (роутинг/передачи, скиллы/MCP, контекст-вес). Цель — система, которая не застревает, передаёт всё по контрактам и не платит лишний контекст каждый ход.
+
+### 1. Роутинг и передачи
+- Ростеры дополнены: delegation.md и patterns.md теперь знают все 12 агентов и 11 режимов (ранее uitester/architect/devops и architecture-design/infra-setup выпадали); `/oneshot` получил команду (триггер был advertised без файла).
+- Мёртвые/невозможные правила убраны: docwriter «вызови contextscout» (task:deny), debugger «вызывает externalscout через task» (task:deny), reviewer [LESSONS-WRITE] (edit:deny), externalscout write-исключение (edit:deny), contextscout «сгенерировать repomap» (bash:deny), architect «через contextscout».
+- Терминальные контракты: planner и uitester получили финальную фразу + FAILED-путь; FEEDBACK-LOOP получил терминальную ветку после 2 возвратов; FAILED скаутов обрабатывается координатором (re-scope/degrade/отчёт), а не слепым делегированием debugger.
+- eval-scenarios: 15 сценариев (+architecture-design, infra-setup, UI one-shot c uitester) + глобальная проверка «каждый субагент покрыт route/сценарием».
+- halt-guard: исчерпание бюджета больше не тихое — один финальный prompt «выдай итог и остановись».
+
+### 2. Зависания и аппрувы
+- MCP-прунинг: `github-grep` и `memory` удалены (ноль вызовов во всём паке) — минус ~2-3K ток/ход схем и холодный старт; `doom_loop: "deny"` (повторные идентичные вызовы гасятся без вопроса).
+- Permission-унификация: деструктив у агентов → deny (цепочки не встают на аппрувах); devops возвращает деструктив пользователю готовой командой ([NO-DESTRUCTIVE]); root-ask оставлен только для прямых действий пользователя.
+- Skill-fallback без external-directory: глобальные `~/.config/opencode/skills`-чтения убраны из всех цепочек (источник permission-промтов mid-chain); единая политика «скилл недоступен → продолжай с пометкой».
+- Деградации вместо stall: context7 down → webfetch + пометка «API не верифицирован»; uitester healthcheck ≤3 попыток → FAILED; contextscout fast-path для точечных запросов; coder context7/standards — условно; блокирующие «дождись подтверждения» переведены на question tool или scoped на прямой вызов.
+
+### 3. Гигиена скиллов (45 → 38)
+- 7 чисто-стековых стандартов переехали в `context/standards/` (знание живо, читается по детекту стека, ноль ежеходного шума): db-migration-safety, caching-redis-strategy, grpc-graphql-contracts, websocket-realtime-events, feature-flags-trunk-based, micro-frontends-federation, event-driven-messaging.
+- Ядерные скиллы получили реальные триггеры: debugger→systematic-debugging+root-cause-tracing, tester→test-driven-development, planner→writing-plans, /pr,/commit→requesting-code-review+git; матрица openagent += db/security/config/API-строки.
+- 14 descriptions-«топиков» переписаны в триггеры; repomap — кросс-платформенная команда + опечатки; instructions больше не дублирует каталог скиллов (харнес инжектит сам), validate-skills гейтит счётчик.
+
+### 4. Контекст-диета
+- instructions.md 204→168 строк (единый источник [B1]/[B2]/[B3]/[G0]/[RETURN]; дубли удалены из 8-9 агентов); contextscout 518→361 (тройные повторы правил, 120-строчный boilerplate стратегий → таблица); coder 293→258 (TDD → указатель на скилл, language-дубль убран); openagent −Constraints-секция; AGENTS.md → только переносимый вход (25 строк).
+- validate-docs-sync расширен на README/doctor/system_map (ранее счётчики протухали без гейта); 86 проверок.
+
+### 5. Статус
+36/36 тестов, 15/15 eval-сценариев, mutation 7/7, validate:all/smoke/eval/secrets/bench зелёные. Коммиты локально (push не выполнялся по указанию).
+
+---
 ## [2026-09-18] — Волна 9.1: верификация полевого аудита (пункты 19-27)
 
 Полевой аудит рабочей копии назвал 9 «осталось»; каждый проверен по репо/рантайму,
