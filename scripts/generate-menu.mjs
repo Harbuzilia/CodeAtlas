@@ -68,6 +68,7 @@ description: Стартовая карта системы — как запро�
 - Docker / CI/CD / деплой -> devops
 - Документация -> docwriter
 - Визуальные UI тесты -> uitester
+- Актуальные доки внешних библиотек -> externalscout
 
 Slash-команды (${entries.length}):
 ${commandList}

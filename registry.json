@@ -147,9 +147,7 @@
                     "readme",
                     "docs"
                 ],
-                "dependencies": [
-                    "subagent:contextscout"
-                ],
+                "dependencies": [],
                 "category": "core"
             },
             {

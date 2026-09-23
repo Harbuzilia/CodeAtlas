@@ -62,11 +62,14 @@ if (oneShotBlock) {
 const scenarios = [
   { name: 'Production Bug Incident', query: 'Падает NullReferenceException на проде при обработке платежа', expectedMode: 'fix-production-bug', expectedRoute: ['debugger'], expectedSkills: ['incident-response'] },
   { name: 'New Feature Implementation (Small)', query: 'Добавь валидацию email в форму регистрации', expectedMode: 'implement-feature', expectedRoute: ['coder'], expectedSkills: ['typescript'] },
-  { name: 'Complex Feature (Multi-file)', query: 'Сделай под ключ интеграцию с платежным шлюзом Stripe (12 файлов)', expectedMode: 'implement-feature', isOneShot: true, expectedRoute: ['planner', 'coder', 'tester', 'docwriter'], expectedSkills: ['typescript', 'context7'] },
+  { name: 'Complex Feature (Multi-file)', query: 'Сделай под ключ интеграцию с платежным шлюзом Stripe (12 файлов)', expectedMode: 'implement-feature', isOneShot: true, expectedRoute: ['planner', 'coder', 'reviewer', 'tester', 'docwriter'], expectedSkills: ['typescript', 'context7'] },
   { name: 'Refactor Module Safely', query: 'Отрефактори сервис авторизации без изменения поведения', expectedMode: 'refactor-safely', expectedRoute: ['coder', 'reviewer', 'tester'], expectedSkills: ['performance-optimization'] },
   { name: 'Add Comprehensive Tests', query: 'Добавь тесты на все публичные методы UserService', expectedMode: 'add-tests-for-module', expectedRoute: ['tester'] },
   { name: 'API Contract Change Safe', query: 'Измени формат ответов /api/users с массива на объект с пагинацией', expectedMode: 'api-change-safe', expectedRoute: ['coder', 'tester', 'docwriter'] },
-  { name: 'Modern UI Design Refresh', query: 'Сделай современный редизайн лендинга', expectedMode: 'modern-design', expectedRoute: ['contextscout', 'externalscout', 'coder'] },
+  { name: 'Modern UI Design Refresh', query: 'Сделай современный редизайн лендинга', expectedMode: 'modern-design', expectedRoute: ['contextscout', 'externalscout', 'coder', 'uitester'] },
+  { name: 'Modern UI Design One-Shot', query: 'Сделай под ключ современный редизайн дашборда', expectedMode: 'modern-design', isOneShot: true, expectedRoute: ['contextscout', 'externalscout', 'coder', 'uitester'] },
+  { name: 'Architecture Design with ADR', query: 'Спроектируй архитектуру модуля уведомлений: ADR и C4 диаграммы', expectedMode: 'architecture-design', expectedRoute: ['architect'], expectedSkills: ['architecture-adr'] },
+  { name: 'Infra Setup Docker CI', query: 'Настрой Docker Compose и CI/CD пайплайн для сервиса', expectedMode: 'infra-setup', expectedRoute: ['devops'], expectedSkills: ['devops-docker'] },
   { name: 'Modern Backend Upgrade', query: 'Обнови ORM и кэширование до современного стека', expectedMode: 'modern-backend-upgrade', expectedRoute: ['contextscout', 'externalscout', 'coder', 'tester'] },
   { name: 'Documentation Sync', query: 'Обнови README и синхронизируй документацию', expectedMode: 'write-and-sync-docs', expectedRoute: ['docwriter'] },
   { name: 'Release Preparation Docs', query: 'Подготовь документацию к релизу', expectedMode: 'prepare-release-docs', expectedRoute: ['docwriter'] },
@@ -137,6 +140,20 @@ for (const sc of scenarios) {
 for (const [mode, agents] of modeRoutes) {
   if (agents.length === 0) {
     console.error(`[FAIL] [FAIL] Mode "${mode}" имеет пустой route в <functional_modes>`);
+    failed++;
+  }
+}
+
+// 6. Global: every registered subagent is reachable from at least one scenario,
+//    mode route or one-shot chain (dead agents would silently rot otherwise).
+const covered = new Set();
+for (const sc of scenarios) for (const a of sc.expectedRoute) covered.add(a);
+for (const agents of modeRoutes.values()) for (const a of agents) covered.add(a);
+for (const agents of oneShotRoutes.values()) for (const a of agents) covered.add(a);
+for (const agent of knownAgents) {
+  if (agent === 'openagent') continue; // the caller, never a route target
+  if (!covered.has(agent)) {
+    console.error(`[FAIL] [FAIL] Агент "${agent}" не покрыт ни сценарием, ни route, ни one-shot-цепочкой`);
     failed++;
   }
 }

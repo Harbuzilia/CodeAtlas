@@ -15,10 +15,17 @@
     - [delegation.md](core/workflows/delegation.md)
     - [resilience.md](core/workflows/resilience.md)
     - [review.md](core/workflows/review.md)
-    - [swarm-protocol.md](core/workflows/swarm-protocol.md)
 - [index.md](index.md)
 - [navigation.md](navigation.md)
 - **project/**
   - [navigation.md](project/navigation.md)
   - [patterns.md](project/patterns.md)
+- **standards/**
+  - [caching-redis-strategy.md](standards/caching-redis-strategy.md)
+  - [db-migration-safety.md](standards/db-migration-safety.md)
+  - [event-driven-messaging.md](standards/event-driven-messaging.md)
+  - [feature-flags-trunk-based.md](standards/feature-flags-trunk-based.md)
+  - [grpc-graphql-contracts.md](standards/grpc-graphql-contracts.md)
+  - [micro-frontends-federation.md](standards/micro-frontends-federation.md)
+  - [websocket-realtime-events.md](standards/websocket-realtime-events.md)
 
