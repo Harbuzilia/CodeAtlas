@@ -1,6 +1,6 @@
 ---
 name: architecture-adr
-description: Проектирование системной архитектуры, генерация Architecture Decision Records (ADR) и C4/Sequence Mermaid диаграмм
+description: "Когда нужно архитектурное решение, ADR или C4/Sequence-диаграммы: фиксация контекст→решение→последствия, Mermaid-диаграммы, сравнение альтернатив"
 ---
 
 # Architecture & ADR Skill

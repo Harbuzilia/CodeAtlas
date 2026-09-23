@@ -1,6 +1,6 @@
 ---
 name: git-conflict-resolution
-description: Стратегии 3-стороннего слияния Git, семантический анализ конфликтов (ours vs theirs) и безопасное объединение
+description: "При merge-конфликтах и их профилактике: 3-way merge, семантическое разрешение по типу файла (код/локи/генерируемое), rebasing-стратегии"
 ---
 
 # Git Conflict Resolution Skill

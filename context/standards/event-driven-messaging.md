@@ -1,7 +1,8 @@
----
-name: event-driven-messaging
-description: Event-Driven архитектура, Transactional Outbox pattern, Idempotent Consumer, Dead Letter Queue (DLQ) и Kafka/RabbitMQ
----
+# Standard: event-driven-messaging
+
+> Справочный стандарт (не скилл): читается при детекте стека/задачи через context/navigation или glob; ноль стоимости в ежеходном каталоге скиллов.
+> Триггеры: Event-Driven архитектура, Transactional Outbox pattern, Idempotent Consumer, Dead Letter Queue (DLQ) и Kafka/RabbitMQ
+
 
 # Event-Driven Messaging & Outbox Skill
 

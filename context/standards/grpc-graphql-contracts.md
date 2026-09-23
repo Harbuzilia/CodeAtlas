@@ -1,7 +1,8 @@
----
-name: grpc-graphql-contracts
-description: Проектирование контрактов gRPC (Protobuf 3) и GraphQL SDL, правила совместимости и защита от N+1
----
+# Standard: grpc-graphql-contracts
+
+> Справочный стандарт (не скилл): читается при детекте стека/задачи через context/navigation или glob; ноль стоимости в ежеходном каталоге скиллов.
+> Триггеры: Проектирование контрактов gRPC (Protobuf 3) и GraphQL SDL, правила совместимости и защита от N+1
+
 
 # gRPC & GraphQL Contracts Skill
 

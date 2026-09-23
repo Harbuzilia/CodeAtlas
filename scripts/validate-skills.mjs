@@ -62,31 +62,24 @@ for (const name of dirs) {
   if (!description) fail(`skills/${name}/SKILL.md frontmatter has no "description"`);
 }
 
+// The skill catalog is injected by opencode itself (names+descriptions in the
+// skill tool), so instructions.md no longer duplicates the name list — it only
+// carries the loading protocol and a count pointer. We gate the count here so
+// the pointer can never rot silently.
 if (!fs.existsSync(instructionsPath)) {
   fail('instructions.md not found');
 } else {
   const instructions = fs.readFileSync(instructionsPath, 'utf8');
-  const block = instructions.match(/<skill_loading>([\s\S]*?)<\/skill_loading>/);
-  if (!block) {
+  if (!instructions.includes('<skill_loading>')) {
     fail('instructions.md has no <skill_loading> block');
-  } else {
-    const listed = new Set(
-      [...block[1].matchAll(/^ {2}- `([a-z0-9-]+)`/gm)].map((m) => m[1]),
-    );
-
-    for (const name of onDisk) {
-      if (!listed.has(name)) fail(`skills/${name}/ exists on disk but is not listed in instructions.md`);
-    }
-    for (const name of listed) {
-      if (!onDisk.has(name)) fail(`instructions.md lists "${name}" but skills/${name}/ does not exist`);
-    }
-
-    const declaredCount = instructions.match(/Канонический реестр скиллов \((\d+) шт\.\)/)?.[1];
-    if (declaredCount && Number(declaredCount) !== listed.size) {
-      fail(`instructions.md claims ${declaredCount} skills but lists ${listed.size}`);
-    }
-    if (!hasErrors) ok(`Skill catalogue coherent: ${listed.size} skills (disk, frontmatter, instructions.md)`);
   }
+  const declaredCount = instructions.match(/Доступные скиллы \((\d+)\)/)?.[1];
+  if (!declaredCount) {
+    fail('instructions.md has no "Доступные скиллы (N)" count pointer');
+  } else if (Number(declaredCount) !== onDisk.size) {
+    fail(`instructions.md claims ${declaredCount} skills but disk has ${onDisk.size}`);
+  }
+  if (!hasErrors) ok(`Skill catalogue coherent: ${onDisk.size} skills (disk, frontmatter, instructions count)`);
 }
 
 if (hasErrors) {

@@ -1,6 +1,6 @@
 ---
 name: observability-opentelemetry
-description: Стандарты сквозной наблюдаемости, OpenTelemetry трассировка, метрики Prometheus, Correlation-ID и Health Checks
+description: "Когда добавляешь или меняешь метрики, трейсинг, логи или health-checks: OpenTelemetry spans, Prometheus-метрики, health/ready-эндпоинты, структурированные логи"
 ---
 
 # Observability & OpenTelemetry Skill

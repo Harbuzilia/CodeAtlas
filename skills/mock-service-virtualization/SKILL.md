@@ -1,6 +1,6 @@
 ---
 name: mock-service-virtualization
-description: Виртуализация API, мокирование внешних сервисов (MSW, in-memory fixtures) для автономной разработки и E2E тестов
+description: "Когда тестам или интеграции нужны внешние API без сети: MSW, мокирование API, оффлайн-сценарии, контрактные стабы"
 ---
 
 # API Mocking & Service Virtualization Skill

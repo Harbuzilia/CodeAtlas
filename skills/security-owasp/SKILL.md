@@ -1,6 +1,6 @@
 ---
 name: security-owasp
-description: "OWASP-безопасность: секреты в env/Key Vault, никогда в коде; XSS-санитизация и запрет dangerouslySetInnerHTML; CSRF-токены и SameSite; серверная валидация ввода (Pydantic/Zod/FluentValidation)"
+description: "OWASP-проверки при написании и ревью кода с секретами, пользовательским вводом или HTML-рендерингом: секреты в env/Key Vault, XSS-санитизация, CSRF-токены, серверная валидация"
 ---
 
 # Правила безопасности OWASP (Skill)

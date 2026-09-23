@@ -1,6 +1,6 @@
 ---
 name: code-modernization-patterns
-description: Паттерны модернизации легаси-кода (CommonJS -> ESM, Callbacks -> async/await, React Class -> React 19 Hooks)
+description: "При модернизации legacy-кода: миграция на ESM, async/await вместо колбэков, паттерны React 19, пошагово без ломки поведения"
 ---
 
 # Code Modernization Patterns Skill

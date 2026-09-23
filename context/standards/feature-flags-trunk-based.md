@@ -1,7 +1,8 @@
----
-name: feature-flags-trunk-based
-description: Feature Flags (булевы, процентные, пользовательские), Trunk-Based Development, безопасный fallback и очистка устаревших флагов
----
+# Standard: feature-flags-trunk-based
+
+> Справочный стандарт (не скилл): читается при детекте стека/задачи через context/navigation или glob; ноль стоимости в ежеходном каталоге скиллов.
+> Триггеры: Feature Flags (булевы, процентные, пользовательские), Trunk-Based Development, безопасный fallback и очистка устаревших флагов
+
 
 # Feature Flags & Trunk-Based Development Skill
 

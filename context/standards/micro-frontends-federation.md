@@ -1,7 +1,8 @@
----
-name: micro-frontends-federation
-description: Архитектура Micro-Frontends, Module Federation 2.0 (Webpack/Vite/Rsbuild), singleton зависимости, Event Bus и Error Boundaries
----
+# Standard: micro-frontends-federation
+
+> Справочный стандарт (не скилл): читается при детекте стека/задачи через context/navigation или glob; ноль стоимости в ежеходном каталоге скиллов.
+> Триггеры: Архитектура Micro-Frontends, Module Federation 2.0 (Webpack/Vite/Rsbuild), singleton зависимости, Event Bus и Error Boundaries
+
 
 # Micro-Frontends & Module Federation Skill
 

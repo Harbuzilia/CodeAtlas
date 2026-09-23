@@ -1,7 +1,8 @@
----
-name: caching-redis-strategy
-description: Стратегии кэширования (Cache-Aside, Write-Through), Redis структуры, защита от Cache Stampede и инвалидация
----
+# Standard: caching-redis-strategy
+
+> Справочный стандарт (не скилл): читается при детекте стека/задачи через context/navigation или glob; ноль стоимости в ежеходном каталоге скиллов.
+> Триггеры: Стратегии кэширования (Cache-Aside, Write-Through), Redis структуры, защита от Cache Stampede и инвалидация
+
 
 # Caching & Redis Strategy Skill
 

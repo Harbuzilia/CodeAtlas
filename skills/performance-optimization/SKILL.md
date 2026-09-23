@@ -1,6 +1,6 @@
 ---
 name: performance-optimization
-description: Профилирование производительности, оптимизация CPU/памяти, устранение N+1 в ORM и бенчмаркинг
+description: "При жалобах на скорость или задаче профилирования: CPU/Memory profiling, поиск N+1 и hot paths, бенчмарк до/после фикса"
 ---
 
 # Performance Optimization Skill

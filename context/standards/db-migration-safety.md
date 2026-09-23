@@ -1,7 +1,8 @@
----
-name: db-migration-safety
-description: Стандарты безопасных Zero-Downtime миграций баз данных (Expand-Contract, non-blocking DDL, rollback scripts)
----
+# Standard: db-migration-safety
+
+> Справочный стандарт (не скилл): читается при детекте стека/задачи через context/navigation или glob; ноль стоимости в ежеходном каталоге скиллов.
+> Триггеры: Стандарты безопасных Zero-Downtime миграций баз данных (Expand-Contract, non-blocking DDL, rollback scripts)
+
 
 # Zero-Downtime Database Migration Safety Skill
 

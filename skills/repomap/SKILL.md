@@ -7,7 +7,7 @@ description: "Карта архитектуры проекта через Aider 
 
 <context>
 Этот скилл предоставляет агентам (особенно `contextscout` и `openagent`) метод для быстрого охвата всей архитектуры проекта через Abstract Syntax Tree (AST). 
-Вместо того чтобы слепо искать через `grep` или читать сотни plików, агент может сгенерировать `repomap`, который использует алгоритм PageRank для оценки наиболее важных файлов, классов и сигнатур функций во всём проекте.
+Вместо того чтобы слепо искать через `grep` или читать сотни файлов, агент может сгенерировать `repomap`, который использует алгоритм PageRank для оценки наиболее важных файлов, классов и сигнатур функций во всём проекте.
 </context>
 
 ## Как сгенерировать Repository Map
@@ -18,7 +18,10 @@ description: "Карта архитектуры проекта через Aider 
 Используй инструмент `bash` (если у тебя есть права) или попроси пользователя выполнить следующую команду в корне проекта:
 
 ```bash
-export PROMPT_TOOLKIT_NO_CPR=1 PYTHONIOENCODING=utf-8 && uvx --from aider-chat aider --yes --no-auto-commits --model null --no-show-model-warnings --show-repo-map > .opencode/repomap.txt
+# Кросс-платформенно (Windows/Linux/macOS): обёртка сама разрулит shell и кодировки
+npm run repomap:generate
+# Или вручную (Git Bash / Linux):
+uvx --from aider-chat aider --yes --no-auto-commits --model null --no-show-model-warnings --show-repo-map > .opencode/repomap.txt
 ```
 
 **Обработка ошибок и адаптация к другим проектам:**
@@ -30,7 +33,7 @@ export PROMPT_TOOLKIT_NO_CPR=1 PYTHONIOENCODING=utf-8 && uvx --from aider-chat a
 
 ## Как использовать файл `.opencode/repomap.txt`
 
-Как только файл сгенерирован (или если он уже существует), агенты должны **прочитать** его начало (`read(".opencode/repomap.txt")`), чтобы мгновенно понять высокоуровневую струкутуру.
+Как только файл сгенерирован (или если он уже существует), агенты должны **прочитать** его начало (`read(".opencode/repomap.txt")`), чтобы мгновенно понять высокоуровневую структуру.
 
 ### Формат вывода `repomap`
 Сгенерированная карта выглядит примерно так:

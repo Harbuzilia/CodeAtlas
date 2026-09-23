@@ -1,6 +1,6 @@
 ---
 name: react-next-modern
-description: Архитектура современного Frontend/Fullstack (React 19, Next.js 15 App Router, Tailwind CSS v4, Zustand v5, TanStack Query v5, Shadcn/ui)
+description: "Для кода на React 19 / Next.js 15 / Tailwind v4 / Zustand: server/client components, RSC-паттерны, современные хуки и состояние"
 ---
 
 # React 19 & Next.js 15 Modern Fullstack Skill

@@ -17,6 +17,7 @@
 | General patterns | `core/essential-patterns.md` |
 | Project-specific | `project/patterns.md` |
 | Delegation | `core/workflows/delegation.md` |
+| Stack-стандарты (Redis/Kafka/gRPC/WS/migrations/flags/MFE) | `standards/*.md` |
 
 ---
 
@@ -25,6 +26,10 @@
 ### `core/essential-patterns.md`
 Triggers: любой код, общие паттерны
 Contains: Pure functions, error handling, security, SOLID краткий
+
+### `standards/*.md` (stack-стандарты, не скиллы)
+Triggers: Redis/кэш, Kafka/очереди, gRPC/GraphQL, WebSockets/SSE, DB-миграции, feature-flags/trunk, micro-frontends
+Contains: db-migration-safety, caching-redis-strategy, grpc-graphql-contracts, websocket-realtime-events, feature-flags-trunk-based, micro-frontends-federation, event-driven-messaging
 
 ### `core/standards/code.md`
 Triggers: write code, edit code, implement, create class/function
@@ -49,10 +54,6 @@ Contains: Review checklist, Conventional Comments, severity levels
 ### `core/workflows/resilience.md`
 Triggers: resilience, reliability, fault-tolerance, circuit breaker
 Contains: Resilience patterns, retry logic, circuit breaker, fallback strategies
-
-### `core/workflows/swarm-protocol.md`
-Triggers: swarm, multi-agent, coordination, parallel agents
-Contains: Swarm communication protocol, agent discovery, parallel execution
 
 ### `core/workflows/delegation.md`
 Triggers: delegate, передай, используй subagent
@@ -89,12 +90,7 @@ BEFORE executing any write/edit:
 
 ### For Subagents
 
-```
-WHEN delegating to subagent:
-1. Create context bundle at .tmp/sessions/{id}/context.md
-2. Include all relevant context files
-3. Tell subagent to load bundle first
-```
+Контекст передаётся ВНУТРИ prompt делегирования (контракт Input/Expected Output/Done Criteria/Return Format + findings из `.opencode/findings.md`); отдельные context-bundle файлы не создаются.
 
 ---
 
@@ -117,7 +113,6 @@ context/
 │       ├── delegation.md
 │       ├── resilience.md
 │       ├── review.md
-│       └── swarm-protocol.md
 └── project/
     ├── navigation.md
     └── patterns.md

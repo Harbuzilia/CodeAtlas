@@ -1,6 +1,6 @@
 ---
 name: security-sast
-description: Статический аудит безопасности кода, защита от OWASP Top 10, утечек секретов, SSRF, IDOR и аудит зависимостей
+description: "При security-ревью кода и зависимостей: статический анализ, OWASP Top 10, dependency-audit, поиск секретов в коде"
 ---
 
 # SAST Security Audit Skill

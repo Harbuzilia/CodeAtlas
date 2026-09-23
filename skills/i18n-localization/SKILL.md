@@ -1,6 +1,6 @@
 ---
 name: i18n-localization
-description: Стандарты интернационализации (i18n/l10n), структуры словарей (JSON/PO/RESX), плюрализация и форматирование дат/валют
+description: "Когда добавляешь или меняешь тексты UI, переводы, локали: плюрализация, Intl API, экстракция строк, locale-fallback"
 ---
 
 # Internationalization & Localization (i18n) Skill

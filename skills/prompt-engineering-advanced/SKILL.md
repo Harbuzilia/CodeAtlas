@@ -1,6 +1,6 @@
 ---
 name: prompt-engineering-advanced
-description: Продвинутый промпт-инжиниринг (XML-структура, DSPy паттерны, Few-Shot, Negative Constraints, защита от галлюцинаций)
+description: "При составлении или оптимизации промптов и инструкций агентов: XML-структурирование, Few-Shot, негативные ограничения, разделение ролей"
 ---
 
 # Advanced Prompt Engineering Skill

@@ -1,6 +1,6 @@
 ---
 name: secrets-config-management
-description: Управление конфигурациями окружений (12-Factor App), runtime-валидация через Zod, маскирование секретов и ротация
+description: "Когда задача трогает переменные окружения, секреты или конфигурацию приложения: 12-Factor config, Zod-валидация env, маскирование секретов, .env.example"
 ---
 
 # Secrets & Environment Config Management Skill

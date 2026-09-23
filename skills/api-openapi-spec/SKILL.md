@@ -1,6 +1,6 @@
 ---
 name: api-openapi-spec
-description: Проектирование REST/HTTP API по спецификации OpenAPI 3.1, валидация схем и предотвращение breaking changes
+description: "При проектировании или изменении REST-контрактов: OpenAPI 3.1 spec-first, валидация схем, версионирование, согласованность контракта с кодом"
 ---
 
 # OpenAPI 3.1 Spec-First Skill

@@ -1,7 +1,8 @@
----
-name: websocket-realtime-events
-description: Стандарты WebSockets, Server-Sent Events (SSE), Heartbeat ping-pong, reconnection backoff и Redis Pub/Sub
----
+# Standard: websocket-realtime-events
+
+> Справочный стандарт (не скилл): читается при детекте стека/задачи через context/navigation или glob; ноль стоимости в ежеходном каталоге скиллов.
+> Триггеры: Стандарты WebSockets, Server-Sent Events (SSE), Heartbeat ping-pong, reconnection backoff и Redis Pub/Sub
+
 
 # WebSocket & Real-Time Events Skill
 
