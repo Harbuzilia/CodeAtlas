@@ -25,7 +25,8 @@
     "edit": {
       "**/*.env*": "deny",
       ".git/**": "deny"
-    }
+    },
+    "doom_loop": "deny"
   },
   "provider": {
     "google": {
@@ -213,18 +214,6 @@
         "npx",
         "-y",
         "@upstash/context7-mcp"
-      ]
-    },
-    "github-grep": {
-      "type": "remote",
-      "url": "https://mcp.grep.app"
-    },
-    "memory": {
-      "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "@modelcontextprotocol/server-memory"
       ]
     }
   },

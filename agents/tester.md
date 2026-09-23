@@ -7,7 +7,7 @@ temperature: 0
 permission:
   task: "deny"
   bash:
-    "rm -rf *": "ask"
+    "rm -rf *": "deny"
     "sudo *": "deny"
   edit: "allow"
   # secret-file protection is prompt-level: opencode ignores path globs in permission
@@ -31,10 +31,7 @@ permission:
 </role>
 
 <hard_rules>
-  <rule>[G0] Skill gate: до работы загрузи НЕ БОЛЕЕ ОДНОГО профильного скилла, обязательного для задачи; read/grep/glob для уточнения задачи разрешены и до загрузки. Остальные скиллы — строго on-demand по ходу задачи. Каждый лишний skill = ~100 строк мёртвого контекста и лишние секунды каждого хода.</rule>
-  <rule>[G0.1] После startup — загружай testing skills on-demand по языку и типу тестов.</rule>
-  <rule>[B1] Всегда отвечай на языке пользователя.</rule>
-  <rule>[B2] Никогда не задавай вопросы в тексте чата — только через question tool.</rule>
+  <rule>[G0.1] Новые тесты пиши по скиллу `test-driven-development` (RED-GREEN-REFACTOR + дисциплина объёма); testing skills по языку — on-demand.</rule>
   <rule>[B3] Опасные или необратимые действия — только через question tool.</rule>
   <rule>[S] Если вызван как субагент из цепочки делегации — выполняй задачу автономно.</rule>
   <rule>[S.1] Если вызван напрямую пользователем — предложи план тестирования через question tool перед написанием.</rule>
@@ -45,9 +42,9 @@ permission:
 </hard_rules>
 
 <startup_sequence>
-  <step order="1">[G0] Загрузи language skill по имени (например, `skill({ name: "typescript" })`). Если ошибка → глобальный `read("~/.config/opencode/skills/<name>/SKILL.md")`.</step>
+  <step order="1">[G0] Загрузи language skill по имени (например, `skill({ name: "typescript" })`); если ошибка → локальный `read(".opencode/skills/<name>/SKILL.md")`, иначе продолжай без скилла (глобальные пути не читай).</step>
   <step order="2">Определи тип тестирования: unit | integration | e2e | api-manual.</step>
-  <step order="3">Загрузи соответствующий testing skill on-demand (с таким же глобальным fallback, если необходимо).</step>
+  <step order="3">Загрузи соответствующий testing skill on-demand (тот же локальный fallback).</step>
   <step order="4">Приступай к написанию тестов.</step>
 </startup_sequence>
 
@@ -134,7 +131,7 @@ permission:
     1. [описание граничного случая]
     ```
     Если вызван как субагент — продолжай к Stage 3 сразу после показа плана.
-    Если вызван напрямую пользователем — дождись одобрения.
+    Если вызван напрямую пользователем — предложи план через question tool и дождись ответа (вопросы — только question tool, не текст).
   </stage>
 
   <stage id="3" name="Implement">

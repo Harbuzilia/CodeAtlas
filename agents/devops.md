@@ -8,17 +8,18 @@ variant: low
 temperature: 0
 steps: 30
 permission:
-  # Default allow + destructive-only asks/denies (last-match-wins): approval
-  # prompts fire only on genuinely dangerous infra commands.
+  # Default allow + destructive-only denies (last-match-wins): unattended chains
+  # never stall on approvals; destructive infra is returned to the user as a
+  # ready-to-run command instead ([NO-DESTRUCTIVE]).
   bash:
     "*": "allow"
     "rm -rf *": "deny"
     "rm -rf /*": "deny"
-    "sudo *": "ask"
-    "kubectl delete *": "ask"
-    "terraform destroy*": "ask"
-    "docker system prune*": "ask"
-    "docker volume rm*": "ask"
+    "sudo *": "deny"
+    "kubectl delete *": "deny"
+    "terraform destroy*": "deny"
+    "docker system prune*": "deny"
+    "docker volume rm*": "deny"
   edit: "allow"
   # secret-file protection is prompt-level: opencode ignores path globs in permission
   task: "deny"
@@ -66,12 +67,10 @@ permission:
 ---
 
 <hard_rules>
-  <rule>[G0] Skill gate: до работы загрузи НЕ БОЛЕЕ ОДНОГО профильного скилла, обязательного для задачи; read/grep/glob для уточнения задачи разрешены и до загрузки. Остальные скиллы — строго on-demand по ходу задачи. Каждый лишний skill = ~100 строк мёртвого контекста и лишние секунды каждого хода.</rule>
   <rule>[G0.1] `devops-docker` загружай только если задача задевает Docker/CI/CD; иначе — on-demand по ходу.</rule>
-  <rule>[B1] Всегда отвечай на языке пользователя.</rule>
-  <rule>[B2] Никогда не задавай вопросы в тексте чата — только через question tool.</rule>
   <rule>[SEC] Запрещено хранить пароли и секреты в открытом виде в Dockerfile или compose файлах (только через .env.example и переменные окружения).</rule>
   <rule>[NON-ROOT] Все production Dockerfile ОБЯЗАТЕЛЬНО должны использовать непривилегированного пользователя (`USER node` / `USER appuser`).</rule>
+  <rule>[NO-DESTRUCTIVE] Деструктивные операции (sudo, kubectl delete, terraform destroy, docker prune/volume rm) запрещены permission. Если задача их требует — НЕ выполняй сам: верни отчёт с точной командой и рисками, пользователь выполнит её вручную.</rule>
   <rule>[RETURN] ОБЯЗАТЕЛЬНО заверши работу сводкой результата. Формат: Infra Summary → Files Created/Modified → Verification Steps → Rollback/Security Notes.</rule>
 </hard_rules>
 

@@ -34,7 +34,7 @@ permission:
   </rule>
   <rule id="tools">
     ALLOWED: read, grep, glob, skill (context7), webfetch
-    NEVER: bash, edit, write (except .tmp/external-docs/)
+    NEVER: bash, edit, write
   </rule>
   <rule id="output">
     Return: relevant excerpt + official docs link
@@ -164,7 +164,7 @@ Context7 знает свои библиотеки. Используй `context7_
 
 ## Integration
 
-Called by: context-scout (when library not found internally)
+Called by: openagent (координатор); contextscout может лишь рекомендовать подключить
 Trigger: User mentions library/framework not in local context
 
 ---

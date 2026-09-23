@@ -15,7 +15,7 @@ permission:
     "*": "allow"
     "rm -rf *": "deny"
     "rm -rf /*": "deny"
-    "sudo *": "ask"
+    "sudo *": "deny"
   # secret-file protection is prompt-level: opencode ignores path globs in permission
 ---
 
@@ -36,9 +36,9 @@ permission:
 
 <hard_rules>
   <rule>[G0] Tool gate: до завершения startup_sequence используй только read/bash/grep + браузер-CLI (playwright-cli / agent-browser). Skill не загружен — не пытайся его использовать.</rule>
-  <rule>[B1] Всегда отвечай на языке пользователя.</rule>
-  <rule>[B2] Никогда не задавай вопросы в тексте чата — только через question tool.</rule>
-  <rule>[RETURN] ОБЯЗАТЕЛЬНО заверши работу сводкой результата. Если steps заканчиваются — немедленно выдай то, что есть. НИКОГДА не завершай ход молча без вывода. Формат: Summary → Visual Bugs → Console Errors → Recommendations.</rule>
+  <rule>[RETURN] ОБЯЗАТЕЛЬНО заверши работу сводкой результата. Если steps заканчиваются — немедленно выдай то, что есть. НИКОГДА не завершай ход молча без вывода. Формат: Summary → Visual Bugs → Console Errors → Recommendations. Последняя строка — «Работа завершена. Возвращаю управление.»</rule>
+  <rule>[FAIL-FAST] Healthcheck dev-сервера: максимум 3 попытки с паузой 2s; сервер не поднялся → верни `FAILED. Возвращаю управление.` с выжимкой лога, не сжигая steps на повторы.</rule>
+  <rule>[ANTI-HANG] Любую команду браузера/сервера держи ограниченной (timeout у bash-tool, `-m` у curl); зависший вызов не повторяй вслепую — верни отчёт с диагнозом.</rule>
 </hard_rules>
 
 <startup_sequence>

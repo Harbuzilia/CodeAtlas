@@ -56,6 +56,32 @@ export default async function HaltGuard({ client }) {
   const taskRetried = shared.taskRetried;
   const sessionTaskRetries = shared.sessionTaskRetries;
   const aborted = shared.aborted;
+  const exhaustedNotified = (shared.exhaustedNotified ??= new Set());
+
+  // Budget exhaustion must not be silent: the user used to see an idle session
+  // with no explanation. One final prompt per session asks the model for a
+  // closing status (done / left) instead of another resume attempt.
+  const notifyExhausted = async (sid, kind) => {
+    if (exhaustedNotified.has(sid)) return;
+    exhaustedNotified.add(sid);
+    try {
+      await client.session.prompt({
+        path: { id: sid },
+        body: {
+          parts: [
+            {
+              type: 'text',
+              text:
+                `[HALT-GUARD] Бюджет авто-продолжений исчерпан (${kind}). Не начинай новых шагов и не повторяй попытки. ` +
+                `Выдай пользователю финальный статус ОДНИМ сообщением: что сделано, что осталось, какие следующие шаги нужны. Затем остановись.`,
+            },
+          ],
+        },
+      });
+    } catch {
+      // best effort
+    }
+  };
 
   const getNudgeState = (sid) => {
     if (!nudges.has(sid)) nudges.set(sid, { count: 0, lastMsgId: null });
@@ -131,7 +157,10 @@ export default async function HaltGuard({ client }) {
           if (!(await isRootSession(sessionID))) return;
 
           const count = errRetries.get(sessionID) ?? 0;
-          if (count >= MAX_ERROR_RETRIES) return;
+          if (count >= MAX_ERROR_RETRIES) {
+            await notifyExhausted(sessionID, 'error retries');
+            return;
+          }
           errRetries.set(sessionID, count + 1);
           pruneMap(errRetries);
 
@@ -280,7 +309,10 @@ export default async function HaltGuard({ client }) {
 
         const st = getNudgeState(sessionID);
         if (st.lastMsgId === info.id) return;
-        if (st.count >= MAX_NUDGES) return;
+        if (st.count >= MAX_NUDGES) {
+          await notifyExhausted(sessionID, 'nudges');
+          return;
+        }
 
         st.count += 1;
         st.lastMsgId = info.id;

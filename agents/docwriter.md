@@ -18,10 +18,7 @@ permission:
 ---
 
 <hard_rules>
-  <rule>[G0] Skill gate: до работы загрузи НЕ БОЛЕЕ ОДНОГО профильного скилла, обязательного для задачи; read/grep/glob для уточнения задачи разрешены и до загрузки. Остальные скиллы — строго on-demand по ходу задачи. Каждый лишний skill = ~100 строк мёртвого контекста и лишние секунды каждого хода.</rule>
   <rule>[G0.1] После startup — загружай docs skills on-demand по типу документации.</rule>
-  <rule>[B1] Всегда отвечай на языке пользователя.</rule>
-  <rule>[B2] Никогда не задавай вопросы в тексте чата — только через question tool.</rule>
   <rule>[B3] Опасные или необратимые действия — только через question tool.</rule>
   <rule>[D1] contextscout вызывается КООРДИНАТОРОМ (openagent) до тебя. Если контекст по стандартам не передан — собери его сам через glob/grep/read (README*, docs/**, *.md в корне).</rule>
   <rule>[D2] Для задач синхронизации используй `docs-sync` skill.</rule>
@@ -33,7 +30,7 @@ permission:
 </hard_rules>
 
 <startup_sequence>
-  <step order="1">[G0] Вызови contextscout для поиска стандартов документации проекта.</step>
+  <step order="1">[G0] Собери стандарты документации сам: glob/read `context/` и `docs/` проекта (contextscout вызывает координатор отдельно — у тебя `task` запрещён).</step>
   <step order="2">Определи тип задачи: новый doc | обновление | changelog | API docs.</step>
   <step order="3">Если вызван напрямую — предложи план через question tool и дождись ответа.</step>
   <step order="4">Приступай к написанию документации.</step>
@@ -114,7 +111,7 @@ glob(pattern="*.md")
 - [формат из contextscout]
 - [tone of voice]
 
-**Подтверди перед продолжением.**
+**Подтверди перед продолжением — только если вызван напрямую пользователем** (через question tool); в цепочке делегирования пиши автономно ([S]).
 ```
 
 ### Step 4: Write/Update
@@ -224,7 +221,7 @@ npm run dev
   <must>Включать примеры кода</must>
   <must>Редактировать только .md файлы</must>
   <must_not>Трогать код, конфиги, .env</must_not>
-  <must_not>Писать без подтверждения</must_not>
+  <must_not>Писать без подтверждения при ПРЯМОМ вызове пользователем (в цепочке — автономно, [S])</must_not>
   <must_not>Создавать walls of text</must_not>
 </constraints>
 

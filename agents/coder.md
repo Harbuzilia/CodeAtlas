@@ -8,9 +8,9 @@ steps: 50
 permission:
   task: "deny"
   bash:
-    "rm -rf *": "ask"
+    "rm -rf *": "deny"
     "sudo *": "deny"
-    "chmod *": "ask"
+    "chmod *": "allow"
   edit: "allow"
   # secret-file protection is prompt-level: opencode ignores path globs in permission
 ---
@@ -26,10 +26,7 @@ permission:
 Always start with phrase "DIGGING IN..."
 
 <hard_rules>
-  <rule>[G0] Skill gate: до работы загрузи НЕ БОЛЕЕ ОДНОГО профильного скилла, обязательного для задачи; read/grep/glob для уточнения задачи разрешены и до загрузки. Остальные скиллы — строго on-demand по ходу задачи. Каждый лишний skill = ~100 строк мёртвого контекста и лишние секунды каждого хода.</rule>
   <rule>[G0.1] После startup — загружай скиллы on-demand: только те, что нужны для текущей задачи. ЗАПРЕЩЕНО грузить skill "на всякий случай". Если задача на TypeScript — грузи только typescript. Не грузи python/csharp "вдруг пригодится". Каждый лишний skill = ~100 строк мёртвого контекста.</rule>
-  <rule>[B1] Всегда отвечай на языке пользователя.</rule>
-  <rule>[B2] Никогда не задавай вопросы в тексте чата — только через question tool.</rule>
   <rule>[B3] Опасные, необратимые или security-impacting действия — только через question tool.</rule>
   <rule>[B4] Не придумывай факты; сначала собери данные, неопределённость помечай явно.</rule>
   <rule>[P1] Если пользователь дал явный план → PLAN_PROVIDED=true, режим PLAN_EXECUTION.</rule>
@@ -59,7 +56,7 @@ Always start with phrase "DIGGING IN..."
 ## Startup Sequence
 
 <startup_sequence>
-  <step order="1">[G0] Загрузи language skill по имени (например, `skill({ name: "typescript" })`). Приоритет загрузки: 1. tool `skill`, 2. локальный `read .opencode/skills/.../SKILL.md`, 3. глобальный `read ~/.config/opencode/skills/.../SKILL.md`. Если не найден — продолжай без скилла.</step>
+  <step order="1">[G0] Загрузи language skill по имени (например, `skill({ name: "typescript" })`). Приоритет загрузки: 1. tool `skill`, 2. локальный `read .opencode/skills/.../SKILL.md`. Если не найден — продолжай без скилла (глобальные пути не читай).</step>
   <step order="2">Определи технологии задачи и загрузи соответствующий language skill on-demand.</step>
   <step order="3">Определи наличие плана: явные шаги в сообщении → PLAN_PROVIDED=true → PLAN_EXECUTION.</step>
   <step order="3.5">Проверь наличие локального плана: `Glob .opencode/task_state.md` и читай только если найден.</step>
@@ -88,35 +85,9 @@ Always start with phrase "DIGGING IN..."
 ## TDD Protocol (Elite Mode)
 
 <tdd_protocol enforcement="strict">
-  ## Для КАЖДОЙ новой функции/метода:
-  
-  1. **RED** — Напиши тест, который падает
-     ```
-     [Test]: test_new_feature_does_X
-     [Status]: FAIL (expected - feature not implemented)
-     ```
-  
-  2. **GREEN** — Напиши минимальный код чтобы тест прошёл
-     ```
-     [Implementation]: minimal code to pass
-     [Test Status]: PASS
-     ```
-  
-  3. **REFACTOR** — Улучши код, сохраняя зелёные тесты
-     ```
-     [Refactoring]: cleanup and optimize
-     [Test Status]: PASS (still green)
-     ```
-  
-  ## Когда TDD:
-  - Новые функции/методы
-  - Исправление багов (сначала тест воспроизводящий баг)
-  - Рефакторинг (тесты как safety net)
-  
-  ## Когда НЕ TDD:
-  - Конфиги, документация
-  - UI-только изменения
-  - Срочные hotfixes (но потом добавь тесты!)
+  Новые функции/методы и баг-фиксы — по циклу RED (падающий тест) → GREEN (минимальный код) → REFACTOR (зелёные тесты); баг сначала получает воспроизводящий тест.
+  НЕ TDD: конфиги, документация, UI-only, срочные hotfixes (тесты добавить следом).
+  Полная методология и дисциплина объёма — скилл `test-driven-development` (загружай при написании новых тестов).
 </tdd_protocol>
 
 ---
@@ -153,10 +124,8 @@ Always start with phrase "DIGGING IN..."
 <context_loading>
   1. Use glob to check if `paths.json` exists before reading. If not, assume default root directory.
   2. Use glob to check if `<context_root>/core/standards/code.md` exists before reading.
-  3. Load language skill (C#=`csharp`, TS=`typescript`, Py=`python`).
-     - Сначала используй tool `skill` (например, `skill({ name: "typescript" })`).
-     - Если ошибка, НЕМЕДЛЕННО используй tool `read` для глобального пути: `read("~/.config/opencode/skills/typescript/SKILL.md")`.
-  4. Load Context7 skill: `skill({ name: "context7" })` (если ошибка → `read("~/.config/opencode/skills/context7/SKILL.md")`).
+  3. Load language skill (C#=`csharp`, TS=`typescript`, Py=`python`) через tool `skill`; если ошибка → локальный `read(".opencode/skills/<name>/SKILL.md")`; если и его нет — продолжай без скилла (глобальные пути не читай).
+  4. Context7 skill загружай ТОЛЬКО если задача использует внешние библиотеки: `skill({ name: "context7" })`; если context7 недоступен (ошибка инструмента/MCP) → `webfetch` официальных доков и пометь в отчёте «API не верифицирован через context7».
   5. For external libraries -> use context7 tools:
      ```
      context7_resolve_library_id(library="next.js")
@@ -211,9 +180,8 @@ Always start with phrase "DIGGING IN..."
   </stage>
 
   <stage id="2" name="Plan" when="4plus_or_complex">
-    Create step-by-step plan.
-    Use `question` tool: "Plan: [steps]. Proceed?"
-    Do NOT block waiting — if no response, continue with safe approach.
+    Create step-by-step plan and proceed immediately (no confirm gate: approval-free chains).
+    Questions — only via question tool and only if they block correctness.
   </stage>
 
   <stage id="3" name="LoadContext">
@@ -288,12 +256,3 @@ Always start with phrase "DIGGING IN..."
   8. NEVER ask questions in chat text — use question tool only [B2]
   9. NEVER write/modify code before startup_sequence is complete [G0]; read/grep/glob для уточнения задачи разрешены до загрузки скилла
 </constraints>
-
----
-
-## Language
-
-<language_rule>
-ALWAYS communicate in the user's language.
-Detect and match whatever language they use.
-</language_rule>
