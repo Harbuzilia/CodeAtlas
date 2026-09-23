@@ -109,18 +109,11 @@
 - `api-openapi-spec` (OpenAPI 3.1 Spec-first, schema validation)
 - `security-sast` (Static code security analysis, OWASP, dependency audit)
 - `architecture-adr` (Architecture Decision Records, C4/Sequence Mermaid)
-- `db-migration-safety` (Zero-downtime DB migrations, Expand-Contract)
 - `mock-service-virtualization` (MSW, API mocking, offline testing)
 - `observability-opentelemetry` (Distributed tracing, Prometheus, Health checks)
 - `i18n-localization` (Localization standards, pluralization, Intl APIs)
 - `prompt-engineering-advanced` (XML structured prompts, Few-Shot, Negative constraints)
-- `caching-redis-strategy` (Cache-Aside, Redis, Cache Stampede protection)
-- `grpc-graphql-contracts` (Protobuf 3, gRPC streaming, GraphQL SDL, DataLoader)
-- `websocket-realtime-events` (WebSockets, SSE, Heartbeat, Redis Pub/Sub)
 - `git-conflict-resolution` (3-way merge, semantic AST conflict resolution)
-- `feature-flags-trunk-based` (Trunk-based dev, canary rollouts, fallback safety)
-- `micro-frontends-federation` (Module Federation 2.0, singletons, event bus)
-- `event-driven-messaging` (Transactional Outbox, Kafka, RabbitMQ, DLQ)
 - `code-modernization-patterns` (Legacy modernization, ESM, async/await, React 19)
 - `secrets-config-management` (12-Factor App config, Zod env validation, secret masking)
 - `frontend-design` (Anti-slop UI-дизайн: лендинги, дашборды, формы, WPF/WinUI, мобильные)
@@ -133,23 +126,33 @@
 - `playwright-cli` (интерактивные браузер-проверки: snapshot/ref-клики/скриншоты/консоль + рост e2e-спеков)
 - `agent-browser` (визуальный аудит, a11y/vitals, логины через профили, doctor/trace/HAR, diff)
 
+### 6.3 Справочные стандарты (`context/standards/*.md`, не скиллы)
+
+Стековые стандарты живут вне каталога скиллов (ноль ежеходного шума), читаются при детекте стека:
+- `db-migration-safety` (Zero-downtime DB migrations, Expand-Contract)
+- `caching-redis-strategy` (Cache-Aside, Redis, Cache Stampede protection)
+- `grpc-graphql-contracts` (Protobuf 3, gRPC streaming, GraphQL SDL, DataLoader)
+- `websocket-realtime-events` (WebSockets, SSE, Heartbeat, Redis Pub/Sub)
+- `feature-flags-trunk-based` (Trunk-based dev, canary rollouts, fallback safety)
+- `micro-frontends-federation` (Module Federation 2.0, singletons, event bus)
+- `event-driven-messaging` (Transactional Outbox, Kafka, RabbitMQ, DLQ)
+
 Когда используются:
 - external libs/framework/API -> `context7`
 - docs sync/release docs -> `docs-sync`
 - production/runtime инциденты -> `incident-response`
-- API contract/schema/status changes -> `api-change-safe`, `api-openapi-spec`, `grpc-graphql-contracts`
+- API contract/schema/status changes -> `api-change-safe`, `api-openapi-spec` (+ стандарт `grpc-graphql-contracts` при gRPC/GraphQL)
 - E2E/UI браузерные тесты -> `e2e-playwright`, `mock-service-virtualization`
-- Профилирование и hot paths -> `performance-optimization`, `caching-redis-strategy`
+- Профилирование и hot paths -> `performance-optimization` (+ стандарт `caching-redis-strategy` при кэшах)
 - Безопасность и PR review -> `security-sast`, `review-code-strategy`
-- Миграции БД -> `database-sql`, `db-migration-safety`
+- Миграции БД -> `database-sql` (+ стандарт `db-migration-safety`)
 - Инфраструктура и мониторинг -> `devops-docker`, `observability-opentelemetry`
 - Интернационализация и переводы -> `i18n-localization`
-- Промпт-инжиниринг и мета-агенты -> `prompt-engineering-advanced`
-- Real-time и WebSockets -> `websocket-realtime-events`
+- Real-time и WebSockets -> стандарт `websocket-realtime-events`
 - Разрешение конфликтов Git -> `git-conflict-resolution`
-- Раскатка фич и флаги -> `feature-flags-trunk-based`
-- Микрофронтенды -> `micro-frontends-federation`
-- Асинхронные события и очереди -> `event-driven-messaging`
+- Раскатка фич и флаги -> стандарт `feature-flags-trunk-based`
+- Микрофронтенды -> стандарт `micro-frontends-federation`
+- Асинхронные события и очереди -> стандарт `event-driven-messaging`
 - Модернизация старого кода -> `code-modernization-patterns`
 - Переменные окружения и секреты -> `secrets-config-management`
 - Дизайн и генерация UI -> `frontend-design`

@@ -7,6 +7,8 @@ description: Автономный конвейер: валидация, Conventi
 ## Назначение
 Провести изменения от рабочего дерева до готового Pull Request: quality gates → безопасный staging → Conventional Commit → `git push` → `gh pr create`.
 
+Перед оформлением PR загрузи скиллы `git` (commit/PR protocol) и `requesting-code-review` (что приложить к запросу ревью и как работать с замечаниями).
+
 Реализация — `scripts/create-pr.mjs` (`npm run pr`). Этот файл описывает **фактическое** поведение скрипта.
 
 ## Вход

@@ -40,6 +40,7 @@ test('telemetry writes a duplicated event once but keeps later real events', asy
 test('halt-guard shares the nudge budget across duplicate plugin instances', async () => {
   let messageSeq = 0;
   let prompts = 0;
+  let lastText = '';
   const client = {
     session: {
       get: async () => ({ data: { id: 's1' } }),
@@ -52,8 +53,9 @@ test('halt-guard shares the nudge budget across duplicate plugin instances', asy
         ],
       }),
       todo: async () => ({ data: [] }),
-      prompt: async () => {
+      prompt: async (args) => {
         prompts += 1;
+        lastText = args.body.parts[0].text;
       },
     },
   };
@@ -68,5 +70,8 @@ test('halt-guard shares the nudge budget across duplicate plugin instances', asy
     await handler.event({ event: { type: 'session.idle', properties: { sessionID: 's1' } } });
   }
 
-  assert.equal(prompts, 3, 'MAX_NUDGES=3 must hold across both plugin instances');
+  // 3 nudges (shared budget across both instances, not 6) + exactly one
+  // closing "budget exhausted" status request instead of a silent stop.
+  assert.equal(prompts, 4, 'MAX_NUDGES=3 must hold across both plugin instances');
+  assert.match(lastText, /Бюджет авто-продолжений исчерпан/);
 });
