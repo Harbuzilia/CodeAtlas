@@ -17,7 +17,7 @@ test('syncs default targets without nesting .opencode inside .opencode', () => {
   try {
     // Skills are directories in the real repo (skills/<name>/SKILL.md).
     write('skills/myskill/marker.txt', 'content of skills\n', tmp);
-    for (const d of ['agents', 'command', 'context', 'plugin']) {
+    for (const d of ['agents', 'command', 'context', 'plugin', 'bin']) {
       write(`${d}/marker.txt`, `content of ${d}\n`, tmp);
     }
     write('AGENTS.md', '# portable entry\n', tmp);
@@ -58,7 +58,7 @@ test('syncs default targets without nesting .opencode inside .opencode', () => {
       path.join(home, '.config', 'pi'),
       path.join(home, '.pi'),
     ]) {
-      for (const d of ['skills', 'agents', 'command', 'context', 'plugin']) {
+      for (const d of ['skills', 'agents', 'command', 'context', 'plugin', 'bin']) {
         const rel = d === 'skills' ? path.join('skills', 'myskill', 'marker.txt') : path.join(d, 'marker.txt');
         assert.ok(fs.existsSync(path.join(target, rel)), `${target}/${rel} must exist`);
       }

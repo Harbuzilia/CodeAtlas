@@ -28,7 +28,7 @@ const WITH_AGENTS_SKILLS =
 console.log('--- 🔄 Multi-Target Environment Sync (OpenCode / Pi / OhMyPi / Agent Skills) ---\n');
 if (DRY_RUN) console.log('(dry-run: nothing will be written)\n');
 
-const DEFAULT_SOURCES = ['skills', 'agents', 'command', 'context', 'plugin'];
+const DEFAULT_SOURCES = ['skills', 'agents', 'command', 'context', 'plugin', 'bin'];
 
 const targets = [
   { name: 'Local Project (.opencode)', dir: path.join(root, '.opencode') },

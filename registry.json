@@ -155,7 +155,7 @@
                 "name": "UITester",
                 "type": "subagent",
                 "path": "agents/uitester.md",
-                "description": "Visual UI Testing (playwright-cli + agent-browser)",
+                "description": "Visual UI Testing (pw)",
                 "tags": [
                     "ui",
                     "testing",

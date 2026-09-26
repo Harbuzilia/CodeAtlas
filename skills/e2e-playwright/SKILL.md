@@ -1,20 +1,20 @@
 ---
 name: e2e-playwright
-description: Автоматизация E2E тестирования с Playwright, Page Object Model, визуальная регрессия; интерактивная разведка — playwright-cli/agent-browser
+description: Автоматизация E2E тестирования с Playwright, Page Object Model, визуальная регрессия; интерактивная разведка — pw (скилл playwright-cli)
 ---
 
 # Playwright E2E Testing Skill
 
 <context>
-Этот скилл содержит стандарты написания надежных, стабильных и быстрых E2E тестов на базе Playwright. Интерактивная браузерная разведка и визуальные проверки — скиллы `playwright-cli` (primary) и `agent-browser` (визуал/диагностика).
+Этот скилл содержит стандарты написания надежных, стабильных и быстрых E2E тестов на базе Playwright. Интерактивная браузерная разведка и визуальные проверки — скилл `playwright-cli` (обёртка pw).
 </context>
 
 ## 0. Интерактивная разведка → постоянный тест
 
-1. Разведка руками: `playwright-cli open/snapshot/click/fill` (см. скилл `playwright-cli`).
-2. Закрепление: `playwright-cli generate-locator <ref>` даёт user-facing локатор; `recording-start` … `recording-stop` печатает действия как Playwright-код.
-3. Переложи запись в спек `e2e/*.spec.ts` по правилам ниже (POM, user-facing locators, без хардкодных таймаутов) — разовая проверка становится постоянным e2e-тестом в CI.
-4. Визуальные diff-ы и a11y/vitals-аудит — `agent-browser diff/a11y/vitals` (см. его скилл).
+1. Разведка руками: `pw open/snap/click/fill` (см. скилл `playwright-cli`); сценарий из 3+ шагов — батчем `pw exec steps.json`.
+2. Селекторы из `pw snap` (`sel`: `#id`, `[data-testid=…]`, `[name=…]`) переводи в user-facing локаторы спека (`getByTestId`/`getByLabel`/`getByRole`).
+3. Переложи сценарий в спек `e2e/*.spec.ts` по правилам ниже (POM, user-facing locators, без хардкодных таймаутов) — разовая проверка становится постоянным e2e-тестом в CI.
+4. A11y/vitals-аудит живой страницы — `pw ax` / `pw vitals`; скриншотные diff-ы — `expect(page).toHaveScreenshot`.
 
 ## 1. Ключевые принципы Playwright
 

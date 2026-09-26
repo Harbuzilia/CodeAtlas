@@ -19,7 +19,7 @@ const checkOnly = process.argv.includes('--check');
 const runtimeDir = path.join(root, '.opencode');
 
 // Mirrored 1:1 from repo root into .opencode/<dir>.
-const MIRRORED_DIRS = ['agents', 'command', 'context', 'plugin', 'skills'];
+const MIRRORED_DIRS = ['agents', 'command', 'context', 'plugin', 'skills', 'bin'];
 
 /** Recursively list files (posix-style relative paths) under `dir`. */
 function listFiles(dir) {
