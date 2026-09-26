@@ -54,6 +54,10 @@ Rule: если есть конфликт в документации, следу
 - `subagents/external-scout`
 - `core/opencoder`
 
+### 2.1) Functional Modes Roster
+Ростер функциональных режимов openagent (единый с `agents/openagent.md` и `context/core/workflows/delegation.md`):
+- `implement-feature`, `fix-production-bug`, `add-tests-for-module`, `refactor-safely`, `write-and-sync-docs`, `prepare-release-docs`, `modern-design`, `modern-backend-upgrade`, `api-change-safe`, `architecture-design`, `infra-setup`.
+
 ### 3) Contract-First Delegation
 Каждая делегация должна включать:
 - `Input`

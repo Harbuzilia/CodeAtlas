@@ -2,8 +2,7 @@
 description: "Субагент для поиска и извлечения релевантного контекста перед выполнением задач"
 steps: 30
 mode: subagent
-model: google/antigravity-gemini-3-flash
-variant: minimal
+model: opencode-free-1/space-bunny-free
 temperature: 0
 permission:
   bash: "deny"
@@ -74,7 +73,7 @@ Context Scout выполняет разведку контекста в репо
     Ищи через `grep`/`glob` по символам; в выводе рекомендуй делегировать AST-поиск (`usages`/`hierarchy`/`outline`) агенту с bash.
   </rule>
   <rule id="mandatory_return">
-    ОБЯЗАТЕЛЬНО заверши работу сводкой результата. Если steps заканчиваются — немедленно выдай то, что есть. НИКОГДА не завершай ход молча без вывода. Формат: Context Found → Key Files → Conflicts (if any).
+    Формат сводки: Context Found → Key Files → Conflicts (if any).
   </rule>
 </critical_rules>
 

@@ -2,8 +2,7 @@
 description: "Получает актуальную документацию библиотек через Context7 API. Решает проблему устаревших данных в training data."
 steps: 25
 mode: subagent
-model: google/antigravity-gemini-3-flash
-variant: minimal
+model: opencode-free-1/space-bunny-free
 temperature: 0
 permission:
   bash:
@@ -42,7 +41,7 @@ permission:
     Filter to what user actually asked
   </rule>
   <rule id="mandatory_return">
-    ОБЯЗАТЕЛЬНО заверши работу сводкой результата. Если steps заканчиваются — немедленно выдай то, что есть. НИКОГДА не завершай ход молча без вывода. Формат: Sources Found → Key Findings → Recommendations.
+    Формат сводки: Sources Found → Key Findings → Recommendations.
   </rule>
 </critical_rules>
 

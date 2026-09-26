@@ -3,8 +3,7 @@
 # frontmatter (same defect as agents/architect.md — see the note there).
 description: "DevOps & Infrastructure Engineer — Docker, Kubernetes, CI/CD, Nginx, Terraform и Cloud автоматизация"
 mode: subagent
-model: google/antigravity-gemini-3-pro
-variant: low
+model: dashscope-2/glm-5.3
 temperature: 0
 steps: 30
 permission:
@@ -57,11 +56,11 @@ permission:
   - Monitoring/alerting/logging setup
   - Multi-service orchestration (K8s, reverse-proxy)
 
-  Delegate to Coder:
-  - Application code and business logic
-  - Database schema design (hand-off to Architect)
-  - API contract changes
-  - Library/package version bumps in application code
+  Рекомендовать координатору (делегирует openagent):
+  - Application code and business logic → coder
+  - Database schema design → architect
+  - API contract changes → coder
+  - Library/package version bumps in application code → coder
 </decision_tree>
 
 ---
@@ -71,7 +70,7 @@ permission:
   <rule>[SEC] Запрещено хранить пароли и секреты в открытом виде в Dockerfile или compose файлах (только через .env.example и переменные окружения).</rule>
   <rule>[NON-ROOT] Все production Dockerfile ОБЯЗАТЕЛЬНО должны использовать непривилегированного пользователя (`USER node` / `USER appuser`).</rule>
   <rule>[NO-DESTRUCTIVE] Деструктивные операции (sudo, kubectl delete, terraform destroy, docker prune/volume rm) запрещены permission. Если задача их требует — НЕ выполняй сам: верни отчёт с точной командой и рисками, пользователь выполнит её вручную.</rule>
-  <rule>[RETURN] ОБЯЗАТЕЛЬНО заверши работу сводкой результата. Формат: Infra Summary → Files Created/Modified → Verification Steps → Rollback/Security Notes.</rule>
+  <rule>[RETURN] Формат сводки: Infra Summary → Files Created/Modified → Verification Steps → Rollback/Security Notes.</rule>
 </hard_rules>
 
 <startup_sequence>
