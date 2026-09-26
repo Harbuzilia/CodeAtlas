@@ -1,5 +1,5 @@
 ---
-description: Карта назначений моделей на агентов и управление пресетами (quality/balanced/cost/speed)
+description: Карта назначений моделей на агентов и управление пресетами (quality/balanced/cost/speed/dashscope/inherit)
 ---
 
 # Presets Command | Команда /presets
@@ -10,7 +10,9 @@ description: Карта назначений моделей на агентов 
 ## Вход
 - `/presets` — текущая карта «агент → модель» активного пресета
 - `/presets list` — все пресеты с описаниями
-- `/presets apply <имя>` — применить пресет (`quality`, `balanced`, `cost`, `speed`)
+- `/presets apply <имя>` — применить пресет (`quality`, `balanced`, `cost`, `speed`, `dashscope`, `inherit`)
+
+Пресет `dashscope` — рабочая конфигурация владельца (GLM-5.3 / Qwen3.8 Flash / free-скауты, без variant): реальные ключи живут в глобальном конфиге машины, в `opencode.json` репозитория — заглушки `REPLACE_WITH_*` только для валидации каталога моделей.
 
 ## Поведение
 1. Для `/presets` и `/presets list`: запусти `npm run models` (и `npm run models -- --list`) через bash и выведи результат как таблицу.

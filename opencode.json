@@ -9,22 +9,92 @@
   "permission": {
     "bash": {
       "*": "allow",
-      "rm -rf *": "deny",
+      "rm -rf /": "deny",
       "rm -rf /*": "deny",
+      "rm -rf ~": "deny",
+      "rm -rf ~/*": "deny",
+      "rm -rf $HOME*": "deny",
+      "rm -rf C:*": "deny",
+      "rm -rf .git*": "deny",
+      "rm -rf ..*": "deny",
+      "del /f /s /q C:*": "deny",
+      "del /q /s C:*": "deny",
+      "rd /s /q C:*": "deny",
+      "rmdir /s /q C:*": "deny",
+      "Remove-Item -Recurse -Force C:*": "deny",
+      "Remove-Item -Recurse -Force /": "deny",
+      "Remove-Item -Recurse -Force /*": "deny",
+      "Remove-Item -Recurse -Force ~*": "deny",
+      "Remove-Item -Recurse -Force ..*": "deny",
+      "Remove-Item -Recurse -Force .git*": "deny",
+      "Remove-Item -Recurse -Force C:/Windows*": "deny",
       "format c:*": "deny",
-      "drop database*": "deny",
+      "format C:*": "deny",
+      "format /": "deny",
+      "Clear-Disk*": "deny",
+      "Initialize-Disk*": "deny",
+      "Remove-Partition*": "deny",
+      "Format-Volume*": "deny",
+      "Remove-Volume*": "deny",
+      "diskpart*": "deny",
+      "mkfs*": "deny",
+      "dd if=*": "deny",
+      "bcdedit*": "deny",
+      "reg delete HKLM*": "deny",
+      "vssadmin delete*": "deny",
+      "cipher /w*": "deny",
+      "wsl --unregister*": "deny",
+      "shutdown*": "deny",
+      "Stop-Computer*": "deny",
+      "Restart-Computer*": "deny",
+      "sudo *": "deny",
+      "doas *": "deny",
+      "curl * | sh": "deny",
+      "curl * | bash": "deny",
+      "wget * | sh": "deny",
+      "wget * | bash": "deny",
+      "iex *": "deny",
+      "Invoke-Expression *": "deny",
+      "* | iex": "deny",
+      "* | Invoke-Expression": "deny",
+      ":(){ :|:& };:": "deny",
+      "*DROP DATABASE*": "deny",
+      "*drop database*": "deny",
       "drop table*": "deny",
-      "sudo *": "ask",
-      "git push --force*": "ask",
-      "git push -f *": "ask",
-      "git reset --hard*": "ask",
-      "git clean -fd*": "ask",
-      "truncate table*": "ask",
-      "shutdown*": "ask"
+      "*DROP SCHEMA*": "deny",
+      "*drop schema*": "deny",
+      "*dropdb *": "deny",
+      "*TRUNCATE TABLE*": "deny",
+      "*migrate reset*": "deny",
+      "*--force-reset*": "deny",
+      "*FLUSHALL*": "deny",
+      "*FLUSHDB*": "deny",
+      "docker volume rm*": "deny",
+      "docker volume prune*": "deny",
+      "docker system prune -a*": "deny",
+      "kubectl delete*": "deny",
+      "git push --force*": "deny",
+      "git push -f*": "deny",
+      "chmod -R 777 /*": "deny",
+      "git push --force-with-lease*": "allow"
     },
     "edit": {
+      "*": "allow",
       "**/*.env*": "deny",
       ".git/**": "deny"
+    },
+    "read": {
+      "*": "allow",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow"
+    },
+    "external_directory": {
+      "*": "allow",
+      "C:/Windows/**": "deny",
+      "C:/Program Files/**": "deny",
+      "~/.ssh/**": "deny",
+      "~/.aws/**": "deny"
     },
     "doom_loop": "deny"
   },
@@ -165,6 +235,78 @@
         },
         "antigravity-gpt-oss-120b": {
           "name": "GPT-OSS 120B"
+        }
+      }
+    },
+    "dashscope": {
+      "npm": "@ai-sdk/openai",
+      "name": "DashScope",
+      "options": {
+        "baseURL": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "apiKey": "REPLACE_WITH_DASHSCOPE_API_KEY"
+      },
+      "models": {
+        "glm-5.3": {
+          "name": "GLM-5.3 (DashScope)",
+          "limit": {
+            "context": 1000000,
+            "output": 131072
+          },
+          "tool_call": true
+        }
+      }
+    },
+    "dashscope-2": {
+      "npm": "@ai-sdk/openai",
+      "name": "DashScope 2",
+      "options": {
+        "baseURL": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "apiKey": "REPLACE_WITH_DASHSCOPE_2_API_KEY"
+      },
+      "models": {
+        "glm-5.3": {
+          "name": "GLM-5.3 (DashScope 2)",
+          "limit": {
+            "context": 1000000,
+            "output": 131072
+          },
+          "tool_call": true
+        },
+        "qwen3.8-flash": {
+          "name": "Qwen3.8 Flash (DashScope 2)",
+          "limit": {
+            "context": 1000000,
+            "output": 131072
+          },
+          "tool_call": true,
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        }
+      }
+    },
+    "opencode-free-1": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "opencode free 1",
+      "options": {
+        "baseURL": "https://opencode.ai/inference/openai/v1",
+        "apiKey": "REPLACE_WITH_OPENCODE_KEY"
+      },
+      "models": {
+        "space-bunny-free": {
+          "name": "Space Bunny Free (free 1)",
+          "limit": {
+            "context": 1000000,
+            "output": 131072
+          },
+          "tool_call": true,
+          "reasoning": true
         }
       }
     }

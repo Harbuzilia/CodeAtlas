@@ -1,5 +1,5 @@
 {
-  "active": "quality",
+  "active": "dashscope",
   "presets": {
     "inherit": {
       "description": "Без назначений: агенты наследуют модель сессии. Для проектов со своим провайдером (DashScope/GLM, OpenRouter и т.п.) — примените `npm run models:apply -- inherit` или свой пресет под локальный каталог моделей.",
@@ -71,6 +71,23 @@
         "externalscout": { "model": "google/antigravity-gemini-3-flash", "variant": "minimal" },
         "uitester": { "model": "google/antigravity-gemini-3-flash", "variant": "low" },
         "docwriter": { "model": "google/antigravity-gemini-3-flash", "variant": "medium" }
+      }
+    },
+    "dashscope": {
+      "description": "Рабочая лошадка владельца: GLM-5.3 на тяжёлых ролях (два DashScope-аккаунта для параллелизма), uitester на Qwen3.8 Flash, скауты на free-модели. Провайдеры описаны в opencode.json (apiKey — заглушка; реальные ключи живут в глобальном конфиге машины).",
+      "agents": {
+        "openagent": { "model": "dashscope/glm-5.3" },
+        "architect": { "model": "dashscope/glm-5.3" },
+        "debugger": { "model": "dashscope/glm-5.3" },
+        "tester": { "model": "dashscope/glm-5.3" },
+        "coder": { "model": "dashscope-2/glm-5.3" },
+        "planner": { "model": "dashscope-2/glm-5.3" },
+        "reviewer": { "model": "dashscope-2/glm-5.3" },
+        "devops": { "model": "dashscope-2/glm-5.3" },
+        "uitester": { "model": "dashscope-2/qwen3.8-flash" },
+        "contextscout": { "model": "opencode-free-1/space-bunny-free" },
+        "docwriter": { "model": "opencode-free-1/space-bunny-free" },
+        "externalscout": { "model": "opencode-free-1/space-bunny-free" }
       }
     }
   }
