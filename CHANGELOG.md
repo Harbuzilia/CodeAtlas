@@ -23,6 +23,7 @@
 - Обёртка `pw` (тонкий Playwright-CLI без демона, 1.2 с против 769 с у daemon-подхода) портирована в пак: `bin/pw.cjs` + скилл `playwright-cli` переписан под pw (open/snap/click/fill/shot/console/ax/vitals, батчи `pw exec`).
 - `agent-browser` удалён из пака (скилл + все упоминания: instructions, openagent, uitester, e2e-playwright, matrix, registry, bash-guard-комментарии, README, PROJECT_GUIDE). uitester переписан на pw. Скиллов 41→40.
 - `bin/` добавлен в карты sync:local и sync:all (аддитивно — сторонние файлы в bin/ не трогаются).
+- uitester += GUI-test протокол (дисциплина web-gui-tester из браузер-стека ZCode, адаптация под pw): план P0-P3, подготовка среды отдельно от теста, чёрный ящик (pw eval только read-only), кросс-валидация «DOM-факт + просмотренный скриншот», транзиентные состояния батчем pw exec, «тестировать ≠ чинить».
 
 ### 4. Модели: пресет dashscope (активен)
 - config/model-presets.json: пресет `dashscope` — рабочая конфигурация владельца (GLM-5.3 через два DashScope-аккаунта, uitester на Qwen3.8 Flash, скауты на free-модели, без variant). Применён и помечен активным: каждый будущий sync сохраняет эти модели; возврат к публичному дефолту — `npm run models:apply -- quality`.
