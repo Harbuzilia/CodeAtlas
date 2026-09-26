@@ -100,6 +100,44 @@ test('halt-guard does not resume non-retryable API errors', async () => {
   assert.equal(prompts.length, 0, 'isRetryable=false must not trigger a resume');
 });
 
+test('halt-guard exhaustion is per stall episode, not per whole session', async () => {
+  let messageSeq = 0;
+  const prompts = [];
+  const client = {
+    session: {
+      get: async () => ({ data: { id: 's', parentID: null } }),
+      messages: async () => ({
+        data: [
+          {
+            info: { role: 'assistant', id: `m${++messageSeq}`, time: { completed: 1 } },
+            parts: [{ type: 'text', text: 'Передаю агенту coder задачу.' }],
+          },
+        ],
+      }),
+      todo: async () => ({ data: [] }),
+      prompt: async (args) => {
+        prompts.push(args.body.parts[0].text);
+      },
+    },
+  };
+  const guard = await (await load('plugin/halt-guard.js')).default({ client });
+
+  // First episode: 3 nudges + one closing exhaustion prompt.
+  for (let i = 0; i < 4; i++) await guard.event(idle('sess-ep'));
+  assert.equal(prompts.length, 4, '3 nudges + 1 exhaustion prompt');
+  assert.match(prompts[3], /Бюджет авто-продолжений исчерпан/);
+
+  // The stall drags on within the same episode — stays silent.
+  await guard.event(idle('sess-ep'));
+  assert.equal(prompts.length, 4, 'no repeat exhaustion prompt within one episode');
+
+  // The user comes back and the session stalls again — a new episode must speak.
+  await guard.event(userMsg('sess-ep'));
+  await guard.event(idle('sess-ep'));
+  assert.equal(prompts.length, 5, 'exhaustion after recovery must not be silent');
+  assert.match(prompts[4], /Бюджет авто-продолжений исчерпан/);
+});
+
 test('secret-guard blocks secret file access via file tools and bash, passes normal work', async () => {
   const guard = await (await load('plugin/secret-guard.js')).default({});
   const hook = guard['tool.execute.before'];
@@ -111,11 +149,15 @@ test('secret-guard blocks secret file access via file tools and bash, passes nor
   await assert.rejects(() => fileTool('edit', '/home/u/.ssh/id_rsa'), /SECRET-GUARD/);
   await assert.rejects(() => bash('cat .env.production'), /SECRET-GUARD/);
   await assert.rejects(() => bash('Get-Content deploy.pem'), /SECRET-GUARD/);
+  await assert.rejects(() => bash('cat prod.env'), /SECRET-GUARD/, 'non-dotfile *.env must be blocked');
+  await assert.rejects(() => bash('rg DATABASE_URL .env'), /SECRET-GUARD/, 'rg must be covered as a reader');
 
   await fileTool('read', 'src/app.ts');
   await fileTool('edit', 'apps/crm/.env.example');
   await bash('npm test');
   await bash('cat README.md');
+  await bash('cat .env.example');
+  await bash('type .env.sample');
 });
 
 test('bash-guard blocks foreground dev servers and pipe hangs, passes bounded commands', async () => {
@@ -131,13 +173,19 @@ test('bash-guard blocks foreground dev servers and pipe hangs, passes bounded co
     'piping a dev server into Select-Object must be blocked',
   );
   await assert.rejects(() => run('tsx watch api/server.ts'), /BASH-GUARD/, 'tsx watch must be blocked');
+  await assert.rejects(() => run('dotnet run'), /BASH-GUARD/, 'dotnet run must be blocked');
+  await assert.rejects(() => run('ng serve --port 4200'), /BASH-GUARD/, 'ng serve must be blocked');
+  await assert.rejects(() => run('python manage.py runserver'), /BASH-GUARD/, 'manage.py runserver must be blocked');
+  await assert.rejects(() => run('npx vitest --watch'), /BASH-GUARD/, 'vitest --watch must be blocked');
+  await assert.rejects(() => run('flask run'), /BASH-GUARD/, 'flask run must be blocked');
 
   // Detached launches and bounded commands pass.
   await run("Start-Process pwsh -ArgumentList 'pnpm dev:api' -WindowStyle Hidden");
   await run('nohup pnpm dev > server.log 2>&1 &');
+  await run('timeout 120 dotnet run');
   await run('npm test');
   await run('npm run build');
   await run('git status');
-  await run('agent-browser open http://localhost:3000');
+  await run('pw open http://localhost:3000');
   await run('playwright-cli snapshot');
 });

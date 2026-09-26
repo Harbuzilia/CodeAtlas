@@ -4,7 +4,7 @@
 // Why: a dev server / watcher started in the foreground never exits; the shell
 // tool's timeout kills the child but the stdio pipe stays open, so the call
 // blocks indefinitely (upstream opencode #49169; the same pipe-EOF trap hits
-// daemon CLIs like agent-browser under PowerShell). The user then has to abort
+// any daemon CLI under PowerShell). The user then has to abort
 // by hand — losing the turn.
 //
 // Design: tool.execute.before throws for foreground server/daemon patterns
@@ -14,13 +14,13 @@
 
 // Foreground servers / watchers that never exit on their own.
 const FOREGROUND_SERVER_RE =
-  /(?:^|[\s;&|()])(?:pnpm|npm|yarn|bun)\s+(?:run\s+)?(?:dev|start|serve|watch)\b|(?:^|[\s;&|()])tsx\s+watch\b|(?:^|[\s;&|()])(?:vite|next|nuxt|astro)\s+dev\b|(?:^|[\s;&|()])nodemon\b|(?:^|[\s;&|()])http-server\b|(?:^|[\s;&|()])dotnet\s+watch\b|(?:^|[\s;&|()])uvicorn\b|(?:^|[\s;&|()])python\s+-m\s+http\.server\b|(?:^|[\s;&|()])live-server\b/i;
+  /(?:^|[\s;&|()])(?:pnpm|npm|yarn|bun)\s+(?:run\s+)?(?:dev|start|serve|watch)\b|(?:^|[\s;&|()])tsx\s+watch\b|(?:^|[\s;&|()])(?:vite|next|nuxt|astro)\s+dev\b|(?:^|[\s;&|()])nodemon\b|(?:^|[\s;&|()])http-server\b|(?:^|[\s;&|()])(?:dotnet\s+watch|dotnet\s+run)\b|(?:^|[\s;&|()])ng\s+serve\b|(?:^|[\s;&|()])(?:flask\s+run|python\s+-m\s+flask\s+run)\b|(?:^|[\s;&|()])gunicorn\b|(?:^|[\s;&|()])(?:python3?|py)\s+manage\.py\s+runserver\b|(?:^|[\s;&|()])(?:tsc|jest|vitest)\b[^;&|]*--watch\b|(?:^|[\s;&|()])uvicorn\b|(?:^|[\s;&|()])python\s+-m\s+http\.server\b|(?:^|[\s;&|()])live-server\b/i;
 
 // Markers that make the launch safe (detached / bounded / logged).
 const DETACH_RE = /Start-Process|start\s+\/b|nohup|setsid|&\s*$|>\s*\S+\s*2>&1\s*&|\btimeout\s+(\/t\s+)?\d/i;
 
 // Piping a non-terminating stream into a consumer that waits for EOF hangs
-// PowerShell forever (the agent-browser/`pnpm dev | Select-Object` incident).
+// PowerShell forever (the `pnpm dev | Select-Object` incident).
 const PIPE_HANG_RE = /\|\s*(Select-Object|Select-String|head|more|less|findstr)\b/i;
 
 const GUIDANCE =

@@ -18,7 +18,7 @@
 // per session), root sessions only (parentID guard), prompt-only guard fallback.
 
 const TERMINAL_RE = /(Работа завершена|FAILED)\.?\s*Возвращаю управление\./;
-const DELEGATION_RE = /(передаю|делегирую|делегац|передал|вызываю\s*task|task\s*\(|handoff|delegat|next\s+agent|следующ.*агент|продолж.*цепочк)/i;
+const DELEGATION_RE = /(передаю|делегирую|делегац|передал|вызываю\s*task|task\s*\(|hand[-\s]?off\s+(?:to|→)|delegat|next\s+agent|следующ.*агент|продолж.*цепочк)/i;
 // Transient provider failures — worth one bounded auto-resume.
 // NOTE: "aborted" is deliberately NOT here: a user abort surfaces with the same
 // wording but must never be auto-resumed (see MessageAbortedError handling).
@@ -59,8 +59,10 @@ export default async function HaltGuard({ client }) {
   const exhaustedNotified = (shared.exhaustedNotified ??= new Set());
 
   // Budget exhaustion must not be silent: the user used to see an idle session
-  // with no explanation. One final prompt per session asks the model for a
-  // closing status (done / left) instead of another resume attempt.
+  // with no explanation. One final prompt per stall EPISODE asks the model for
+  // a closing status (done / left) instead of another resume attempt. The flag
+  // resets when the session recovers (tool activity / terminal phrase / new
+  // user message), so a later exhaustion is not silent either.
   const notifyExhausted = async (sid, kind) => {
     if (exhaustedNotified.has(sid)) return;
     exhaustedNotified.add(sid);
@@ -120,18 +122,28 @@ export default async function HaltGuard({ client }) {
   return {
     event: async ({ event }) => {
       try {
-        // Cleanup on session delete — prevent leak
+        // Cleanup on session delete — prevent leak and stale marks
         if (event?.type === 'session.deleted') {
           const sid = getSessionId(event);
-          if (sid) { nudges.delete(sid); errRetries.delete(sid); }
+          if (sid) {
+            nudges.delete(sid);
+            errRetries.delete(sid);
+            aborted.delete(sid);
+            exhaustedNotified.delete(sid);
+            sessionTaskRetries.delete(sid);
+          }
           return;
         }
 
         // A new user message means the user is back in control — clear the
-        // abort mark so later genuine stalls can be nudged again.
+        // abort mark (and the exhaustion flag: a new stall episode must be
+        // able to speak again) so later genuine stalls can be nudged.
         if (event?.type === 'message.updated') {
           const info = event?.properties?.info;
-          if (info?.role === 'user' && info.sessionID) aborted.delete(info.sessionID);
+          if (info?.role === 'user' && info.sessionID) {
+            aborted.delete(info.sessionID);
+            exhaustedNotified.delete(info.sessionID);
+          }
           return;
         }
 
@@ -280,6 +292,7 @@ export default async function HaltGuard({ client }) {
           st.count = 0;
           st.lastMsgId = null;
           errRetries.delete(sessionID); // session healthy again — reset error budget
+          exhaustedNotified.delete(sessionID); // and the exhaustion flag (new episode rule)
           return;
         }
 
@@ -289,6 +302,7 @@ export default async function HaltGuard({ client }) {
           const st = getNudgeState(sessionID);
           st.count = 0;
           st.lastMsgId = null;
+          exhaustedNotified.delete(sessionID); // clean end — a later stall is a new episode
           return;
         }
 
