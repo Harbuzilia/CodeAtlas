@@ -25,6 +25,10 @@
 - Ядерные скиллы получили реальные триггеры: debugger→systematic-debugging+root-cause-tracing, tester→test-driven-development, planner→writing-plans, /pr,/commit→requesting-code-review+git; матрица openagent += db/security/config/API-строки.
 - 14 descriptions-«топиков» переписаны в триггеры; repomap — кросс-платформенная команда + опечатки; instructions больше не дублирует каталог скиллов (харнес инжектит сам), validate-skills гейтит счётчик.
 
+### 3.1 Заимствовано у mattpocock/skills (MIT)
+
+Три процесс-скилла адаптированы под наш формат (RU, наши конвенции, триггеры в матрицах): `handoff` (сдать смену — документ-передача контекста следующей сессии), `domain-modeling` (доменный глоссарий CONTEXT.md + стресс-тест терминов edge-кейсами), `prototype` (одноразовый прототип для дизайн-вопросов: state-модель в HTML или UI-варианты). Итого 41 скилл.
+
 ### 4. Контекст-диета
 - instructions.md 204→168 строк (единый источник [B1]/[B2]/[B3]/[G0]/[RETURN]; дубли удалены из 8-9 агентов); contextscout 518→361 (тройные повторы правил, 120-строчный boilerplate стратегий → таблица); coder 293→258 (TDD → указатель на скилл, language-дубль убран); openagent −Constraints-секция; AGENTS.md → только переносимый вход (25 строк).
 - validate-docs-sync расширен на README/doctor/system_map (ранее счётчики протухали без гейта); 86 проверок.

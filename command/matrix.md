@@ -1,11 +1,11 @@
 ---
-description: Интерактивная карта мультиагентной системы, бюджеты шагов, права на файлы и реестр 38 навыков
+description: Интерактивная карта мультиагентной системы, бюджеты шагов, права на файлы и реестр 41 навык
 ---
 
 # Matrix Command | Команда /matrix
 
 ## Назначение
-Вывести подробную живую матрицу всех 12 активных агентов, их моделей (пресет `/presets`), бюджетов шагов (`steps`), прав записи, полного реестра из 38 специализированных навыков и 25 slash-команд.
+Вывести подробную живую матрицу всех 12 активных агентов, их моделей (пресет `/presets`), бюджетов шагов (`steps`), прав записи, полного реестра из 41 специализированного навыка и 25 slash-команд.
 
 ## Вход
 - `/matrix` — вывод полной таблицы агентов и навыков (эквивалент `npm run matrix`)
@@ -30,8 +30,8 @@ description: Интерактивная карта мультиагентной 
 | tester         |    25 | antigravity-claude-sonnet-4-5 | TDD-агент для создания тестов  | edit, write, patch            |
 | uitester       |    25 | antigravity-gemini-3-flash:low | Visual UI Tester - проверяет ви | Read-only                    |
 
-🛠️  Validated Skills (38 total):
-`api-change-safe`, `api-openapi-spec`, `architecture-adr`, `ast-index`, `code-modernization-patterns`, `config-migration`, `context7`, `csharp`, `database-sql`, `devops-docker`, `docs-sync`, `e2e-playwright`, `frontend-design`, `git`, `git-conflict-resolution`, `i18n-localization`, `incident-response`, `mock-service-virtualization`, `observability-opentelemetry`, `performance-optimization`, `prompt-engineering-advanced`, `python`, `repomap`, `react-next-modern`, `requesting-code-review`, `review-code-checklist`, `review-code-strategy`, `root-cause-tracing`, `secrets-config-management`, `security-owasp`, `security-sast`, `systematic-debugging`, `test-driven-development`, `typescript`, `verification-before-completion`, `websocket-realtime-events`, `writing-plans`, `playwright-cli`, `agent-browser`
+🛠️  Validated Skills (41 total):
+`api-change-safe`, `api-openapi-spec`, `architecture-adr`, `ast-index`, `code-modernization-patterns`, `config-migration`, `context7`, `csharp`, `database-sql`, `devops-docker`, `docs-sync`, `e2e-playwright`, `frontend-design`, `git`, `git-conflict-resolution`, `i18n-localization`, `incident-response`, `mock-service-virtualization`, `observability-opentelemetry`, `performance-optimization`, `prompt-engineering-advanced`, `python`, `repomap`, `react-next-modern`, `requesting-code-review`, `review-code-checklist`, `review-code-strategy`, `root-cause-tracing`, `secrets-config-management`, `security-owasp`, `security-sast`, `systematic-debugging`, `test-driven-development`, `typescript`, `verification-before-completion`, `websocket-realtime-events`, `writing-plans`, `playwright-cli`, `agent-browser`, `domain-modeling`, `handoff`, `prototype`
 
 ⚡ Slash Commands (25 total):
 /arch, /bootstrap, /budget, /build-context-system, /commit, /conflict, /docgen, /doctor, /heal, /i18n, /infra, /matrix, /modernize, /optimize, /oracle, /plan, /presets, /pr, /prompt, /prompt-engineering/prompt-optimizer, /release, /review, /synthesize, /test

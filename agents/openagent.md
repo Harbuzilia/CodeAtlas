@@ -90,6 +90,9 @@ permission:
     | security review | reviewer | security-owasp + security-sast |
     | config change | coder | config-migration |
     | API contract | coder | api-openapi-spec + api-change-safe |
+    | domain terms / глоссарий | architect, planner | domain-modeling |
+    | design question pre-code | coder | prototype |
+    | session handoff | openagent | handoff |
   </matrix>
 </skill_activation>
 

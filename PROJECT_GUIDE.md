@@ -125,6 +125,9 @@
 - `requesting-code-review` (запрос ревью и ответы по severity; критичное блокирует мёрдж)
 - `playwright-cli` (интерактивные браузер-проверки: snapshot/ref-клики/скриншоты/консоль + рост e2e-спеков)
 - `agent-browser` (визуальный аудит, a11y/vitals, логины через профили, doctor/trace/HAR, diff)
+- `handoff` (сдать смену: документ-передача контекста следующей сессии)
+- `domain-modeling` (доменный глоссарий CONTEXT.md, стресс-тест терминов edge-кейсами)
+- `prototype` (одноразовый прототип: state-модель HTML или UI-варианты — ответ до продакшн-кода)
 
 ### 6.3 Справочные стандарты (`context/standards/*.md`, не скиллы)
 
@@ -156,6 +159,9 @@
 - Модернизация старого кода -> `code-modernization-patterns`
 - Переменные окружения и секреты -> `secrets-config-management`
 - Дизайн и генерация UI -> `frontend-design`
+- Термины предметной области -> `domain-modeling`
+- Дизайн-вопрос «а что если» -> `prototype`
+- Смена сессии / передача контекста -> `handoff`
 - Баги и отладка -> `systematic-debugging`, `root-cause-tracing`
 - Завершение задачи/передача результата -> `verification-before-completion`
 - Новая фича с тестами -> `test-driven-development`

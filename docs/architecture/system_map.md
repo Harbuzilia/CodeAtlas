@@ -1,6 +1,6 @@
 # System Architecture Map (Live C4 Container & Workflow Model)
 
-*Generated automatically via `npm run arch` on 2026-09-23.*
+*Generated automatically via `npm run arch` on 2026-09-26.*
 
 ## 1. High-Level Agent & Subsystem Interactions
 
@@ -55,10 +55,12 @@ graph TD
     skill_database-sql["database-sql"]
     skill_devops-docker["devops-docker"]
     skill_docs-sync["docs-sync"]
+    skill_domain-modeling["domain-modeling"]
     skill_e2e-playwright["e2e-playwright"]
     skill_frontend-design["frontend-design"]
     skill_git["git"]
     skill_git-conflict-resolution["git-conflict-resolution"]
+    skill_handoff["handoff"]
     skill_i18n-localization["i18n-localization"]
     skill_incident-response["incident-response"]
     skill_mock-service-virtualization["mock-service-virtualization"]
@@ -66,6 +68,7 @@ graph TD
     skill_performance-optimization["performance-optimization"]
     skill_playwright-cli["playwright-cli"]
     skill_prompt-engineering-advanced["prompt-engineering-advanced"]
+    skill_prototype["prototype"]
     skill_python["python"]
     skill_react-next-modern["react-next-modern"]
     skill_repomap["repomap"]
@@ -93,5 +96,5 @@ tester --> docwriter
 ## 2. Inventory (generated from disk)
 - Agents: 12 (architect, coder, contextscout, debugger, devops, docwriter, externalscout, openagent, planner, reviewer, tester, uitester)
 - Slash commands: 25 (/arch, /bootstrap, /budget, /build-context-system, /commit, /conflict, /docgen, /doctor, /heal, /i18n, /infra, /matrix, /modernize, /oneshot, /optimize, /oracle, /plan, /pr, /presets, /prompt, /prompt-engineering/prompt-optimizer, /release, /review, /synthesize, /test)
-- Skills: 38 (agent-browser, api-change-safe, api-openapi-spec, architecture-adr, ast-index, code-modernization-patterns, config-migration, context7, csharp, database-sql, devops-docker, docs-sync, e2e-playwright, frontend-design, git, git-conflict-resolution, i18n-localization, incident-response, mock-service-virtualization, observability-opentelemetry, performance-optimization, playwright-cli, prompt-engineering-advanced, python, react-next-modern, repomap, requesting-code-review, review-code-checklist, review-code-strategy, root-cause-tracing, secrets-config-management, security-owasp, security-sast, systematic-debugging, test-driven-development, typescript, verification-before-completion, writing-plans)
+- Skills: 41 (agent-browser, api-change-safe, api-openapi-spec, architecture-adr, ast-index, code-modernization-patterns, config-migration, context7, csharp, database-sql, devops-docker, docs-sync, domain-modeling, e2e-playwright, frontend-design, git, git-conflict-resolution, handoff, i18n-localization, incident-response, mock-service-virtualization, observability-opentelemetry, performance-optimization, playwright-cli, prompt-engineering-advanced, prototype, python, react-next-modern, repomap, requesting-code-review, review-code-checklist, review-code-strategy, root-cause-tracing, secrets-config-management, security-owasp, security-sast, systematic-debugging, test-driven-development, typescript, verification-before-completion, writing-plans)
 - Delegation edges from functional_modes table: 7
