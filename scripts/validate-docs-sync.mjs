@@ -7,8 +7,10 @@
 //   - PLANS.md: the declared skill count, the declared command count, and the
 //     full command list (every disk command listed, nothing listed twice or
 //     invented; the generated `/menu` is explicitly excluded from the list).
-//   - command/matrix.md: every "N навык(ов)" and "N slash-команд" claim, and
-//     that every disk skill is mentioned somewhere in the matrix.
+//   - command/matrix.md: every "N навык(ов)" and "N slash-команд" claim, that
+//     every disk skill is mentioned somewhere in the matrix, and that the
+//     "Validated Skills / Slash Commands" registries are EXACT set matches
+//     with disk (no phantom names, no missing commands).
 //   - PROJECT_GUIDE.md: every disk skill appears in the §7 catalogue.
 //   - command/menu.md: the "Slash-команды (N)" claim.
 
@@ -105,6 +107,41 @@ for (const m of matrix.matchAll(/(\d+)\s+slash-команд/g)) {
 for (const s of skills) {
   checks += 1;
   if (!matrix.includes(s)) fail(`command/matrix.md: навык \`${s}\` отсутствует в реестре`);
+}
+// Exact-set checks: the "Validated Skills (N total)" / "Slash Commands (N total)"
+// registries must list EXACTLY the disk sets — a phantom name (a skill moved to
+// context/standards but left in the list) or a missing command must fail, not
+// just the count line. The old disk→matrix-only check let a 42-name list pass
+// with "(41 total)" green (wave-11 audit finding).
+const matrixSkills = [...matrix.matchAll(/Validated Skills \(\d+\s*total\):\s*\n(.+)/g)]
+  .flatMap((m) => [...m[1].matchAll(/`([^`]+)`/g)].map((x) => x[1]));
+checks += 1;
+if (matrixSkills.length === 0) {
+  fail('command/matrix.md: список "Validated Skills (N total):" не найден');
+} else {
+  const diskSet = new Set(skills);
+  const listedSet = new Set(matrixSkills);
+  for (const s of skills) {
+    if (!listedSet.has(s)) fail(`command/matrix.md: навык \`${s}\` есть на диске, но отсутствует в реестре скиллов`);
+  }
+  for (const s of matrixSkills) {
+    if (!diskSet.has(s)) fail(`command/matrix.md: фантом \`${s}\` в реестре скиллов (на диске нет такого)`);
+  }
+}
+const matrixCommands = [...matrix.matchAll(/Slash Commands \(\d+\s*total\):\s*\n(.+)/g)]
+  .flatMap((m) => [...m[1].matchAll(/\/([A-Za-z0-9/-]+)/g)].map((x) => x[1]));
+checks += 1;
+if (matrixCommands.length === 0) {
+  fail('command/matrix.md: список "Slash Commands (N total):" не найден');
+} else {
+  const diskSet = new Set(commands);
+  const listedSet = new Set(matrixCommands);
+  for (const c of commands) {
+    if (!listedSet.has(c)) fail(`command/matrix.md: команда /${c} есть на диске, но отсутствует в списке`);
+  }
+  for (const c of matrixCommands) {
+    if (!diskSet.has(c)) fail(`command/matrix.md: фантом /${c} в списке команд (на диске нет такой)`);
+  }
 }
 
 // --- PROJECT_GUIDE.md ---

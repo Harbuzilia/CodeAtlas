@@ -12,11 +12,11 @@
 | Компонент | Объём | Где лежит |
 |-----------|-------|-----------|
 | Агенты | 12 (openagent — оркестратор, contextscout, coder, tester, reviewer и др.) | `agents/` |
-| Скиллы | 41 (языки, безопасность, DevOps, AST-поиск, design) | `skills/` |
+| Скиллы | 40 (языки, безопасность, DevOps, AST-поиск, design) | `skills/` |
 | Slash-команды | 25 + генерируемый `/menu` | `command/` |
-| Плагины | 2 (halt-guard — авто-продолжение при зависании делегирования, telemetry — журнал роутинга) | `plugin/` |
+| Плагины | 4 (halt-guard — авто-продолжение при зависании делегирования, bash-guard — блок foreground dev-серверов, secret-guard — защита секрет-файлов, telemetry — журнал роутинга) | `plugin/` |
 | Скрипты | ~50 генераторов, валидаторов, бенчмарков | `scripts/` |
-| Пресеты моделей | quality / balanced / cost / speed (агент → модель) | `config/model-presets.json` |
+| Пресеты моделей | quality / balanced / cost / speed / dashscope / inherit (агент → модель) | `config/model-presets.json` |
 | Контекст-система | стандарты кода/тестов/доков, workflow-протоколы | `context/` |
 
 Правила системы: `opencode.json` (source of truth) → `PROJECT_GUIDE.md` (обзор) → `PLANS.md` (трекер) → `CHANGELOG.md` (история).
@@ -90,12 +90,14 @@ npm run models:apply -- inherit   # проект со своим провайд�
 - **Права агентов — permission-only**: deprecated `tools:` карты удалены из всех 12 агентов
   (opencode их игнорирует, а с 1.18.26 они ломают пользовательские permission-правила, issue #46873);
   гейт `validate-agent-permissions` запрещает их возврат и проверяет неэффективные path-globs.
-- **Ноль approval-спама**: bash по умолчанию `allow`; аппрувы только на деструктив
-  (`rm -rf`, `sudo`, force-push, `reset --hard`, drop/truncate — deny/ask последними правилами).
+- **Ноль approval-спама**: bash по умолчанию `allow`; деструктив — только `deny`
+  (rm -rf системных путей, sudo, force-push, drop/truncate, diskpart и пр. — последними правилами,
+  last-match-wins; force-push-with-lease — единственный allow-карв-аут).
 - **Без зависаний**: плагин `bash-guard` блокирует foreground dev-серверы/вотчеры до того, как они
   повесят shell-tool (upstream #49169); halt-guard уважает пользовательский abort и не воскрешает сессию.
-- **Браузер**: `playwright-cli` (primary, интерактив + рост e2e-спеков) и `agent-browser`
-  (визуал/a11y/vitals/профили/диагностика); Playwright MCP — опционально, не по умолчанию.
+- **Браузер**: единый CLI-путь — обёртка `pw` (скилл `playwright-cli`: snap/клики/скриншоты/консоль/
+  a11y/vitals, батчи `pw exec`, без демона — 1.2 с против 769 с у daemon-подхода); Playwright MCP —
+  опционально, не по умолчанию.
 
 ## Важно
 

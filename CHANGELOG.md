@@ -3,6 +3,39 @@
 Этот файл является единым источником правды по всем внесенным изменениям в проект: **где**, **что** было обновлено, **почему** (техническое обоснование) и **какой эффект** это дало. Обновляется после каждой итерации доработок.
 
 ---
+## [2026-09-27] — Волна 11: ревизия волны 10 + pw как штатный браузер + пресет dashscope
+
+Плотная независимая ревизия нашла упущения волны 10 (фантом в matrix.md, недоведённая дедупликация, дыры гвардов, несбрасываемый exhaustedNotified) и идеологические расхождения с боевой копией владельца. Премисса дедупликации подтверждена по исходникам opencode (anomalyco/opencode, session/prompt.ts): instructions инжектятся в системный промпт ВСЕХ сессий, включая субагентов task().
+
+### 1. Ревизия волны 10 — закрытые упущения
+- command/matrix.md: фантом `websocket-realtime-events` в реестре скиллов (42 имени при счётчике 41) и пропуск `/oneshot` в списке команд; validate-docs-sync теперь сверяет реестры скиллов/команд матрицы ТОЧНЫМ множеством с диском (фантом и пропуск больше не проходят «зелёным»).
+- Дедупликация доведена: [B3]-дубли (coder/planner/docwriter/reviewer/tester), [B2] (openagent/coder), anti-hang-блоки (coder, openagent), skill-fallback-цепочки (coder×2/tester/debugger), [RETURN]-boilerplate (11 агентов). Терминальная фраза намеренно остаётся в Return Format блоках (recency-якорь) — оговорено в instructions.md.
+- Мёртвые правила: architect «Delegate to Coder» и devops «hand-off to Architect» (task:deny) → возврат рекомендации координатору; planner «Route to appropriate developers» → указание целевого агента в плане.
+- Матрицы сведены: git-строка (instructions vs openagent) — владелец openagent → coder; debug/design-строки синхронизированы. PROJECT_GUIDE §13: глобальный fallback-путь `~/.config/opencode/skills` убран (противоречил instructions). patterns.md получил ростер 11 режимов (заявлялся CHANGELOG'ом волны 10, отсутствовал).
+- README: плагины 2→4; CHANGELOG: «86 проверок» → актуальное число.
+
+### 2. Гварды
+- bash-guard: FOREGROUND_SERVER_RE += dotnet run, ng serve, flask run, gunicorn, manage.py runserver, tsc/jest/vitest --watch (тот же класс #49169).
+- secret-guard: BASH_SECRET_RE больше не блокирует `.env.example/.sample/.template` (ложное срабатывание, противоречившее SECRET_PATH_RE); читатели += grep/rg/sed/awk; non-dotfile `*.env` (prod.env).
+- halt-guard: session.deleted чистит всё пер-сессионное состояние; флаг «бюджет исчерпан» сбрасывается при восстановлении сессии (hasTool/терминальная фраза/новое сообщение пользователя) — второе исчерпание больше не молчит; DELEGATION_RE: голый `handoff` → `hand-off to` (не матчить работу скилла `handoff`).
+
+### 3. Браузер: pw — штатный путь (полевой вердикт владельца)
+- Обёртка `pw` (тонкий Playwright-CLI без демона, 1.2 с против 769 с у daemon-подхода) портирована в пак: `bin/pw.cjs` + скилл `playwright-cli` переписан под pw (open/snap/click/fill/shot/console/ax/vitals, батчи `pw exec`).
+- `agent-browser` удалён из пака (скилл + все упоминания: instructions, openagent, uitester, e2e-playwright, matrix, registry, bash-guard-комментарии, README, PROJECT_GUIDE). uitester переписан на pw. Скиллов 41→40.
+- `bin/` добавлен в карты sync:local и sync:all (аддитивно — сторонние файлы в bin/ не трогаются).
+
+### 4. Модели: пресет dashscope (активен)
+- config/model-presets.json: пресет `dashscope` — рабочая конфигурация владельца (GLM-5.3 через два DashScope-аккаунта, uitester на Qwen3.8 Flash, скауты на free-модели, без variant). Применён и помечен активным: каждый будущий sync сохраняет эти модели; возврат к публичному дефолту — `npm run models:apply -- quality`.
+- opencode.json: provider-заглушки dashscope/dashscope-2/opencode-free-1 (apiKey — REPLACE_WITH_*; реальные ключи в глобальном конфиге машины) — каталог моделей резолвится и в самом репо.
+
+### 5. Permission-политика: ноль аппрувов (по боевому образцу)
+- Глобальная bash-карта opencode.json переведена на deny-only деструктив (65+ правил: del/rd/rmdir/diskpart/dd/bcdedit/reg delete/wsl --unregister/Stop-Computer/doas/curl|sh/iex/DROP DATABASE/migrate reset/docker volume prune/kubectl delete/push --force/Clear-Disk/fork bomb…), ask-записи убраны; `git push --force-with-lease*: allow` замыкает карту (last-match-wins).
+- + read-гварды (`*.env` deny, `*.env.example` allow) и external_directory-гварды (Windows/Program Files/.ssh/.aws) как в живом конфиге.
+
+### 6. Статус
+Полный прогон гейтов/тестов/мутаций — в отчёте волны. Коммиты локально (push не выполнялся по указанию).
+
+---
 ## [2026-09-18] — Волна 10: идеальная система — роутинг, передачи, скорость, чистые скиллы
 
 Финальная полировка по результатам трёх ревизий (роутинг/передачи, скиллы/MCP, контекст-вес). Цель — система, которая не застревает, передаёт всё по контрактам и не платит лишний контекст каждый ход.
@@ -31,7 +64,7 @@
 
 ### 4. Контекст-диета
 - instructions.md 204→168 строк (единый источник [B1]/[B2]/[B3]/[G0]/[RETURN]; дубли удалены из 8-9 агентов); contextscout 518→361 (тройные повторы правил, 120-строчный boilerplate стратегий → таблица); coder 293→258 (TDD → указатель на скилл, language-дубль убран); openagent −Constraints-секция; AGENTS.md → только переносимый вход (25 строк).
-- validate-docs-sync расширен на README/doctor/system_map (ранее счётчики протухали без гейта); 86 проверок.
+- validate-docs-sync расширен на README/doctor/system_map (ранее счётчики протухали без гейта); 92 проверки.
 
 ### 5. Статус
 36/36 тестов, 15/15 eval-сценариев, mutation 7/7, validate:all/smoke/eval/secrets/bench зелёные. Коммиты локально (push не выполнялся по указанию).

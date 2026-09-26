@@ -40,7 +40,7 @@ function buildFixture() {
   );
   write(
     'command/matrix.md',
-    '---\ndescription: matrix\n---\n\nРеестр из 3 навыков и 4 slash-команд: alpha, beta, gamma.\n',
+    '---\ndescription: matrix\n---\n\nРеестр из 3 навыков и 4 slash-команд: alpha, beta, gamma.\n\n```\nValidated Skills (3 total):\n`alpha`, `beta`, `gamma`\n\nSlash Commands (4 total):\n/one, /two, /matrix, /doctor\n```\n',
     tmp,
   );
   write('README.md', '# T\n\n| Скиллы | 3 (test) | `skills/` |\n| Slash-команды | 4 + меню | `command/` |\n', tmp);
@@ -109,6 +109,40 @@ test('stale menu count and missing skill mention fail', () => {
     assert.match(r.stdout + r.stderr, /menu\.md: заявлено 5 команд/);
     assert.match(r.stdout + r.stderr, /навык `gamma` отсутствует в реестре/);
     assert.match(r.stdout + r.stderr, /PROJECT_GUIDE\.md: навык `gamma`/);
+  } finally {
+    rmTmp(tmp);
+  }
+});
+
+test('phantom skill in the matrix registry fails (wave-11 finding)', () => {
+  const tmp = buildFixture();
+  try {
+    // 4 names listed while disk has 3: a skill moved to context/standards but
+    // left in the registry used to pass the count-only gate.
+    write(
+      'command/matrix.md',
+      '---\ndescription: matrix\n---\n\nРеестр из 3 навыков.\n\nValidated Skills (3 total):\n`alpha`, `beta`, `gamma`, `websocket-realtime-events`\n\nSlash Commands (4 total):\n/one, /two, /matrix, /doctor\n',
+      tmp,
+    );
+    const r = runScript('scripts/validate-docs-sync.mjs', { cwd: tmp });
+    assert.equal(r.status, 1, 'фантом в реестре скиллов должен ронять гейт');
+    assert.match(r.stdout + r.stderr, /фантом `websocket-realtime-events`/);
+  } finally {
+    rmTmp(tmp);
+  }
+});
+
+test('command missing from the matrix registry list fails', () => {
+  const tmp = buildFixture();
+  try {
+    write(
+      'command/matrix.md',
+      '---\ndescription: matrix\n---\n\nРеестр из 3 навыков.\n\nValidated Skills (3 total):\n`alpha`, `beta`, `gamma`\n\nSlash Commands (4 total):\n/one, /two, /matrix\n',
+      tmp,
+    );
+    const r = runScript('scripts/validate-docs-sync.mjs', { cwd: tmp });
+    assert.equal(r.status, 1, 'пропущенная команда в реестре должна ронять гейт');
+    assert.match(r.stdout + r.stderr, /команда \/doctor есть на диске, но отсутствует в списке/);
   } finally {
     rmTmp(tmp);
   }

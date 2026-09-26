@@ -123,8 +123,7 @@
 - `test-driven-development` (TDD: RED-GREEN-REFACTOR, дисциплина объёма тестов)
 - `writing-plans` (планы для исполнения: шаги 2-5 минут с точными файлами и проверками)
 - `requesting-code-review` (запрос ревью и ответы по severity; критичное блокирует мёрдж)
-- `playwright-cli` (интерактивные браузер-проверки: snapshot/ref-клики/скриншоты/консоль + рост e2e-спеков)
-- `agent-browser` (визуальный аудит, a11y/vitals, логины через профили, doctor/trace/HAR, diff)
+- `playwright-cli` (браузер-проверки через обёртку pw: snap/клики/скриншоты/консоль/a11y/vitals + рост e2e-спеков)
 - `handoff` (сдать смену: документ-передача контекста следующей сессии)
 - `domain-modeling` (доменный глоссарий CONTEXT.md, стресс-тест терминов edge-кейсами)
 - `prototype` (одноразовый прототип: state-модель HTML или UI-варианты — ответ до продакшн-кода)
@@ -167,7 +166,7 @@
 - Новая фича с тестами -> `test-driven-development`
 - Декомпозиция и планы -> `writing-plans`
 - Подготовка PR к ревью -> `requesting-code-review`
-- UI/E2E проверки в браузере -> `playwright-cli` (primary), `agent-browser` (визуал/диагностика)
+- UI/E2E проверки в браузере -> `playwright-cli` (обёртка pw)
 
 ## 8. One-shot режим
 По умолчанию OFF.
@@ -224,7 +223,7 @@
 - перед финалом обязательный self-check качества.
 
 ## 13. Ключевые механизмы (Global Skills, Debugger, Localization)
-- **Universal Global Skills**: Агенты (`coder`, `tester`, `debugger`) используют name-based вызов скиллов (например, `skill({ name: "typescript" })`) и fallback-чтение manifest-файлов: `read("~/.config/opencode/skills/<name>/SKILL.md")` (на Windows: `%USERPROFILE%/.config/opencode/skills/<name>/SKILL.md`). Это гарантирует discoverable-layout и переносимость.
+- **Universal Skills Loading**: Агенты (`coder`, `tester`, `debugger`) используют name-based вызов скиллов (например, `skill({ name: "typescript" })`). Fallback-цепочка — в `instructions.md` (Skill Loading Protocol): локальный `read(".opencode/skills/<name>/SKILL.md")`, затем продолжение без скилла с пометкой. Глобальные пути (`~/.config/opencode/skills`) агенты не читают — это чужой external-directory, чтение спровоцирует permission-промт mid-chain.
 - **Dynamic Debugger**: Агент `debugger` больше не угадывает команды сборки (hardcoded `dotnet build`). Он анализирует контекст ошибки: запускает напрямую указанные `.bat`/`.sh` скрипты, ищет точки входа в `package.json` или `Makefile`. Если информации нет, запрашивает команду через `question tool`.
 - **UI Localization Enforcement**: В `openagent` внедрен чек: при необходимости генерации UI и отсутствии языка в настройках он ОДИН раз запрашивает предпочитаемый язык интерфейса и сохраняет его в `.opencode/project_settings.json`. Агент `coder` строго придерживается этой настройки при генерации визуальных компонентов.
 
@@ -237,7 +236,7 @@
 ## 15. Практичные архитектурные улучшения
 - Разрешения: bash по умолчанию `allow`; аппрувы только на деструктив (`rm -rf`, `sudo`, force-push, `reset --hard`, drop/truncate и т.п. — deny/ask последними правилами, last-match-wins) в `opencode.json` и permission-картах агентов. Цель — ноль approval-спама на обычной работе. Path-глобы в `permission` на 1.18.x не матчатся — секреты реально закрывает плагин `secret-guard` (read/edit/write + bash cat/type/get-content по `.env*`, `*.key`, `*.pem`, `id_*`, `.netrc`, `credentials`).
 - Синхронизация наружу (`sync:all`) пишет в ~/.config/opencode, ~/.config/pi, ~/.pi; флаги `--dry-run`, `--only=<подстрока>`; таргет `~/.agents/skills` — opt-in (`--with-agents-skills` / `CODE_ATLAS_SYNC_AGENTS_SKILLS=1`), т.к. каталог общий с другими инструментами машины. В global opencode дополнительно копируется `AGENTS.md`; `registry.json`/`config/` остаются repo-scoped (скрипты работают из репо). Изменения применяются после перезапуска opencode.
-- Браузер: два CLI-пути — `playwright-cli` (primary: интерактивные проверки + рост e2e-спеков) и `agent-browser` (визуал/a11y/vitals/профили/диагностика). Playwright MCP не поднят по умолчанию (хостинг MCP в opencode глючит: #42191, #31554); опционально: `"playwright": {"type":"local","command":["npx","-y","@playwright/mcp@latest","--caps","core"]}` в `mcp` opencode.json.
+- Браузер: единый CLI-путь — `pw` (тонкая Playwright-обёртка без демона: open/snap/click/fill/shot/console/ax/vitals, батчи `pw exec`; полевой замер — 1.2 c против 769 c у daemon-подхода agent-browser, который из пака убран). Playwright MCP не поднят по умолчанию (хостинг MCP в opencode глючит: #42191, #31554); опционально: `"playwright": {"type":"local","command":["npx","-y","@playwright/mcp@latest","--caps","core"]}` в `mcp` opencode.json.
 - Долгие процессы: dev-серверы/вотчеры только детачённо с логом и healthcheck; плагин `bash-guard` блокирует foreground-запуск до зависания (upstream #49169); daemon-CLI не пайпить в Select-Object/head (pipe-EOF висание).
 - Halt-guard уважает пользовательский abort: MessageAbortedError и interrupted-парты помечают сессию — авто-возобновления и нуджи молчат до следующего сообщения пользователя.
 - Качество: запускать `npm run validate:all` перед merge и фиксировать результат в PR/отчете.
