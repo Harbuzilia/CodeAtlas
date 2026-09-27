@@ -3,7 +3,7 @@ description: "Unified Planner Agent - Task decomposition and implementation plan
 mode: subagent
 model: dashscope-2/glm-5.3
 temperature: 0
-steps: 40
+steps: 80
 permission:
   task: "deny"
   bash: "deny"

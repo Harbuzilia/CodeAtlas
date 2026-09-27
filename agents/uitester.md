@@ -3,7 +3,7 @@ description: "Visual UI Tester — проверяет визуальную ве�
 mode: subagent
 model: dashscope-2/qwen3.8-flash
 temperature: 0
-steps: 25
+steps: 60
 permission:
   edit: "deny"
   task: "deny"

@@ -33,7 +33,13 @@
 - Глобальная bash-карта opencode.json переведена на deny-only деструктив (65+ правил: del/rd/rmdir/diskpart/dd/bcdedit/reg delete/wsl --unregister/Stop-Computer/doas/curl|sh/iex/DROP DATABASE/migrate reset/docker volume prune/kubectl delete/push --force/Clear-Disk/fork bomb…), ask-записи убраны; `git push --force-with-lease*: allow` замыкает карту (last-match-wins).
 - + read-гварды (`*.env` deny, `*.env.example` allow) и external_directory-гварды (Windows/Program Files/.ssh/.aws) как в живом конфиге.
 
-### 6. Статус
+### 6. Полевая обратная связь: бюджеты шагов под тяжёлые репо
+- Полевой прогон на репо 15k+ строк: кодеры сжигали steps:50 на разведке и возвращали «анализ + готовый дифф» вместо кода (правило «после 40 шагов — завершай» срабатывало посреди чтения файлов); planner упирался в 40 до записи task_state.
+- Бюджеты подняты: coder 50→150 («предупреди» после 120), planner 40→80, uitester 25→60 (под новый GUI-test протокол с обязательным просмотром скриншотов). reviewer/tester/debugger не тронуты — их роли уже, а прогон тестов main-сессия может сама bash'ем.
+- Delegation Contract усилен: Input обязан включать ФАЙЛОВУЮ КАРТУ contextscout (пути+строки) — субагент не тратит бюджет на повторную разведку.
+- Легализована деградация полевого агента: «субагент вернул готовый дифф из-за лимита шагов → main применяет дифф и коммитит с пометкой» — carve-out в Strict Delegation (доктрина «деградации вместо stall»); повторный task() того же диффа запрещён.
+
+### 7. Статус
 Полный прогон гейтов/тестов/мутаций — в отчёте волны. Коммиты локально (push не выполнялся по указанию).
 
 ---

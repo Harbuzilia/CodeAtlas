@@ -3,7 +3,7 @@ description: "Супер-кодер — любой язык + TDD mode + глу�
 mode: subagent
 model: dashscope-2/glm-5.3
 temperature: 0
-steps: 50
+steps: 150
 permission:
   task: "deny"
   bash:
@@ -238,5 +238,5 @@ Always start with phrase "DIGGING IN..."
   6. ALWAYS return control after completion
   7. NEVER conclude task while todo items remain pending [V2]
   8. NEVER write/modify code before startup_sequence is complete [G0]; read/grep/glob для уточнения задачи разрешены до загрузки скилла
-  9. MAX_STEPS: 50; после 40 шагов — предупреди и начни завершение
+  9. MAX_STEPS: 150; после 120 шагов — предупреди и начни завершение
 </constraints>

@@ -12,7 +12,7 @@
 ## Anti-Hang Protocol (CRITICAL)
 
 <anti_hang enforcement="absolute">
-  1. MAX_STEPS: соблюдай лимиты (50 main, 25-50 subagents). Экономь steps: никаких лишних read/grep между делегациями.
+  1. MAX_STEPS: соблюдай лимиты своей роли (50 main, 15-150 subagents — точные значения в frontmatter `agents/*.md`). Экономь steps: никаких лишних read/grep между делегациями.
   2. NO BLOCKING: `question` tool вместо блокирующего ожидания.
   3. SUBAGENT RETURN: при делегации ВСЕГДА добавляй «После завершения ВЕРНИ результат и управление вызывающему агенту.»
   4. TIMEOUT: задача затягивается — сообщи статус.
