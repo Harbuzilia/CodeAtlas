@@ -42,7 +42,7 @@ const failedTaskPart = (id, sid, error) => ({
 
 test('halt-guard retries a transiently failed delegation once per part', async () => {
   const { client, prompts } = makeClient();
-  const guard = await (await load('plugin/halt-guard.js')).default({ client });
+  const guard = await (await load('plugin/halt-guard.js')).default.server({ client });
 
   await guard.event(partEvent(failedTaskPart('p1', 'sess-retry-1', 'HTTP 429: rate limit exceeded')));
   assert.equal(prompts.length, 1, 'retryable task failure must be nudged');
@@ -64,7 +64,7 @@ test('halt-guard retries a transiently failed delegation once per part', async (
 
 test('halt-guard ignores fatal and non-task tool errors', async () => {
   const { client, prompts } = makeClient();
-  const guard = await (await load('plugin/halt-guard.js')).default({ client });
+  const guard = await (await load('plugin/halt-guard.js')).default.server({ client });
 
   await guard.event(partEvent(failedTaskPart('p1', 'sess-fatal', '401 unauthorized: invalid api key')));
   await guard.event(
@@ -83,7 +83,7 @@ test('halt-guard ignores fatal and non-task tool errors', async () => {
 test('telemetry records delegation duration from start marker to completion', async () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'telemetry-dur-'));
   try {
-    const telemetry = await (await load('plugin/telemetry.js')).default({ directory: tmp });
+    const telemetry = await (await load('plugin/telemetry.js')).default.server({ directory: tmp });
 
     await telemetry.event(
       partEvent({ type: 'tool', tool: 'task', id: 'part-1', sessionID: 'sess-dur', state: { status: 'running' } }),

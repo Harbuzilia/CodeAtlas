@@ -12,6 +12,11 @@
 //   - bash commands that print secret-looking files (cat/type/get-content/grep/rg/sed/...)
 // The thrown error reaches the model as the tool result, so the agent learns
 // to use env vars / secret managers instead.
+//
+// Dual API: opencode 1.x calls the legacy `server` factory; opencode 2.x calls
+// `setup(ctx)` with the native tool-hook API (ctx.tool.hook('execute.before')
+// — payload { tool, sessionID, agent, input }; 2.x file tools carry the path
+// under `input.path` and the shell tool is named "shell"). Checks are shared.
 
 // .env.example/.env.sample/.env.template are committable templates, not secrets.
 // The bash reader regex mirrors the same whitelist (a bare `cat .env.example`
@@ -28,21 +33,33 @@ const GUIDANCE =
   '.env.example как шаблон и секрет-менеджер в проде. Если значение нужно для диагностики — ' +
   'попроси пользователя предоставить его явно (question tool), не читая файл.';
 
+const FILE_TOOLS = new Set(['read', 'edit', 'write', 'patch', 'apply_patch']);
+const SHELL_TOOLS = new Set(['bash', 'shell']);
+
 const isSecretPath = (p) => typeof p === 'string' && SECRET_PATH_RE.test(p.trim());
 
-export default async function SecretGuard() {
+/** Shared checks: return the guidance text to throw, or null when allowed. */
+export function secretPathBlock(pathLike) {
+  return isSecretPath(pathLike) ? GUIDANCE : null;
+}
+export function bashSecretBlock(cmd) {
+  return BASH_SECRET_RE.test(String(cmd ?? '')) ? GUIDANCE : null;
+}
+
+async function SecretGuard() {
   return {
     'tool.execute.before': async (input, output) => {
       try {
         const tool = input?.tool;
         const args = output?.args ?? {};
-        if (tool === 'read' || tool === 'edit' || tool === 'write' || tool === 'patch' || tool === 'apply_patch') {
-          if (isSecretPath(args.file_path ?? args.path ?? args.filePath)) throw new Error(GUIDANCE);
+        if (FILE_TOOLS.has(tool)) {
+          const reason = secretPathBlock(args.file_path ?? args.path ?? args.filePath);
+          if (reason) throw new Error(reason);
           return;
         }
-        if (tool === 'bash' || tool === 'shell') {
-          const cmd = String(args.command ?? args.cmd ?? '');
-          if (BASH_SECRET_RE.test(cmd)) throw new Error(GUIDANCE);
+        if (SHELL_TOOLS.has(tool)) {
+          const reason = bashSecretBlock(args.command ?? args.cmd ?? '');
+          if (reason) throw new Error(reason);
         }
       } catch (e) {
         if (e instanceof Error && e.message.startsWith('[SECRET-GUARD]')) throw e;
@@ -51,3 +68,37 @@ export default async function SecretGuard() {
     },
   };
 }
+
+/** opencode 2.x native registration. Always resolves to a dispose function. */
+async function setup(ctx) {
+  try {
+    if (typeof ctx?.tool?.hook !== 'function') return async () => {};
+    const reg = await ctx.tool.hook('execute.before', async (payload) => {
+      try {
+        const tool = String(payload?.tool ?? '');
+        const input = payload?.input ?? {};
+        if (FILE_TOOLS.has(tool)) {
+          const reason = secretPathBlock(input.path ?? input.file_path ?? input.filePath);
+          if (reason) throw new Error(reason);
+          return;
+        }
+        if (SHELL_TOOLS.has(tool)) {
+          const reason = bashSecretBlock(input.command ?? input.cmd ?? '');
+          if (reason) throw new Error(reason);
+        }
+      } catch (e) {
+        if (e instanceof Error && e.message.startsWith('[SECRET-GUARD]')) throw e;
+      }
+    });
+    return async () => {
+      try {
+        await reg?.dispose?.();
+      } catch {}
+    };
+  } catch {
+    return async () => {};
+  }
+}
+
+export { SecretGuard };
+export default { id: 'secret-guard', server: SecretGuard, setup };

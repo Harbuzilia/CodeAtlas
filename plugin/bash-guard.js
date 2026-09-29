@@ -11,6 +11,11 @@
 // without a detach marker; the thrown text reaches the model as the tool
 // error, teaching it the detached + healthcheck pattern. NEVER touches bounded
 // commands (tests, builds, git).
+//
+// Dual API: opencode 1.x calls the legacy `server` factory; opencode 2.x calls
+// `setup(ctx)` with the native tool-hook API (ctx.tool.hook('execute.before')
+// — payload { tool, sessionID, agent, input } where the shell tool is named
+// "shell"). The check logic is shared.
 
 // Foreground servers / watchers that never exit on their own.
 const FOREGROUND_SERVER_RE =
@@ -32,19 +37,26 @@ const GUIDANCE =
   'Не пайпь вотчеры/демоны в Select-Object/head (ожидание EOF = вечное висение). ' +
   'Для разовых длинных команд передай timeout в bash-tool. Подробности — instructions.md, блок LONG-RUNNING.';
 
-export default async function BashGuard() {
+/** Shared check: returns the guidance text to throw, or null when allowed. */
+export function shellBlockReason(cmd) {
+  const command = String(cmd ?? '');
+  if (!command) return null;
+  const serverish = FOREGROUND_SERVER_RE.test(command);
+  const piped = PIPE_HANG_RE.test(command);
+  if ((serverish && !DETACH_RE.test(command)) || (serverish && piped)) return GUIDANCE;
+  return null;
+}
+
+const SHELL_TOOLS = new Set(['bash', 'shell']);
+
+async function BashGuard() {
   return {
     'tool.execute.before': async (input, output) => {
       try {
-        const tool = input?.tool;
-        if (tool !== 'bash' && tool !== 'shell') return;
-        const cmd = String(output?.args?.command ?? output?.args?.cmd ?? '');
-        if (!cmd) return;
-        const serverish = FOREGROUND_SERVER_RE.test(cmd);
-        const piped = PIPE_HANG_RE.test(cmd);
-        if ((serverish && !DETACH_RE.test(cmd)) || (serverish && piped)) {
-          throw new Error(GUIDANCE);
-        }
+        if (!SHELL_TOOLS.has(input?.tool)) return;
+        const cmd = output?.args?.command ?? output?.args?.cmd ?? '';
+        const reason = shellBlockReason(cmd);
+        if (reason) throw new Error(reason);
       } catch (e) {
         if (e instanceof Error && e.message.startsWith('[BASH-GUARD]')) throw e;
         // NEVER break the session on our own bugs
@@ -52,3 +64,30 @@ export default async function BashGuard() {
     },
   };
 }
+
+/** opencode 2.x native registration. Always resolves to a dispose function. */
+async function setup(ctx) {
+  try {
+    if (typeof ctx?.tool?.hook !== 'function') return async () => {};
+    const reg = await ctx.tool.hook('execute.before', async (payload) => {
+      try {
+        if (!SHELL_TOOLS.has(String(payload?.tool ?? ''))) return;
+        const cmd = payload?.input?.command ?? payload?.input?.cmd ?? '';
+        const reason = shellBlockReason(cmd);
+        if (reason) throw new Error(reason);
+      } catch (e) {
+        if (e instanceof Error && e.message.startsWith('[BASH-GUARD]')) throw e;
+      }
+    });
+    return async () => {
+      try {
+        await reg?.dispose?.();
+      } catch {}
+    };
+  } catch {
+    return async () => {};
+  }
+}
+
+export { BashGuard };
+export default { id: 'bash-guard', server: BashGuard, setup };

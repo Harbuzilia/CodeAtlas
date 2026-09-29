@@ -11,7 +11,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-export default async function Telemetry({ directory }) {
+async function Telemetry({ directory }) {
   const logFile = path.join(directory || process.cwd(), '.opencode', 'agent-journal.jsonl');
 
   // Bounded growth: when the journal exceeds MAX_BYTES, keep only the tail.
@@ -165,3 +165,13 @@ export default async function Telemetry({ directory }) {
     }
   };
 }
+
+// opencode 2.x plugin format: the default export must be an object with an id
+// and a server() factory - a bare function is rejected on load
+// (PluginModule.LoadError). The named export keeps the factory discoverable
+// by the legacy loader (it scans named/default exports).
+export { Telemetry };
+// NOTE: `setup` is intentionally a no-op FOR NOW - the native 2.x port
+// (ctx.tool.hook('execute.after') + session events) is pending; the legacy
+// `server` hooks serve the 1.x API.
+export default { id: "telemetry", server: Telemetry, setup: async () => {} };

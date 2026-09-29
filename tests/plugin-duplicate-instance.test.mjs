@@ -15,8 +15,8 @@ const load = (rel) => import(pathToFileURL(path.join(root, rel)).href);
 test('telemetry writes a duplicated event once but keeps later real events', async () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'tlm-'));
   try {
-    const TelemetryA = (await load('plugin/telemetry.js')).default;
-    const TelemetryB = (await load('.opencode/plugin/telemetry.js')).default;
+    const TelemetryA = (await load('plugin/telemetry.js')).default.server;
+    const TelemetryB = (await load('.opencode/plugin/telemetry.js')).default.server;
     const a = await TelemetryA({ directory: tmp });
     const b = await TelemetryB({ directory: tmp });
 
@@ -60,8 +60,8 @@ test('halt-guard shares the nudge budget across duplicate plugin instances', asy
     },
   };
 
-  const HaltGuardA = (await load('plugin/halt-guard.js')).default;
-  const HaltGuardB = (await load('.opencode/plugin/halt-guard.js')).default;
+  const HaltGuardA = (await load('plugin/halt-guard.js')).default.server;
+  const HaltGuardB = (await load('.opencode/plugin/halt-guard.js')).default.server;
   const a = await HaltGuardA({ client });
   const b = await HaltGuardB({ client });
 
@@ -74,4 +74,18 @@ test('halt-guard shares the nudge budget across duplicate plugin instances', asy
   // closing "budget exhausted" status request instead of a silent stop.
   assert.equal(prompts, 4, 'MAX_NUDGES=3 must hold across both plugin instances');
   assert.match(lastText, /Бюджет авто-продолжений исчерпан/);
+});
+
+test('plugins export the opencode 2.x definition shape (id + server factory + setup)', async () => {
+  // Regression guard: opencode 2.x rejects `export default <function>`
+  // (PluginModule.LoadError: "must export a default definition with an id and
+  // an effect or setup function") and silently disables the plugin. All four
+  // guards spent time dead in the live 2.0.19 runtime because of this.
+  for (const rel of ['plugin/halt-guard.js', 'plugin/bash-guard.js', 'plugin/secret-guard.js', 'plugin/telemetry.js', 'plugin/image-guard.js']) {
+    const mod = await load(rel);
+    assert.equal(typeof mod.default, 'object', `${rel}: default must be the 2.x definition object`);
+    assert.equal(typeof mod.default.id, 'string', `${rel}: definition needs a string id`);
+    assert.equal(typeof mod.default.server, 'function', `${rel}: definition.server must be the factory`);
+    assert.equal(typeof mod.default.setup, 'function', `${rel}: 2.x schema requires an effect or setup function`);
+  }
 });

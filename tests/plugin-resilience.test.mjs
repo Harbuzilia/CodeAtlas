@@ -45,7 +45,7 @@ const userMsg = (sid) => ({ event: { type: 'message.updated', properties: { info
 
 test('halt-guard respects user abort: no resume, no idle nudge until user writes', async () => {
   const { client, prompts } = makeClient();
-  const guard = await (await load('plugin/halt-guard.js')).default({ client });
+  const guard = await (await load('plugin/halt-guard.js')).default.server({ client });
 
   // User pressed Esc: session.error with MessageAbortedError.
   await guard.event({
@@ -87,7 +87,7 @@ test('halt-guard respects user abort: no resume, no idle nudge until user writes
 
 test('halt-guard does not resume non-retryable API errors', async () => {
   const { client, prompts } = makeClient();
-  const guard = await (await load('plugin/halt-guard.js')).default({ client });
+  const guard = await (await load('plugin/halt-guard.js')).default.server({ client });
   await guard.event({
     event: {
       type: 'session.error',
@@ -120,7 +120,7 @@ test('halt-guard exhaustion is per stall episode, not per whole session', async 
       },
     },
   };
-  const guard = await (await load('plugin/halt-guard.js')).default({ client });
+  const guard = await (await load('plugin/halt-guard.js')).default.server({ client });
 
   // First episode: 3 nudges + one closing exhaustion prompt.
   for (let i = 0; i < 4; i++) await guard.event(idle('sess-ep'));
@@ -139,7 +139,7 @@ test('halt-guard exhaustion is per stall episode, not per whole session', async 
 });
 
 test('secret-guard blocks secret file access via file tools and bash, passes normal work', async () => {
-  const guard = await (await load('plugin/secret-guard.js')).default({});
+  const guard = await (await load('plugin/secret-guard.js')).default.server({});
   const hook = guard['tool.execute.before'];
   const fileTool = (tool, file_path) => hook({ tool, sessionID: 's', callID: 'c' }, { args: { file_path } });
   const bash = (command) => hook({ tool: 'bash', sessionID: 's', callID: 'c' }, { args: { command } });
@@ -161,7 +161,7 @@ test('secret-guard blocks secret file access via file tools and bash, passes nor
 });
 
 test('bash-guard blocks foreground dev servers and pipe hangs, passes bounded commands', async () => {
-  const guard = await (await load('plugin/bash-guard.js')).default({});
+  const guard = await (await load('plugin/bash-guard.js')).default.server({});
   const hook = guard['tool.execute.before'];
   const run = (command) => hook({ tool: 'bash', sessionID: 's', callID: 'c' }, { args: { command } });
 
@@ -188,4 +188,49 @@ test('bash-guard blocks foreground dev servers and pipe hangs, passes bounded co
   await run('git status');
   await run('pw open http://localhost:3000');
   await run('playwright-cli snapshot');
+});
+
+test('native 2.x setup adapters enforce guards through ctx.tool.hook', async () => {
+  const makeCtx = () => {
+    const handlers = new Map();
+    const ctx = {
+      tool: {
+        hook: async (name, fn) => {
+          handlers.set(name, fn);
+          return { dispose: async () => {} };
+        },
+      },
+    };
+    return { ctx, handlers };
+  };
+
+  // image-guard: block image reads for text-only agents, allow vision/uitester
+  const img = await load('plugin/image-guard.js');
+  const { ctx: imgCtx, handlers: imgH } = makeCtx();
+  await img.default.setup(imgCtx);
+  const imgBefore = imgH.get('execute.before');
+  assert.equal(typeof imgBefore, 'function', 'image-guard must register execute.before');
+  await assert.rejects(() => imgBefore({ tool: 'read', agent: 'openagent', input: { path: 'a/b.png' } }), /IMAGE-GUARD/);
+  await imgBefore({ tool: 'read', agent: 'vision', input: { path: 'a/b.png' } });
+  await imgBefore({ tool: 'read', agent: 'uitester', input: { path: 'shot.PNG' } });
+  await imgBefore({ tool: 'read', agent: 'openagent', input: { path: 'README.md' } });
+  await imgBefore({ tool: 'shell', agent: 'openagent', input: { command: 'echo hi' } });
+
+  // bash-guard: foreground dev server blocked via the native payload
+  const bg = await load('plugin/bash-guard.js');
+  const { ctx: bgCtx, handlers: bgH } = makeCtx();
+  await bg.default.setup(bgCtx);
+  const bgBefore = bgH.get('execute.before');
+  await assert.rejects(() => bgBefore({ tool: 'shell', agent: 'openagent', input: { command: 'pnpm dev' } }), /BASH-GUARD/);
+  await bgBefore({ tool: 'shell', input: { command: 'npm test' } });
+
+  // secret-guard: path + shell readers via the native payload
+  const sg = await load('plugin/secret-guard.js');
+  const { ctx: sgCtx, handlers: sgH } = makeCtx();
+  await sg.default.setup(sgCtx);
+  const sgBefore = sgH.get('execute.before');
+  await assert.rejects(() => sgBefore({ tool: 'read', input: { path: 'apps/.env' } }), /SECRET-GUARD/);
+  await assert.rejects(() => sgBefore({ tool: 'shell', input: { command: 'cat prod.env' } }), /SECRET-GUARD/);
+  await sgBefore({ tool: 'read', input: { path: '.env.example' } });
+  await sgBefore({ tool: 'shell', input: { command: 'npm test' } });
 });

@@ -38,7 +38,7 @@ const MAX_TASK_RETRIES_PER_SESSION = 2;
 // Env-overridable for tests (tests set HALT_GUARD_TASK_BACKOFF_MS=0).
 const TASK_BACKOFF_MS = Number(process.env.HALT_GUARD_TASK_BACKOFF_MS ?? 3000);
 
-export default async function HaltGuard({ client }) {
+async function HaltGuard({ client }) {
   // opencode loads this plugin twice when it exists in BOTH the global config
   // (~/.config/opencode/plugin) and the project (.opencode/plugin). Keep the
   // per-session budgets in one process-wide registry, otherwise each copy counts
@@ -353,3 +353,13 @@ export default async function HaltGuard({ client }) {
     },
   };
 }
+
+// opencode 2.x plugin format: the default export must be an object with an id
+// and a server() factory - a bare function is rejected on load
+// (PluginModule.LoadError). The named export keeps the factory discoverable
+// by the legacy loader (it scans named/default exports).
+export { HaltGuard };
+// NOTE: `setup` is intentionally a no-op FOR NOW - the native 2.x event-mapping
+// port (session.execution.* -> idle, ctx.session.hook('prompt'), nudges via
+// ctx.session.prompt) is pending; the legacy `server` hooks serve the 1.x API.
+export default { id: "halt-guard", server: HaltGuard, setup: async () => {} };
