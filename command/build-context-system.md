@@ -201,7 +201,7 @@ description: "Интерактивный конструктор системы �
     <action>Генерация системы</action>
     <prerequisites>Approval получен</prerequisites>
     <routing>
-      <route to="meta/system-builder">
+      <route to="planner">
         <context_level>Level 2</context_level>
         <pass_data>
           - interview_responses
@@ -219,7 +219,7 @@ description: "Интерактивный конструктор системы �
     </routing>
     <process>
       1. Подготовить requirements документ
-      2. Делегировать meta/system-builder
+      2. Делегировать planner и docwriter
       3. Проверить структуру и качество
     </process>
     <checkpoint>Система сгенерирована</checkpoint>

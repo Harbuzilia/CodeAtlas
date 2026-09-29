@@ -20,7 +20,7 @@ description: "Продвинутый оптимизатор промптов: и
 ## Пример
 
 ```
-/prompt-optimizer agent/core/openagent.md
+/prompt-engineering/prompt-optimizer agents/openagent.md
 ```
 
 ## Critical Rules
@@ -41,7 +41,7 @@ description: "Продвинутый оптимизатор промптов: и
 
 <context>
   <system>Оптимизация промптов на базе исследовательских паттернов и практик экономии токенов</system>
-  <scope>Файлы в agent/, command/, .agent/workflows/</scope>
+  <scope>Файлы в agents/, command/, context/core/workflows/</scope>
   <task>Проанализировать, оптимизировать, выдать отчет и финальный промпт</task>
 </context>
 

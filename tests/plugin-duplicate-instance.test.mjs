@@ -1,0 +1,91 @@
+// Regression test: opencode loads the same plugin twice when it exists in both the
+// global config (~/.config/opencode/plugin) and the project (.opencode/plugin).
+// Both copies receive every event. Before the fix this doubled every telemetry
+// record and doubled the halt-guard nudge budget per session.
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import test from 'node:test';
+import { pathToFileURL } from 'node:url';
+
+const root = path.resolve(import.meta.dirname, '..');
+const load = (rel) => import(pathToFileURL(path.join(root, rel)).href);
+
+test('telemetry writes a duplicated event once but keeps later real events', async () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'tlm-'));
+  try {
+    const TelemetryA = (await load('plugin/telemetry.js')).default.server;
+    const TelemetryB = (await load('.opencode/plugin/telemetry.js')).default.server;
+    const a = await TelemetryA({ directory: tmp });
+    const b = await TelemetryB({ directory: tmp });
+
+    const input = { tool: 'task', sessionID: 's1', args: { subagent_type: 'coder' } };
+    await a['tool.execute.after'](input);
+    await b['tool.execute.after'](input);
+
+    const journal = path.join(tmp, '.opencode', 'agent-journal.jsonl');
+    const read = () => fs.readFileSync(journal, 'utf8').trim().split('\n').filter(Boolean);
+
+    assert.equal(read().length, 1, 'the duplicate plugin instance must not double-write');
+
+    await new Promise((r) => setTimeout(r, 80));
+    await a['tool.execute.after'](input);
+    assert.equal(read().length, 2, 'a genuinely later event must still be recorded');
+  } finally {
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+});
+
+test('halt-guard shares the nudge budget across duplicate plugin instances', async () => {
+  let messageSeq = 0;
+  let prompts = 0;
+  let lastText = '';
+  const client = {
+    session: {
+      get: async () => ({ data: { id: 's1' } }),
+      messages: async () => ({
+        data: [
+          {
+            info: { role: 'assistant', id: `m${++messageSeq}`, time: { completed: 1 } },
+            parts: [{ type: 'text', text: 'Передаю агенту coder задачу.' }],
+          },
+        ],
+      }),
+      todo: async () => ({ data: [] }),
+      prompt: async (args) => {
+        prompts += 1;
+        lastText = args.body.parts[0].text;
+      },
+    },
+  };
+
+  const HaltGuardA = (await load('plugin/halt-guard.js')).default.server;
+  const HaltGuardB = (await load('.opencode/plugin/halt-guard.js')).default.server;
+  const a = await HaltGuardA({ client });
+  const b = await HaltGuardB({ client });
+
+  for (let i = 0; i < 6; i++) {
+    const handler = i % 2 === 0 ? a : b;
+    await handler.event({ event: { type: 'session.idle', properties: { sessionID: 's1' } } });
+  }
+
+  // 3 nudges (shared budget across both instances, not 6) + exactly one
+  // closing "budget exhausted" status request instead of a silent stop.
+  assert.equal(prompts, 4, 'MAX_NUDGES=3 must hold across both plugin instances');
+  assert.match(lastText, /Бюджет авто-продолжений исчерпан/);
+});
+
+test('plugins export the opencode 2.x definition shape (id + server factory + setup)', async () => {
+  // Regression guard: opencode 2.x rejects `export default <function>`
+  // (PluginModule.LoadError: "must export a default definition with an id and
+  // an effect or setup function") and silently disables the plugin. All four
+  // guards spent time dead in the live 2.0.19 runtime because of this.
+  for (const rel of ['plugin/halt-guard.js', 'plugin/bash-guard.js', 'plugin/secret-guard.js', 'plugin/telemetry.js', 'plugin/image-guard.js']) {
+    const mod = await load(rel);
+    assert.equal(typeof mod.default, 'object', `${rel}: default must be the 2.x definition object`);
+    assert.equal(typeof mod.default.id, 'string', `${rel}: definition needs a string id`);
+    assert.equal(typeof mod.default.server, 'function', `${rel}: definition.server must be the factory`);
+    assert.equal(typeof mod.default.setup, 'function', `${rel}: 2.x schema requires an effect or setup function`);
+  }
+});

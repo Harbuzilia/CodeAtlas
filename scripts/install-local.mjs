@@ -22,11 +22,16 @@ const baseFiles = [
   'instructions.md',
   'PROJECT_GUIDE.md',
   'package.json',
+  // npm ci in the target requires the lockfile, and the governance validator
+  // requires .opencode/package.json (regenerable there via npm run sync:local).
+  'package-lock.json',
+  '.opencode/package.json',
   'validate-runtime-governance.mjs',
-  'opencode-init.sh'
+  'opencode-init.sh',
+  'opencode-init.ps1',
+  'CHANGELOG.md'
 ];
-
-const baseDirs = ['agents', 'context', 'scripts', 'skills', 'skill'];
+const baseDirs = ['agents', 'context', 'scripts', 'skills', 'command', 'plugin', '.githooks', '.github', '.opencode/plugin'];
 
 const files = new Set([
   ...baseFiles,

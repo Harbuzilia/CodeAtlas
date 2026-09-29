@@ -9,6 +9,8 @@ description: Умные conventional commits с автоматическим а�
 - Текстовый тип изменений
 - Автоанализ diff для определения типа
 
+Перед staging загрузи скилл `git` (quality commit/PR protocol); `git add .` допустим только в auto-режиме ПОСЛЕ просмотра `git diff --staged` (иначе — явные пути).
+
 ## Workflow | Рабочий процесс
 
 ### 1. Проверь изменения

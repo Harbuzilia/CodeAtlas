@@ -11,10 +11,7 @@
             "read",
             "write",
             "edit",
-            "bash",
-            "filesystem_read_text_file",
-            "filesystem_write_file",
-            "filesystem_edit_file"
+            "bash"
         ]
     },
     "turnProtection": {
@@ -41,10 +38,7 @@
                 "read",
                 "write",
                 "edit",
-                "bash",
-                "filesystem_read_text_file",
-                "filesystem_write_file",
-                "filesystem_edit_file"
+                "bash"
             ]
         },
         "distill": {

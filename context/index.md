@@ -17,6 +17,7 @@
 | General patterns | `core/essential-patterns.md` |
 | Project-specific | `project/patterns.md` |
 | Delegation | `core/workflows/delegation.md` |
+| Stack-стандарты (Redis/Kafka/gRPC/WS/migrations/flags/MFE) | `standards/*.md` |
 
 ---
 
@@ -25,6 +26,10 @@
 ### `core/essential-patterns.md`
 Triggers: любой код, общие паттерны
 Contains: Pure functions, error handling, security, SOLID краткий
+
+### `standards/*.md` (stack-стандарты, не скиллы)
+Triggers: Redis/кэш, Kafka/очереди, gRPC/GraphQL, WebSockets/SSE, DB-миграции, feature-flags/trunk, micro-frontends
+Contains: db-migration-safety, caching-redis-strategy, grpc-graphql-contracts, websocket-realtime-events, feature-flags-trunk-based, micro-frontends-federation, event-driven-messaging
 
 ### `core/standards/code.md`
 Triggers: write code, edit code, implement, create class/function
@@ -46,9 +51,21 @@ Contains: Document templates, comment standards, API docs format
 Triggers: code review, ревью, проверь код
 Contains: Review checklist, Conventional Comments, severity levels
 
+### `core/workflows/resilience.md`
+Triggers: resilience, reliability, fault-tolerance, circuit breaker
+Contains: Resilience patterns, retry logic, circuit breaker, fallback strategies
+
 ### `core/workflows/delegation.md`
 Triggers: delegate, передай, используй subagent
 Contains: When to delegate, context bundling, handoff format
+
+---
+
+## Config Contexts | Конфигурационные контексты
+
+### `core/config/paths.json`
+Triggers: path resolution, file structure, project layout
+Contains: Project path aliases, directory structure configuration
 
 ---
 
@@ -73,12 +90,7 @@ BEFORE executing any write/edit:
 
 ### For Subagents
 
-```
-WHEN delegating to subagent:
-1. Create context bundle at .tmp/sessions/{id}/context.md
-2. Include all relevant context files
-3. Tell subagent to load bundle first
-```
+Контекст передаётся ВНУТРИ prompt делегирования (контракт Input/Expected Output/Done Criteria/Return Format + findings из `.opencode/findings.md`); отдельные context-bundle файлы не создаются.
 
 ---
 
@@ -87,15 +99,21 @@ WHEN delegating to subagent:
 ```
 context/
 ├── index.md              # ← YOU ARE HERE
+├── navigation.md
 ├── core/
 │   ├── essential-patterns.md
+│   ├── navigation.md
+│   ├── config/
+│   │   └── paths.json
 │   ├── standards/
 │   │   ├── code.md
 │   │   ├── tests.md
-│   │   └── docs.md       # NEW
+│   │   └── docs.md
 │   └── workflows/
+│       ├── delegation.md
+│       ├── resilience.md
 │       ├── review.md
-│       └── delegation.md
 └── project/
+    ├── navigation.md
     └── patterns.md
 ```

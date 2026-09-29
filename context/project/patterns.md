@@ -42,6 +42,9 @@ Rule: если есть конфликт в документации, следу
 - `planner`
 - `externalscout`
 - `docwriter`
+- `uitester`
+- `architect`
+- `devops`
 
 Запрещены legacy IDs:
 - `specialist/*`
@@ -50,6 +53,10 @@ Rule: если есть конфликт в документации, следу
 - `research/external-scout`
 - `subagents/external-scout`
 - `core/opencoder`
+
+### 2.1) Functional Modes Roster
+Ростер функциональных режимов openagent (единый с `agents/openagent.md` и `context/core/workflows/delegation.md`):
+- `implement-feature`, `fix-production-bug`, `add-tests-for-module`, `refactor-safely`, `write-and-sync-docs`, `prepare-release-docs`, `modern-design`, `modern-backend-upgrade`, `api-change-safe`, `architecture-design`, `infra-setup`.
 
 ### 3) Contract-First Delegation
 Каждая делегация должна включать:
@@ -61,7 +68,7 @@ Rule: если есть конфликт в документации, следу
 Если контракт неполный -> не делегировать, сначала запросить/уточнить вход.
 
 ### 4) Planner as Fan-Out Controller
-- Для задач 4+ файлов сначала `planner`.
+- Для задач 10+ файлов сначала `planner` (порог единый с openagent.md).
 - Planner выдает подзадачи с явным именем агента и контрактом.
 - Исполнение без декомпозиции допустимо только для простых задач.
 
@@ -95,7 +102,8 @@ Rule: если есть конфликт в документации, следу
 ## Documentation Hygiene | Гигиена документации
 
 - Runtime точка входа: `PROJECT_GUIDE.md`.
-- Исторические материалы: `docs/legacy/history/` и `docs/legacy/archive/`.
+- Сгенерированные карты: `docs/architecture/system_map.md` и `docs/modules/scripts.md`.
+- Архив атомарных бэкапов: `.opencode/history/`.
 - Файлы с пометкой legacy не использовать как источник runtime-правды.
 
 ---

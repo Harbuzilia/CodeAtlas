@@ -8,18 +8,95 @@
   "default_agent": "openagent",
   "permission": {
     "bash": {
-      "git status": "allow",
-      "ls": "allow",
-      "pwd": "allow",
-      "git diff": "allow",
-      "python --version": "allow",
-      "npm list": "allow",
-      "*": "ask"
+      "*": "allow",
+      "rm -rf /": "deny",
+      "rm -rf /*": "deny",
+      "rm -rf ~": "deny",
+      "rm -rf ~/*": "deny",
+      "rm -rf $HOME*": "deny",
+      "rm -rf C:*": "deny",
+      "rm -rf .git*": "deny",
+      "rm -rf ..*": "deny",
+      "del /f /s /q C:*": "deny",
+      "del /q /s C:*": "deny",
+      "rd /s /q C:*": "deny",
+      "rmdir /s /q C:*": "deny",
+      "Remove-Item -Recurse -Force C:*": "deny",
+      "Remove-Item -Recurse -Force /": "deny",
+      "Remove-Item -Recurse -Force /*": "deny",
+      "Remove-Item -Recurse -Force ~*": "deny",
+      "Remove-Item -Recurse -Force ..*": "deny",
+      "Remove-Item -Recurse -Force .git*": "deny",
+      "Remove-Item -Recurse -Force C:/Windows*": "deny",
+      "format c:*": "deny",
+      "format C:*": "deny",
+      "format /": "deny",
+      "Clear-Disk*": "deny",
+      "Initialize-Disk*": "deny",
+      "Remove-Partition*": "deny",
+      "Format-Volume*": "deny",
+      "Remove-Volume*": "deny",
+      "diskpart*": "deny",
+      "mkfs*": "deny",
+      "dd if=*": "deny",
+      "bcdedit*": "deny",
+      "reg delete HKLM*": "deny",
+      "vssadmin delete*": "deny",
+      "cipher /w*": "deny",
+      "wsl --unregister*": "deny",
+      "shutdown*": "deny",
+      "Stop-Computer*": "deny",
+      "Restart-Computer*": "deny",
+      "sudo *": "deny",
+      "doas *": "deny",
+      "curl * | sh": "deny",
+      "curl * | bash": "deny",
+      "wget * | sh": "deny",
+      "wget * | bash": "deny",
+      "iex *": "deny",
+      "Invoke-Expression *": "deny",
+      "* | iex": "deny",
+      "* | Invoke-Expression": "deny",
+      ":(){ :|:& };:": "deny",
+      "*DROP DATABASE*": "deny",
+      "*drop database*": "deny",
+      "drop table*": "deny",
+      "*DROP SCHEMA*": "deny",
+      "*drop schema*": "deny",
+      "*dropdb *": "deny",
+      "*TRUNCATE TABLE*": "deny",
+      "*migrate reset*": "deny",
+      "*--force-reset*": "deny",
+      "*FLUSHALL*": "deny",
+      "*FLUSHDB*": "deny",
+      "docker volume rm*": "deny",
+      "docker volume prune*": "deny",
+      "docker system prune -a*": "deny",
+      "kubectl delete*": "deny",
+      "git push --force*": "deny",
+      "git push -f*": "deny",
+      "chmod -R 777 /*": "deny",
+      "git push --force-with-lease*": "allow"
     },
     "edit": {
+      "*": "allow",
       "**/*.env*": "deny",
       ".git/**": "deny"
-    }
+    },
+    "read": {
+      "*": "allow",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow"
+    },
+    "external_directory": {
+      "*": "allow",
+      "C:/Windows/**": "deny",
+      "C:/Program Files/**": "deny",
+      "~/.ssh/**": "deny",
+      "~/.aws/**": "deny"
+    },
+    "doom_loop": "deny"
   },
   "provider": {
     "google": {
@@ -161,168 +238,75 @@
         }
       }
     },
-    "ccs-agy": {
-      "npm": "@ai-sdk/anthropic",
-      "name": "CCS AGY Provider",
+    "dashscope": {
+      "npm": "@ai-sdk/openai",
+      "name": "DashScope",
       "options": {
-        "baseURL": "http://127.0.0.1:8317/api/provider/agy/v1",
-        "apiKey": "ccs-internal-managed"
+        "baseURL": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "apiKey": "REPLACE_WITH_DASHSCOPE_API_KEY"
       },
       "models": {
-        "gemini-3-pro-preview": {
-          "name": "Gemini 3 Pro (CCS AGY)",
+        "glm-5.3": {
+          "name": "GLM-5.3 (DashScope)",
           "limit": {
-            "context": 1048576,
-            "output": 65535
+            "context": 1000000,
+            "output": 131072
           },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
+          "tool_call": true
+        }
+      }
+    },
+    "dashscope-2": {
+      "npm": "@ai-sdk/openai",
+      "name": "DashScope 2",
+      "options": {
+        "baseURL": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "apiKey": "REPLACE_WITH_DASHSCOPE_2_API_KEY"
+      },
+      "models": {
+        "glm-5.3": {
+          "name": "GLM-5.3 (DashScope 2)",
+          "limit": {
+            "context": 1000000,
+            "output": 131072
           },
-          "variants": {
-            "low": {
-              "thinkingLevel": "low"
-            },
-            "high": {
-              "thinkingLevel": "high"
-            }
-          }
+          "tool_call": true
         },
-        "gemini-3-flash-preview": {
-          "name": "Gemini 3 Flash (CCS AGY)",
+        "qwen3.8-flash": {
+          "name": "Qwen3.8 Flash (DashScope 2)",
           "limit": {
-            "context": 1048576,
-            "output": 65536
+            "context": 1000000,
+            "output": 131072
           },
+          "tool_call": true,
           "modalities": {
             "input": [
               "text",
-              "image",
-              "pdf"
+              "image"
             ],
             "output": [
               "text"
             ]
-          },
-          "variants": {
-            "minimal": {
-              "thinkingLevel": "minimal"
-            },
-            "low": {
-              "thinkingLevel": "low"
-            },
-            "medium": {
-              "thinkingLevel": "medium"
-            },
-            "high": {
-              "thinkingLevel": "high"
-            }
-          }
-        },
-        "gemini-claude-sonnet-4-5": {
-          "name": "Claude Sonnet 4.5 (CCS AGY)",
-          "limit": {
-            "context": 200000,
-            "output": 64000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          }
-        },
-        "gemini-claude-sonnet-4-5-thinking": {
-          "name": "Claude Sonnet 4.5 Thinking (CCS AGY)",
-          "limit": {
-            "context": 200000,
-            "output": 64000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "low": {
-              "thinkingConfig": {
-                "thinkingBudget": 8192
-              }
-            },
-            "max": {
-              "thinkingConfig": {
-                "thinkingBudget": 32768
-              }
-            }
-          }
-        },
-        "gemini-claude-opus-4-5-thinking": {
-          "name": "Claude Opus 4.5 Thinking (CCS AGY)",
-          "limit": {
-            "context": 200000,
-            "output": 64000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "low": {
-              "thinkingConfig": {
-                "thinkingBudget": 8192
-              }
-            },
-            "max": {
-              "thinkingConfig": {
-                "thinkingBudget": 32768
-              }
-            }
           }
         }
       }
     },
-    "ccs-gpt": {
-      "npm": "@ai-sdk/openai",
-      "name": "CCS GPT Provider",
+    "opencode-free-1": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "opencode free 1",
       "options": {
-        "baseURL": "http://127.0.0.1:8317/api/provider/codex/v1",
-        "apiKey": "ccs-internal-managed",
-        "reasoningEffort": "medium",
-        "reasoningSummary": "auto",
-        "textVerbosity": "medium",
-        "include": [
-          "reasoning.encrypted_content"
-        ],
-        "store": false
+        "baseURL": "https://opencode.ai/inference/openai/v1",
+        "apiKey": "REPLACE_WITH_OPENCODE_KEY"
       },
       "models": {
-        "gpt-5.2": {
-          "name": "GPT 5.2 (CCS GPT)",
+        "space-bunny-free": {
+          "name": "Space Bunny Free (free 1)",
           "limit": {
-            "context": 272000,
-            "output": 128000
+            "context": 1000000,
+            "output": 131072
           },
+          "tool_call": true,
+          "reasoning": true,
           "modalities": {
             "input": [
               "text",
@@ -331,208 +315,6 @@
             "output": [
               "text"
             ]
-          },
-          "variants": {
-            "none": {
-              "reasoningEffort": "none",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "low": {
-              "reasoningEffort": "low",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "medium": {
-              "reasoningEffort": "medium",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            }
-          }
-        },
-        "gpt-5.2-codex": {
-          "name": "GPT 5.2 Codex (CCS GPT)",
-          "limit": {
-            "context": 272000,
-            "output": 128000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "low": {
-              "reasoningEffort": "low",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "medium": {
-              "reasoningEffort": "medium",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            }
-          }
-        },
-        "gpt-5.1-codex-max": {
-          "name": "GPT 5.1 Codex Max (CCS GPT)",
-          "limit": {
-            "context": 272000,
-            "output": 128000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "low": {
-              "reasoningEffort": "low",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            },
-            "medium": {
-              "reasoningEffort": "medium",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            }
-          }
-        },
-        "gpt-5.1-codex": {
-          "name": "GPT 5.1 Codex (CCS GPT)",
-          "limit": {
-            "context": 272000,
-            "output": 128000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "low": {
-              "reasoningEffort": "low",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "medium": {
-              "reasoningEffort": "medium",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            }
-          }
-        },
-        "gpt-5.1-codex-mini": {
-          "name": "GPT 5.1 Codex Mini (CCS GPT)",
-          "limit": {
-            "context": 272000,
-            "output": 128000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "medium": {
-              "reasoningEffort": "medium",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            }
-          }
-        },
-        "gpt-5.1": {
-          "name": "GPT 5.1 (CCS GPT)",
-          "limit": {
-            "context": 272000,
-            "output": 128000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "none": {
-              "reasoningEffort": "none",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "low": {
-              "reasoningEffort": "low",
-              "reasoningSummary": "auto",
-              "textVerbosity": "low"
-            },
-            "medium": {
-              "reasoningEffort": "medium",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "high"
-            }
           }
         }
       }
@@ -568,6 +350,15 @@
     },
     "uitester": {
       "path": "agents/uitester.md"
+    },
+    "architect": {
+      "path": "agents/architect.md"
+    },
+    "devops": {
+      "path": "agents/devops.md"
+    },
+    "vision": {
+      "path": "agents/vision.md"
     }
   },
   "mcp": {
@@ -577,49 +368,6 @@
         "npx",
         "-y",
         "@upstash/context7-mcp"
-      ]
-    },
-    "ddg-search": {
-      "type": "local",
-      "command": [
-        "uvx",
-        "duckduckgo-mcp-server"
-      ]
-    },
-    "github-grep": {
-      "type": "remote",
-      "url": "https://mcp.grep.app"
-    },
-    "chrome-devtools": {
-      "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "chrome-devtools-mcp@latest"
-      ]
-    },
-    "memory": {
-      "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "@modelcontextprotocol/server-memory"
-      ]
-    },
-    "filesystem": {
-      "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "D:/AllMyProject"
-      ]
-    },
-    "echovault": {
-      "type": "local",
-      "command": [
-        "memory",
-        "mcp"
       ]
     }
   },

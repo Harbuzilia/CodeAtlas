@@ -1,6 +1,6 @@
 #!/bin/bash
 # opencode-init.sh
-# Initialize OpenCode in a new repository (required dirs and symlinks).
+# Initialize OpenCode in a new repository (required dirs and links).
 
 set -e
 
@@ -8,50 +8,36 @@ echo "Initializing OpenCode in $(pwd)..."
 
 mkdir -p .opencode
 
-GLOBAL_SKILLS_PATH="$HOME/.config/opencode/skills"
-LOCAL_SKILLS_PATH=".opencode/skills"
+# Link or copy a global directory into .opencode/.
+# Windows note: Git Bash without MSYS=winsymlinks:nativestrict silently makes a
+# COPY on `ln -s` — a stale copy is worse than no link, so we verify the symlink
+# actually materialized and fall back to a plain recursive copy.
+link_or_copy() {
+    local GLOBAL_PATH="$1"
+    local LOCAL_PATH="$2"
 
-GLOBAL_LEGACY_SKILL_PATH="$HOME/.config/opencode/skill"
-LOCAL_LEGACY_SKILL_PATH=".opencode/skill"
-
-if [ -d "$GLOBAL_SKILLS_PATH" ]; then
-    if [ ! -L "$LOCAL_SKILLS_PATH" ] && [ ! -d "$LOCAL_SKILLS_PATH" ]; then
-        echo "Creating symlink for discoverable skills..."
-        ln -s "$GLOBAL_SKILLS_PATH" "$LOCAL_SKILLS_PATH"
-        echo "Symlink created: $LOCAL_SKILLS_PATH -> $GLOBAL_SKILLS_PATH"
-    else
-        echo "Directory or symlink already exists at $LOCAL_SKILLS_PATH"
+    if [ ! -d "$GLOBAL_PATH" ]; then
+        echo "Warning: directory not found ($GLOBAL_PATH), skipping."
+        return
     fi
-else
-    echo "Warning: Global skills directory not found ($GLOBAL_SKILLS_PATH)."
-fi
-
-# Link global bin directory (ast-index and other CLI tools).
-GLOBAL_BIN_PATH="$HOME/.config/opencode/bin"
-LOCAL_BIN_PATH=".opencode/bin"
-
-if [ -d "$GLOBAL_BIN_PATH" ]; then
-    if [ ! -L "$LOCAL_BIN_PATH" ] && [ ! -d "$LOCAL_BIN_PATH" ]; then
-        echo "Creating symlink for global bin tools..."
-        ln -s "$GLOBAL_BIN_PATH" "$LOCAL_BIN_PATH"
-        echo "Symlink created: $LOCAL_BIN_PATH -> $GLOBAL_BIN_PATH"
-    else
-        echo "Directory or symlink already exists at $LOCAL_BIN_PATH"
+    if [ -e "$LOCAL_PATH" ] || [ -L "$LOCAL_PATH" ]; then
+        echo "Directory or link already exists at $LOCAL_PATH"
+        return
     fi
-else
-    echo "Warning: Global bin directory not found ($GLOBAL_BIN_PATH)."
-fi
-
-# Keep legacy link support during transition.
-if [ -d "$GLOBAL_LEGACY_SKILL_PATH" ]; then
-    if [ ! -L "$LOCAL_LEGACY_SKILL_PATH" ] && [ ! -d "$LOCAL_LEGACY_SKILL_PATH" ]; then
-        echo "Creating legacy skill symlink (transition compatibility)..."
-        ln -s "$GLOBAL_LEGACY_SKILL_PATH" "$LOCAL_LEGACY_SKILL_PATH"
-        echo "Symlink created: $LOCAL_LEGACY_SKILL_PATH -> $GLOBAL_LEGACY_SKILL_PATH"
+    if ln -s "$GLOBAL_PATH" "$LOCAL_PATH" 2>/dev/null && [ -L "$LOCAL_PATH" ]; then
+        echo "Symlink created: $LOCAL_PATH -> $GLOBAL_PATH"
     else
-        echo "Directory or symlink already exists at $LOCAL_LEGACY_SKILL_PATH"
+        rm -rf "$LOCAL_PATH"
+        cp -r "$GLOBAL_PATH" "$LOCAL_PATH"
+        echo "Copied (symlink unavailable): $LOCAL_PATH <- $GLOBAL_PATH"
     fi
-fi
+}
+
+# Discoverable skills from the global config.
+link_or_copy "$HOME/.config/opencode/skills" ".opencode/skills"
+
+# Global bin directory (ast-index and other CLI tools).
+link_or_copy "$HOME/.config/opencode/bin" ".opencode/bin"
 
 if [ -f .gitignore ]; then
     if ! grep -q "\.opencode/task_state\.md" .gitignore; then

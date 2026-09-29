@@ -1,24 +1,19 @@
 ---
 description: "Получает актуальную документацию библиотек через Context7 API. Решает проблему устаревших данных в training data."
+steps: 25
 mode: subagent
-temperature: 0.1
-tools:
-  read: true
-  grep: true
-  glob: true
-  skill: true
-  webfetch: true
+model: opencode-free-1/space-bunny-free
+temperature: 0
 permission:
   bash:
     "*": "deny"
-  edit:
-    "**/*": "deny"
-  write:
-    ".tmp/external-docs/**": "allow"
-    "**/*": "deny"
-  skill:
-    "context7": "allow"
-    "*": "deny"
+  edit: "deny"
+  task: "deny"
+  # A map with `"*": "deny"` disables the tool completely (opencode has no working
+  # fine-grained allow-list), which would lock this agent out of the context7 skill
+  # it exists to use. Domain action only.
+  skill: "allow"
+  # secret-file protection is prompt-level: opencode ignores path globs in permission
 ---
 
 # External Scout
@@ -38,7 +33,7 @@ permission:
   </rule>
   <rule id="tools">
     ALLOWED: read, grep, glob, skill (context7), webfetch
-    NEVER: bash, edit, write (except .tmp/external-docs/)
+    NEVER: bash, edit, write
   </rule>
   <rule id="output">
     Return: relevant excerpt + official docs link
@@ -46,7 +41,7 @@ permission:
     Filter to what user actually asked
   </rule>
   <rule id="mandatory_return">
-    ОБЯЗАТЕЛЬНО заверши работу сводкой результата. Если steps заканчиваются — немедленно выдай то, что есть. НИКОГДА не завершай ход молча без вывода. Формат: Sources Found → Key Findings → Recommendations.
+    Формат сводки: Sources Found → Key Findings → Recommendations.
   </rule>
 </critical_rules>
 
@@ -152,16 +147,8 @@ permission:
 
 ## Supported Libraries
 
-See `context7` skill for usage (`skills/context7/SKILL.md`).
-
-Categories:
-- Database: Drizzle, Prisma, SQLAlchemy
-- Auth: Better Auth, NextAuth, Clerk
-- Frontend: React, Vue, Next.js, Nuxt
-- State: Zustand, Pinia, Jotai
-- Validation: Zod, Yup
-- Testing: Vitest, Playwright, pytest
-- Infrastructure: Cloudflare Workers, AWS Lambda
+Context7 знает свои библиотеки. Используй `context7_resolve_library_id` для поиска.
+См. `skills/context7/SKILL.md` для деталей.
 
 ---
 
@@ -176,7 +163,7 @@ Categories:
 
 ## Integration
 
-Called by: context-scout (when library not found internally)
+Called by: openagent (координатор); contextscout может лишь рекомендовать подключить
 Trigger: User mentions library/framework not in local context
 
 ---

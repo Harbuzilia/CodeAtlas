@@ -20,13 +20,17 @@ Performance contract:
 | Condition | Delegate to (agent name) |
 |-----------|---------------------------|
 | Any code (write/edit/fix) | coder |
-| 4+ files | planner first |
+| 10+ files | planner first |
 | Complex code | coder |
 | Tests | tester |
 | Review | reviewer |
 | Context search | contextscout |
 | Build errors | debugger (required: `incident-response` for production incidents) |
 | Documentation (README, API) | docwriter |
+| Architecture / ADR / diagrams | architect |
+| Docker / CI/CD / deploy / monitoring | devops |
+| Visual UI / browser checks | uitester |
+| External library docs | externalscout |
 
 ---
 
@@ -34,15 +38,19 @@ Performance contract:
 
 | Mode | Context Scout | Primary route | Follow-up |
 |------|---------------|---------------|-----------|
-| implement-feature | AUTO (4+ files) / SKIP (1-3) | coder | planner first if 10+ files |
+| implement-feature | AUTO (4+ files) / SKIP (1-3) | coder | planner first if 10+ files; reviewer then tester unless LIGHT-ROUTE |
 | fix-production-bug | OPTIONAL | debugger (required: `incident-response`) | tester if fix touches behavior |
 | add-tests-for-module | OPTIONAL | tester | reviewer optional |
-| refactor-safely | AUTO | coder | reviewer then tester |
+| refactor-safely | AUTO | coder | reviewer then tester unless LIGHT-ROUTE |
 | write-and-sync-docs | OPTIONAL | docwriter | contextscout for missing context |
 | prepare-release-docs | OPTIONAL | docwriter (required: `docs-sync` release-docs-sync profile) | sync corresponding sections in `PROJECT_GUIDE.md` |
-| modern-design | AUTO | contextscout -> externalscout -> coder | emit Design Decision Lock first, then implement |
+| modern-design | AUTO | contextscout -> externalscout -> coder -> uitester | emit Design Decision Lock first, then implement |
 | modern-backend-upgrade | AUTO | contextscout -> externalscout -> coder -> tester | emit Backend Upgrade Decision Lock first, then implement |
 | api-change-safe | AUTO | coder (required: `api-change-safe`) | tester then docwriter |
+| architecture-design | OPTIONAL | architect | docwriter optional |
+| infra-setup | SKIP | devops | reviewer optional for config security |
+
+LIGHT-ROUTE (openagent.md — источник): правка ≤3 файлов без риск-триггеров → route = [coder] с самопроверкой, reviewer/tester не подключаются.
 
 Rules:
 1. Detect mode before generic condition routing (including `api-change-safe`, `prepare-release-docs`, `modern-design`, `modern-backend-upgrade`).
@@ -80,6 +88,9 @@ Rules:
 11. **NO-LEAK**: ЗАПРЕЩЕНО выводить параметры task() как текст (JSON, prompt, description, subagent_type). Параметры идут ТОЛЬКО внутри function call.
 12. **NO-EARLY-EXIT**: НЕ говори "Работа завершена" пока ВСЕ шаги route не выполнены и результат каждого не получен.
 13. **FINAL-REPORT-ONLY**: Единственный текстовый вывод = финальный отчёт после завершения ВСЕЙ цепочки. Между делегациями — ноль текста.
+14. **PROGRESS-LOG**: Для цепочки из 2+ делегирований веди `.opencode/progress.md` минимально: одна строка `HH:MM → agent: задача` перед task() (1 запись на делегирование), итоги — одной записью в конце цепочки. Это единственный живой канал «что происходит сейчас» для пользователя. Записи — это tool-вызовы (edit/write), не текст в чат, правило 13 не нарушают. LIGHT-ROUTE и execute_directly протокол не ведут.
+15. **FINDINGS-DURABLE**: Только после возврата `contextscout` допиши 3-7 строк его ключевых находок в `.opencode/findings.md` и передавай релевантные findings следующему субагенту в prompt — они переживают compaction. Скауты сами ничего не пишут (read-only).
+16. **LIGHT-ROUTE**: правка ≤3 файлов без риск-триггеров (API-контракты, БД/миграции, auth/security, публичные интерфейсы, CI/deploy-конфиги) идёт одним `coder` с самопроверкой — без reviewer/tester, если пользователь не попросил их явно.
 
 ---
 
@@ -95,3 +106,6 @@ Rules:
 | Planner | planner |
 | External Scout | externalscout |
 | DocWriter | docwriter |
+| UI Tester | uitester |
+| Architect | architect |
+| DevOps | devops |
