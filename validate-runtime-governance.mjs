@@ -313,7 +313,8 @@ if (fs.existsSync(haltGuardRoot) && fs.existsSync(haltGuardOpencode)) {
   const b = fs.readFileSync(haltGuardOpencode, 'utf8');
   if (a !== b) fail('plugin/halt-guard.js and .opencode/plugin/halt-guard.js diverged — run sync');
   if (!a.includes('parentID')) fail('halt-guard.js missing parentID guard — will nudge child sessions');
-  if (!a.includes('session.todo')) fail('halt-guard.js missing todo check — silent stalls not caught');
+  if (!a.includes('session.execution.interrupted')) fail('halt-guard.js missing native user-stop handling — aborts may be auto-resumed');
+  if (!a.includes('session.synthetic')) fail('halt-guard.js missing synthetic injection channel — guard input would clear abort marks');
   if (!a.includes('export default')) fail('halt-guard.js missing export — not a valid plugin');
 }
 const telemRoot = path.join(root, 'plugin', 'telemetry.js');
