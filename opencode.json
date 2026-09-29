@@ -306,7 +306,16 @@
             "output": 131072
           },
           "tool_call": true,
-          "reasoning": true
+          "reasoning": true,
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          }
         }
       }
     }
@@ -347,6 +356,9 @@
     },
     "devops": {
       "path": "agents/devops.md"
+    },
+    "vision": {
+      "path": "agents/vision.md"
     }
   },
   "mcp": {

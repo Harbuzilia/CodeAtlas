@@ -33,7 +33,8 @@
                     "subagent:externalscout",
                     "subagent:uitester",
                     "subagent:architect",
-                    "subagent:devops"
+                    "subagent:devops",
+                    "subagent:vision"
                 ],
                 "category": "core"
             }
@@ -192,6 +193,20 @@
                 ],
                 "dependencies": [],
                 "category": "infra"
+            },
+            {
+                "id": "vision",
+                "name": "Vision",
+                "type": "subagent",
+                "path": "agents/vision.md",
+                "description": "Image-capable agent for attached images and screenshots",
+                "tags": [
+                    "vision",
+                    "images",
+                    "screenshots"
+                ],
+                "dependencies": [],
+                "category": "code"
             }
         ]
     }

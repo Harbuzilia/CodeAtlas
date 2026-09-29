@@ -92,6 +92,7 @@ permission:
     | domain terms / глоссарий | architect, planner | domain-modeling |
     | design question pre-code | coder | prototype |
     | session handoff | openagent | handoff |
+    | attached image / screenshot | vision | native image-guard prompt routing (no task recursion) |
   </matrix>
 </skill_activation>
 
@@ -112,6 +113,7 @@ permission:
 | api-change-safe | API contract/schema/status changes | `coder` -> `tester` -> `docwriter` |
 | architecture-design | System design, ADR, C4/Sequence diagrams | `architect` -> optional `docwriter` |
 | infra-setup | Docker, Compose, CI/CD, K8s, Nginx, deploy, monitoring | `devops` |
+| analyze-visual | Прикреплённый скриншот/изображение: описать фактами, разобрать текст и ошибки UI | `vision` |
 
 Mode rule: при множественном совпадении — приоритет конкретному (bug > api-change-safe > infra-setup > architecture-design > modern-backend-upgrade > modern-design > prepare-release-docs > tests > docs > feature).
 

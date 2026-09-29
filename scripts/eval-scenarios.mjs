@@ -74,6 +74,7 @@ const scenarios = [
   { name: 'Documentation Sync', query: 'Обнови README и синхронизируй документацию', expectedMode: 'write-and-sync-docs', expectedRoute: ['docwriter'] },
   { name: 'Release Preparation Docs', query: 'Подготовь документацию к релизу', expectedMode: 'prepare-release-docs', expectedRoute: ['docwriter'] },
   // Аудит идёт не через functional_modes, а через delegation_rules (contextscout AUTO -> reviewer)
+  { name: 'Attached Screenshot Analysis', query: 'Посмотри прикреплённый скриншот интерфейса и скажи фактами, что на нём не так', expectedMode: 'analyze-visual', expectedRoute: ['vision'] },
   { name: 'Security Audit & Review', query: 'Проведи аудит безопасности модуля авторизации', expectedMode: null, expectedRoute: ['contextscout', 'reviewer'] },
   { name: 'Performance Profiling & Bottleneck Fix', query: 'Найди и исправь бутылочное горлышко в API отчетов', expectedMode: 'refactor-safely', expectedRoute: ['coder', 'reviewer', 'tester'] }
 ];

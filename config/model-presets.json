@@ -19,7 +19,8 @@
         "contextscout": { "model": "google/antigravity-gemini-3-flash", "variant": "minimal" },
         "externalscout": { "model": "google/antigravity-gemini-3-flash", "variant": "minimal" },
         "uitester": { "model": "google/antigravity-gemini-3-flash", "variant": "low" },
-        "docwriter": { "model": "google/antigravity-gemini-3-flash", "variant": "medium" }
+        "docwriter": { "model": "google/antigravity-gemini-3-flash", "variant": "medium" },
+        "vision": { "model": "opencode-free-1/space-bunny-free" }
       }
     },
     "balanced": {
@@ -36,7 +37,8 @@
         "contextscout": { "model": "google/antigravity-gemini-3-flash", "variant": "minimal" },
         "externalscout": { "model": "google/antigravity-gemini-3-flash", "variant": "minimal" },
         "uitester": { "model": "google/antigravity-gemini-3-flash", "variant": "low" },
-        "docwriter": { "model": "google/antigravity-gemini-3-flash", "variant": "medium" }
+        "docwriter": { "model": "google/antigravity-gemini-3-flash", "variant": "medium" },
+        "vision": { "model": "opencode-free-1/space-bunny-free" }
       }
     },
     "cost": {
@@ -53,7 +55,8 @@
         "contextscout": { "model": "google/antigravity-gemini-3-flash", "variant": "minimal" },
         "externalscout": { "model": "google/antigravity-gemini-3-flash", "variant": "minimal" },
         "uitester": { "model": "google/antigravity-gemini-3-flash", "variant": "low" },
-        "docwriter": { "model": "google/antigravity-gemini-3-flash", "variant": "medium" }
+        "docwriter": { "model": "google/antigravity-gemini-3-flash", "variant": "medium" },
+        "vision": { "model": "opencode-free-1/space-bunny-free" }
       }
     },
     "speed": {
@@ -70,7 +73,8 @@
         "contextscout": { "model": "google/antigravity-gemini-3-flash", "variant": "minimal" },
         "externalscout": { "model": "google/antigravity-gemini-3-flash", "variant": "minimal" },
         "uitester": { "model": "google/antigravity-gemini-3-flash", "variant": "low" },
-        "docwriter": { "model": "google/antigravity-gemini-3-flash", "variant": "medium" }
+        "docwriter": { "model": "google/antigravity-gemini-3-flash", "variant": "medium" },
+        "vision": { "model": "opencode-free-1/space-bunny-free" }
       }
     },
     "dashscope": {
@@ -87,6 +91,7 @@
         "uitester": { "model": "dashscope-2/qwen3.8-flash" },
         "contextscout": { "model": "opencode-free-1/space-bunny-free" },
         "docwriter": { "model": "opencode-free-1/space-bunny-free" },
+        "vision": { "model": "opencode-free-1/space-bunny-free" },
         "externalscout": { "model": "opencode-free-1/space-bunny-free" }
       }
     }

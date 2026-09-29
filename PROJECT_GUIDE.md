@@ -45,6 +45,7 @@
 - `externalscout`
 - `docwriter`
 - `uitester`
+- `vision` (native prompt-hook routing for attached images; model `opencode-free-1/space-bunny-free`)
 - `architect`
 - `devops`
 
