@@ -18,7 +18,8 @@ const benchmarks = [
   { name: 'Routing Scenario Evaluator (12 routes)', cmd: 'node scripts/eval-scenarios.mjs' },
   { name: 'Security Secret Scanner', cmd: 'node scripts/scan-secrets.mjs' },
   { name: 'Tech Debt Radar', cmd: 'node scripts/tech-debt-radar.mjs' },
-  { name: 'AST Impact Blast Radius Radar', cmd: 'node scripts/ast-impact.mjs' },
+  // real ast-index spawns (outline+usages per changed symbol) need a real budget
+  { name: 'AST Impact (ast-index outline+usages)', cmd: 'node scripts/ast-impact.mjs', budget: 8000 },
   { name: 'Test Coverage Gap Analyzer', cmd: 'node scripts/test-coverage-gap.mjs' },
   // audit-deps legitimately runs longer: it walks node_modules and consults the
   // npm metadata, so it gets its own budget instead of tripping the 500ms bar.

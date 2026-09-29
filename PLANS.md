@@ -52,7 +52,7 @@
 
 ### ✅ Dual-Mode Prompting, AST Impact, Test Gap, Redis & gRPC (Batch 6)
 - [x] **Двухрежимный Промпт-Оптимизатор**: `skills/prompt-engineering-advanced/SKILL.md` + команда `/prompt` (`command/prompt.md`) + фоновый Ambient Request Optimizer в `openagent.md`.
-- [x] **Анализатор радиуса поражения изменений (AST Impact)**: Скрипт `scripts/ast-impact.mjs` (`npm run impact`) для анализа зависимых сервисов по `git diff`.
+- [x] **Анализатор радиуса поражения изменений (AST Impact)**: Скрипт `scripts/ast-impact.mjs` (`npm run impact`) — настоящие `ast-index outline` + `usages` (SQLite-индекс AST) по изменённым символам из `git diff`; схема JSON v2 с учётом `truncated`.
 - [x] **Анализатор пробелов в тестах (Test Coverage Gap)**: Скрипт `scripts/test-coverage-gap.mjs` (`npm run test:gap`) для выявления нетестированных экспортов.
 - [x] **Навык Caching & Redis Strategy**: `skills/caching-redis-strategy/SKILL.md` (Cache-Aside, SingleFlight, Stampede prevention, Tagged invalidation).
 - [x] **Навык gRPC & GraphQL Contracts**: `skills/grpc-graphql-contracts/SKILL.md` (Protobuf 3 backward compatibility, GraphQL DataLoader N+1 fix).
@@ -81,7 +81,7 @@
 - [x] **Сквозной синтезатор фич из одного запроса или спецификации**: Команда `/synthesize` (`command/synthesize.md`) и скрипт `scripts/spec-synthesizer.mjs` (`npm run synthesize`) для сквозного синтеза фич под ключ из текстового запроса или `.md` файла.
 - [x] **Инкрементальный Smart-Тестер (Test Impact Analysis - TIA)**: Скрипт `scripts/smart-test-runner.mjs` (`npm run test:smart` / `/test --smart`) для запуска только затронутых тестов за миллисекунды.
 - [x] **AI Chaos Engineer & Fault Injection**: Скрипт `scripts/chaos-resilience-tester.mjs` (`npm run test:chaos`) для симуляции сбоев, задержек и 429 штормов.
-- [x] **AST Охотник за утечками памяти и ресурсов**: Скрипт `scripts/ast-leak-detector.mjs` (`npm run perf:leaks`) для выявления висящих таймеров и утечек памяти.
+- [x] **AST Охотник за утечками памяти и ресурсов**: удалён в волне 12 как regex-фейк (две `includes`-эвристики без AST); проверка таймеров/слушателей не заменяется ничем — см. CHANGELOG волны 12.
 - [x] **Движок мутационного тестирования (Mutation Testing)**: Скрипт `scripts/mutation-test-runner.mjs` (`npm run test:mutate`) для оценки реального качества тестов.
 - [x] **Сквозной визуализатор живой архитектуры C4**: Команда `/arch` (`command/arch.md`) и скрипт `scripts/arch-visualizer.mjs` (`npm run arch`) для генерации C4 Mermaid диаграмм.
 
@@ -100,7 +100,7 @@
 - **Скиллов в системе**: 40 навык (100% валидированы).
 - **Slash-команд**: 25 + сгенерированный `/menu` (`/oneshot`, `/commit`, `/plan`, `/review`, `/test`, `/optimize`, `/pr`, `/infra`, `/release`, `/i18n`, `/prompt`, `/prompt-engineering/prompt-optimizer`, `/docgen`, `/budget`, `/presets`, `/conflict`, `/doctor`, `/modernize`, `/matrix`, `/heal`, `/synthesize`, `/arch`, `/oracle`, `/bootstrap`, `/build-context-system`).
 - **Модели и пресеты**: назначения моделей на агентов — `config/model-presets.json` (quality/balanced/cost/speed/dashscope/inherit), применение `npm run models:apply -- <preset>`, гейт `validate:models`, команда `/presets`.
-- **Quality Gates & CI**: 100% прохождение (`validate:all`, `smoke:functional`, `eval:routes`, `radar`, `scan:secrets`, `impact`, `test:gap`, `bench`, `budget`, `doctor`, `db:explain`, `matrix`, `heal`, `drift`, `synthesize`, `memory`, `test:smart`, `test:chaos`, `perf:leaks`, `test:mutate`, `arch`, `oracle`, `pr:auto`, `test:flaky`, `memory:compact`, `bootstrap`, `menu:gen`, `heal:config`, `telemetry`, `onboard`, `watch`).
+- **Quality Gates & CI**: 100% прохождение (`validate:all`, `smoke:functional`, `eval:routes`, `radar`, `scan:secrets`, `impact`, `test:gap`, `bench`, `budget`, `doctor`, `db:explain`, `matrix`, `heal`, `drift`, `synthesize`, `memory`, `test:smart`, `test:chaos`, `test:mutate`, `arch`, `oracle`, `pr:auto`, `test:flaky`, `memory:compact`, `bootstrap`, `menu:gen`, `heal:config`, `telemetry`, `onboard`, `watch`).
 
 ---
 

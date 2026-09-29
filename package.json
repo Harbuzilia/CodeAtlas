@@ -55,7 +55,6 @@
     "memory": "node scripts/swarm-memory.mjs",
     "test:smart": "node scripts/smart-test-runner.mjs",
     "test:chaos": "node scripts/chaos-resilience-tester.mjs",
-    "perf:leaks": "node scripts/ast-leak-detector.mjs",
     "test:mutate": "node scripts/mutation-test-runner.mjs",
     "arch": "node scripts/arch-visualizer.mjs",
     "oracle": "node scripts/defect-oracle.mjs",

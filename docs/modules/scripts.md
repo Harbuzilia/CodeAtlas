@@ -1,6 +1,6 @@
 # Module Documentation: scripts
 
-Generated automatically via `npm run docgen` on 2026-09-17.
+Generated automatically via `npm run docgen` on 2026-09-29.
 
 ## 📄 `agent-matrix.mjs`
 
@@ -20,11 +20,13 @@ Generated automatically via `npm run docgen` on 2026-09-17.
 
 ## 📄 `ast-impact.mjs`
 
-*Executable script or configuration module.*
-
-## 📄 `ast-leak-detector.mjs`
-
-*Executable script or configuration module.*
+### Functions & Methods:
+- `findBinary(cwd = process.cwd()`
+- `parseListPayload(payload)`
+- `parseOutline(payload, text)`
+- `parseDiffHunks(diffText)`
+- `changedSymbols(symbols, hunks)`
+- `main(argv = process.argv.slice(2)`
 
 ## 📄 `ast-rebuild.mjs`
 
@@ -120,6 +122,10 @@ Generated automatically via `npm run docgen` on 2026-09-17.
 *Executable script or configuration module.*
 
 ## 📄 `run-benchmarks.mjs`
+
+*Executable script or configuration module.*
+
+## 📄 `run-tests.mjs`
 
 *Executable script or configuration module.*
 

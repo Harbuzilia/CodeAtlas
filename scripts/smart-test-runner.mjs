@@ -40,7 +40,6 @@ const analysisTools = new Set([
   'token-budget-tracker.mjs',
   'defect-oracle.mjs',
   'contract-drift-sentinel.mjs',
-  'ast-leak-detector.mjs',
   'db-query-advisor.mjs'
 ]);
 

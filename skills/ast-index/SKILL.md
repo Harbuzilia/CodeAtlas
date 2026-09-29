@@ -1,20 +1,20 @@
 ---
 name: ast-index
-description: "AST-поиск по кодовой базе через CLI ast-index (SQLite, 23 языка): usages, hierarchy, callers, implementations, outline — вместо grep по символам, в 12-260 раз быстрее"
+description: "AST-поиск по кодовой базе через CLI ast-index (SQLite, 36+ языков): usages, hierarchy, callers, implementations, outline — вместо grep по символам"
 ---
 
 # ast-index — AST-поиск по коду
 
-`ast-index` — Rust CLI, строит SQLite-базу из AST проекта (23 языка). Поиск символов/использований за миллисекунды (12-260x быстрее grep).
+`ast-index` — Rust CLI, строит SQLite-базу из AST проекта (36+ языков, включая TS/JS, C#, Python). Поиск символов/использований за миллисекунды из готового индекса.
 
 **Используй вместо grep:** все вызовы функции, иерархия наследования, outline файла, реализации интерфейса.
 **НЕ для:** строк/комментариев/конфигов, `.md`/`.json`/`.yaml` (не индексируются).
 
 ## Бинарник и настройка
 
-Порядок разрешения бинаря: 1) `.opencode/bin/ast-index.exe` в репо Code Atlas; 2) `%LOCALAPPDATA%\ast-index\ast-index.exe`; 3) `~/.config/opencode/bin/ast-index.exe`.
-Индекс в `%LOCALAPPDATA%\ast-index\`. Первый `rebuild` ~1s, дальше — инкрементальный `update`.
-Вне репо Code Atlas бинаря может не быть (45 МБ экзешник специально НЕ синхронизируется в глобальные таргеты): предупреди одной строкой и работай без ast-index (grep/repomap), НЕ падая и не повторяя попытки.
+Порядок разрешения бинаря: 1) `~/.config/opencode/bin/ast-index.exe` (глобальная установка); 2) `.opencode/bin/ast-index.exe` в репо Code Atlas; 3) `%LOCALAPPDATA%\ast-index\ast-index.exe`.
+Индекс в `%LOCALAPPDATA%\ast-index\`. Первый `rebuild` занимает десятки секунд на среднем репо, дальше — инкрементальный `update`.
+Вне репо Code Atlas бинаря может не быть: предупреди одной строкой и работай без ast-index (grep/repomap), НЕ падая и не повторяя попытки.
 
 ## Команды
 
@@ -32,7 +32,9 @@ description: "AST-поиск по кодовой базе через CLI ast-ind
 | `implementations "I"` | Реализации интерфейса |
 | `imports "path"` | Импорты файла |
 | `map` | Карта проекта по директориям |
-| `changed [--base X]` | Изменённые символы vs ветка |
+| `changed [--base X]` | Изменённые ФАЙЛЫ vs ветка (символы — см. `npm run impact`) |
+| `stats` | Размер индекса: файлы/символы/ссылки |
+| `module` / `deps` / `dependents` / `unused-deps` | Модульные зависимости |
 
 ## Правила для агентов
 
@@ -41,3 +43,5 @@ description: "AST-поиск по кодовой базе через CLI ast-ind
 3. `update` вместо `rebuild` (инкрементально).
 4. Нет индекса → один `rebuild` перед первым использованием.
 5. **Не заменяет repomap**: repomap — глобальная архитектура, ast-index — точечный поиск символов.
+6. **JSON schema v2**: у `usages`/`search`/`symbol` проверяй `pagination.truncated` — если true, подними `-l` и перечитай, прежде чем делать вывод о радиусе поражения.
+7. **Перед `npm run impact`** (радиус поражения текущих правок) — `ast-index update`: свежесть индекса = верные номера строк символов.

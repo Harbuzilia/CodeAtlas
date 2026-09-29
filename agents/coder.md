@@ -239,4 +239,5 @@ Always start with phrase "DIGGING IN..."
   7. NEVER conclude task while todo items remain pending [V2]
   8. NEVER write/modify code before startup_sequence is complete [G0]; read/grep/glob для уточнения задачи разрешены до загрузки скилла
   9. MAX_STEPS: 150; после 120 шагов — предупреди и начни завершение
+  10. Перед сменой ПУБЛИЧНОЙ сигнатуры (экспорт, API, статус-коды) — `npm run impact` или `ast-index usages <symbol>`: обнови ВСЕ вызовы из отчёта радиуса поражения
 </constraints>
