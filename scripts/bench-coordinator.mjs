@@ -109,10 +109,13 @@ function purgeBenchSessions() {
 function runScenario({ title, model, prompt, mode, cwd }) {
   return new Promise((resolve) => {
     const started = Date.now();
-    // bash -lc: the provider auth env only exists in a login shell; a bare
-    // node spawn (or cmd.exe) loses it and every run dies with provider.auth 401.
+    // Git bash by absolute path: a bare 'bash' resolves to the WSL shell under
+    // Windows when PATH order differs (background tasks), and a login shell is
+    // required because provider auth env only exists there — a bare node spawn
+    // or cmd.exe loses it and every run dies with provider.auth 401.
+    const GIT_BASH = process.env.BENCH_BASH ?? 'C:\\Program Files\\Git\\bin\\bash.exe';
     const command = `opencode run --standalone --title '${title}' -m '${model}' --agent openagent --format json --auto '${prompt}'`;
-    const child = spawn('bash', ['-lc', command], { cwd, encoding: 'utf8' });
+    const child = spawn(GIT_BASH, ['-lc', command], { cwd, encoding: 'utf8' });
     let buffer = '';
     let taskSec = null;
     let answered = false;
