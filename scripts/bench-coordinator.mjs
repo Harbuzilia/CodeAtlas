@@ -109,12 +109,10 @@ function purgeBenchSessions() {
 function runScenario({ title, model, prompt, mode, cwd }) {
   return new Promise((resolve) => {
     const started = Date.now();
-    const child = spawn(
-      'opencode',
-      ['run', '--standalone', '--title', title, '-m', model, '--agent', 'openagent', '--format', 'json', '--auto', prompt],
-      // shell: true — on Windows `opencode` is a .cmd shim.
-      { cwd, encoding: 'utf8', shell: true },
-    );
+    // bash -lc: the provider auth env only exists in a login shell; a bare
+    // node spawn (or cmd.exe) loses it and every run dies with provider.auth 401.
+    const command = `opencode run --standalone --title '${title}' -m '${model}' --agent openagent --format json --auto '${prompt}'`;
+    const child = spawn('bash', ['-lc', command], { cwd, encoding: 'utf8' });
     let buffer = '';
     let taskSec = null;
     let answered = false;
