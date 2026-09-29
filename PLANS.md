@@ -109,3 +109,4 @@
 1. **Реальные стресс-тесты**: Регулярный прогон сценариев через `npm run eval:routes`, `npm run bench` и `npm run test:smart`.
 2. **Мониторинг DCP**: Контроль сжатия контекста через плагин `@tarquinen/opencode-dcp`.
 3. **Обновление версий**: Синхронизация версий внешних библиотек через Context7.
+4. **Watchlist волны 12 (наблюдаем, не внедряем)**: `ast-grep` 0.45+ как codemod/lint-дополнение к ast-index; `@playwright/cli` (pre-1.0, alpha-зависимости) вместо `pw.cjs` после стабилизации; hook `experimental.session.compacting` для сохранения контракт-форматов агентов при компакции; playwright-mcp только для uitester и только если MCP-обход plugin-хуков (upstream #50073) перестанет быть риском.

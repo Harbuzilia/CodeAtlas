@@ -331,7 +331,7 @@ if (!fs.existsSync(pkgOpencodePath)) {
   fail('Missing .opencode/package.json — run npm run sync:local (validate:all does this first)');
 } else {
   const pkgOpencode = JSON.parse(fs.readFileSync(pkgOpencodePath, 'utf8'));
-  const verRoot = pkgRoot.dependencies?.['@opencode-ai/plugin'];
+  const verRoot = pkgRoot.dependencies?.['@opencode-ai/plugin'] ?? pkgRoot.devDependencies?.['@opencode-ai/plugin'];
   const verOpencode = pkgOpencode.dependencies?.['@opencode-ai/plugin'];
   if (verRoot !== verOpencode) fail(`@opencode-ai/plugin version drift: root ${verRoot} vs .opencode ${verOpencode}`);
 }

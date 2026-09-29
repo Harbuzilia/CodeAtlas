@@ -65,7 +65,7 @@
     "install:local": "node scripts/install-local.mjs",
     "update:local": "node scripts/update-local.mjs"
   },
-  "dependencies": {
-    "@opencode-ai/plugin": "1.18.18"
+  "devDependencies": {
+    "@opencode-ai/plugin": "^1.18.33"
   }
 }

@@ -89,7 +89,7 @@ function buildRuntimePackage() {
       name: 'opencode-runtime',
       private: true,
       type: 'module',
-      dependencies: { '@opencode-ai/plugin': pkg.dependencies?.['@opencode-ai/plugin'] ?? 'latest' },
+      dependencies: { '@opencode-ai/plugin': pkg.dependencies?.['@opencode-ai/plugin'] ?? pkg.devDependencies?.['@opencode-ai/plugin'] ?? 'latest' },
     },
     null,
     2,

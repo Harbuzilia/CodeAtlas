@@ -527,6 +527,16 @@ test('text prompt heals a session stranded on vision after a plugin restart', as
   assert.deepEqual(healthy.switches, [], 'a coordinator session must not be touched');
 });
 
+test('a session stranded on vision after restart restores to the coordinator, not to vision', async () => {
+  const imageGuard = await load('plugin/image-guard.js');
+  const fixture = makeCtx({ initialAgent: 'vision' });
+  await setup(imageGuard, fixture.ctx);
+  await fixture.sessionHooks.get('prompt')(event([{ path: 'stranded.png' }]));
+  assert.equal(fixture.agents.get('sess-image-1'), 'vision');
+  await fixture.emit('session.idle');
+  assert.equal(fixture.agents.get('sess-image-1'), 'openagent', 'captured previous agent must not be vision itself');
+});
+
 test('registration failures do not prevent the other native hook from activating', async () => {
   const imageGuard = await load('plugin/image-guard.js');
   const toolHooks = new Map();

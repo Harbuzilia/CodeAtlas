@@ -221,7 +221,9 @@ export async function routeImagePrompt(ctx, event) {
       if (!state) {
         const selection = await currentSelection(ctx, sessionID);
         state = {
-          previousAgent: selection.agent,
+          // A session stranded on vision (plugin restarted mid-turn) must not
+          // capture 'vision' as the coordinator to restore afterwards.
+          previousAgent: selection.agent === 'vision' ? FALLBACK_AGENT : selection.agent,
           previousModel: selection.model,
           pending: 0,
           messages: new Set(),
